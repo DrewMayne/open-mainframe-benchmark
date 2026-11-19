@@ -1,10 +1,27 @@
 # Contributing
 
-Contributions are welcome, and **methodology critique** most of all: if a design choice favours one platform, open an
-issue and say why.
+Contributions are welcome. Two kinds help most: **methodology critique** (if a design choice favours one platform,
+open an issue and say why) and **access to systems** (below).
 
-- **Issues:** questions, critiques, platform facts (with a source), proposed spec changes.
-- **Pull requests:** kit code (once M1 lands), ports, documentation. Keep changes focused, and explain the reason in the description.
-- **Results:** include the run manifest, the raw output and the spec version. Never include credentials, internal hostnames or private data.
-- **Platform terms:** only submit results from platforms whose terms allow performance testing and publishing results.
-- **Licence:** contributions are under Apache License 2.0 (inbound = outbound).
+## Ways to contribute
+- **Critique and spec changes:** open a [methodology issue](../../issues/new?template=methodology.md). Point at the spec section and say what would be fairer.
+- **Platform access:** open a [platform access issue](../../issues/new?template=platform-access.md) (see below).
+- **Platform facts:** a correction or addition to docs/platforms.md, always with a source URL.
+- **Code:** kit code (once M1 lands), ports and documentation, as pull requests. Keep them focused, and explain the reason in the description. Issues labelled `good first issue` are a place to start.
+- **Results:** open a [results issue](../../issues/new?template=results.md), with the run manifest, the raw output and the spec version.
+
+## Offering access to a system
+These help us most:
+- LinuxONE or Linux on Z guests (2-4 IFLs, dedicated preferred);
+- z/OS sandboxes with CICS, VSAM, DFSORT and an adjustable WLM service class;
+- x86 servers with QAT/AMX, or EPYC Zen 4+.
+
+What we commit to:
+- **Terms first.** We run only where the platform's terms allow performance testing and publishing results, or with the owner's written permission. Please say which applies when you offer access.
+- **Agreed load.** Scheduled windows, a fixed maximum duration per run, capped CPU, and an immediate stop on request. No overrides of site limits.
+- **Disclosure.** The configuration (core counts, SMT, sharing and capping, other load) and any constraint you set are published with the results. Your support is acknowledged, unless you ask us not to name you.
+- **Independence.** You may review drafts for factual accuracy, but results are not subject to approval.
+- **Hygiene.** No credentials, internal hostnames or private data ever enter this repository.
+
+## Licence
+Contributions are under the Apache License 2.0 (inbound = outbound).

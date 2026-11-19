@@ -44,6 +44,17 @@ script and raw file published, and predictions written down before the data exis
 5. **Permitted platforms only.** Runs happen only where the platform's terms allow performance testing and publishing
    results, with written permission where needed. See [docs/platforms.md](docs/platforms.md).
 
+## Help wanted
+The project is open for contribution: code, critique, results and, most of all, **access to systems**.
+- **LinuxONE / Linux on Z:** 2-4 IFLs (dedicated preferred), for a few weeks of scheduled runs.
+- **z/OS:** a sandbox with CICS, VSAM, DFSORT and a WLM service class we may adjust, in agreed windows.
+- **x86 servers with accelerators:** Intel QAT and AMX (4th Gen Xeon or later), or AMD EPYC Zen 4+.
+
+**We only run where the platform's terms allow performance testing and publishing results**, or with the owner's
+written permission. Runs are capped, scheduled and stoppable on request, and every configuration and constraint is
+published with the results. Offers of access: open a
+[platform access issue](../../issues/new?template=platform-access.md). See [CONTRIBUTING.md](CONTRIBUTING.md) for the rest.
+
 ## License
 Apache License 2.0, see [LICENSE](LICENSE). Any third-party code adopted later (for example AWS CardDemo, also Apache
 2.0) keeps its own licence and notices; see [NOTICE](NOTICE).
