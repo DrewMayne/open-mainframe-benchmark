@@ -13,17 +13,22 @@
 | M7 | Open cost model: a separate report in which every cost assumption is a visible, editable input, fed by the measured ratios. No hidden utilisation or licence assumptions | later |
 | A1 | Analytics track (TPC-H-derived, compliance-ready) on PostgreSQL x86: SF 1 and 10, power and throughput tests, refresh streams, answer validation, ACID tests (with power-loss durability on our own hardware) | planned |
 | A2 | Analytics on Linux on Z, then Db2 for z/OS (phase 2); queries as batch underneath the online track | access being arranged |
+| T1 | TPC-Pricing / TPC-Energy methods applied to the FDR pricing appendix and energy section (x86) | planned |
+| T2 | TPC-DI-derived batch ETL module on PostgreSQL x86, then Linux on Z / z/OS | planned |
+| T3 | TPC-E-derived OLTP module beside the online track (x86 first) | planned |
+| T4 | TPCx-V-derived consolidation module (KVM on x86; KVM or z/VM on Z) | access being arranged |
 | Stretch | An audited run of an actual TPC benchmark (e.g. TPC-E or TPCx-AI) on Z and x86, as a separately sponsored effort with a TPC-certified auditor | needs a sponsor |
 
-## Other TPC benchmarks we may adopt, in the same way (derived, labelled, never vendored)
-Ranked by how closely each matches mainframe work. Kit availability and current revisions are to be confirmed on tpc.org.
+## Other TPC benchmarks, ranked (derived, labelled, never vendored)
+The high-priority rows are now adopted as optional modules (SPEC 1.7; milestones T1-T4). The others stay candidates.
+Revisions as on tpc.org, 2026-11-19: TPC-H 3.0.1, TPC-E 1.14.0, TPC-DI 1.1.0 (obsolete), TPCx-V 2.1.10, TPC-Energy 1.5.0, TPC-Pricing 2.9.0.
 
 | Benchmark | What it is | Why it matters here | Priority |
 | --- | --- | --- | --- |
-| TPC-E | Brokerage OLTP: complex, read-heavy transactions | The closest standard analogue to zRef and to CICS-style work; a familiar OLTP yardstick beside our CardDemo track | high |
-| TPC-DI | Data integration: batch ETL from multiple source formats, including fixed-width files, into a warehouse | The nightly batch load, in its most mainframe-like form | high |
-| TPCx-V | Virtualization: many database VMs with shifting load on one host | Tests the consolidation claims (N VMs per LinuxONE vs x86) directly | high |
-| TPC-Pricing, TPC-Energy | Common methodologies for price and energy metrics | Method for the open cost model (M7) and for energy where it can be measured | high (method only) |
+| TPC-E (adopted) | Brokerage OLTP: complex, read-heavy transactions | The closest standard analogue to zRef and to CICS-style work; a familiar OLTP yardstick beside our CardDemo track | high |
+| TPC-DI (adopted; obsolete at TPC) | Data integration: batch ETL from multiple source formats, including fixed-width files, into a warehouse | The nightly batch load, in its most mainframe-like form | high |
+| TPCx-V (adopted) | Virtualization: many database VMs with shifting load on one host | Tests the consolidation claims (N VMs per LinuxONE vs x86) directly | high |
+| TPC-Pricing, TPC-Energy (adopted) | Common methodologies for price and energy metrics | Method for the open cost model (M7) and for energy where it can be measured | high (method only) |
 | TPC-C | Classic order-entry OLTP (spec only; HammerDB's TPROC-C is the common derived kit) | A widely recognised OLTP baseline on PostgreSQL and Db2 | medium |
 | TPC-DS | Modern decision support: 99 queries plus data maintenance | A broader analytics check beside TPC-H | medium |
 | TPCx-AI | End-to-end AI pipelines (data prep, training, serving) | Relevant to the Telum AI accelerator; stack portability to s390x unknown | medium |
@@ -46,4 +51,4 @@ We need s390x and z/OS time on platforms whose terms allow benchmarking **and** 
 - **Transaction mix weights** for the online set.
 - **The AI model for the scoring step:** a public fraud model and dataset (candidates: the IBM LSTM fraud and TabFormer models).
 - **Fair x86 accelerator coverage** on consumer hardware without QAT or AMX.
-- **Which TPC benchmarks to adopt beyond TPC-H,** and in what order (see the table above).
+- **Order of the TPC modules** (T1-T4), and whether any medium-priority ones are worth adding.

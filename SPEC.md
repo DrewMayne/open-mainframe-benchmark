@@ -1,10 +1,11 @@
-# Open Mainframe Benchmark: specification, draft v0.2.0 (2026-11-19)
+# Open Mainframe Benchmark: specification, draft v0.3.0 (2026-11-19)
 
 Status: draft for comment. Items marked **(proposed)** are not yet decided. Version numbers follow semantic versioning:
 results always name the spec version and track they ran against.
 
 Changes in v0.1.1: two implementation tracks (Java first, then COBOL) under one spec (1.0, 1.5).
 Changes in v0.2.0: analytics track, TPC-H-derived and compliance-ready (1.6); rules for using TPC materials (6).
+Changes in v0.3.0: optional TPC-derived modules: TPC-E, TPC-DI, TPCx-V, plus the TPC-Pricing and TPC-Energy methods (1.7).
 
 ## 1. Workload
 
@@ -80,6 +81,23 @@ The reporting and analytics side of mainframe work: large scans, joins, sorts an
   - dbgen's LINEITEM data can be the standard input for the B2 extract/sort/merge job.
 - **End goal:** an audited, official TPC-H result on at least one configuration, if a sponsor funds the audit and
   pricing.
+
+### 1.7 Optional TPC-derived modules (proposed)
+Each module answers a question the core tracks don't. Each is optional, run only when its question matters, and
+follows section 6. Revisions are as listed on tpc.org on 2026-11-19; results name the revision used.
+- **TPC-E (v1.14.0, EGen kit). A standard OLTP yardstick.** The brokerage OLTP workload, run on PostgreSQL / Db2 next
+  to our CardDemo track. It shows whether our online-track ratios hold on a recognised OLTP mix, and it is the nearest
+  standard analogue to zRef. It is a separate module, and CardDemo is never derived from it.
+- **TPC-DI (v1.1.0, DIGen kit; listed by the TPC as obsolete, so no new official results are possible). Batch ETL.**
+  It loads a warehouse from multiple source formats, including fixed-width files, with historical and incremental
+  loads. It is the nightly batch job in its most mainframe-like form, measured as elapsed time and CPU for each load
+  phase.
+- **TPCx-V (v2.1.10, kit). Consolidation.** Many database VMs with shifting load on one host. It tests the
+  consolidation claims (how many VMs per LinuxONE against per x86 host, under the same service levels) on KVM or z/VM
+  on Z and KVM on x86.
+- **TPC-Pricing (v2.9.0) and TPC-Energy (v1.5.0). Methods, not workloads.** Pricing defines how the optional pricing
+  appendix and the open cost model (M7) are built, from public list prices with stated assumptions. Energy defines how
+  power is measured where it can be (on x86 we control). On shared Z it can't be measured, and the FDR says so.
 
 ## 2. Platforms
 - **Phase 1:**
