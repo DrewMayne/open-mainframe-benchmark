@@ -1,9 +1,10 @@
-# Open Mainframe Benchmark: specification, draft v0.1.1 (2026-11-19)
+# Open Mainframe Benchmark: specification, draft v0.2.0 (2026-11-19)
 
 Status: draft for comment. Items marked **(proposed)** are not yet decided. Version numbers follow semantic versioning:
 results always name the spec version and track they ran against.
 
 Changes in v0.1.1: two implementation tracks (Java first, then COBOL) under one spec (1.0, 1.5).
+Changes in v0.2.0: analytics track, TPC-H-derived and compliance-ready (1.6); rules for using TPC materials (6).
 
 ## 1. Workload
 
@@ -55,6 +56,31 @@ Results are always reported with and without the extension.
 - A deterministic generator with a scale factor S (accounts = 10,000 × S, transactions per account stated).
 - The same seed gives byte-identical data files on every platform. Golden checks compare decompressed bytes, because hardware and software deflate output differ.
 
+### 1.6 Analytics track: TPC-H-derived, compliance-ready (proposed)
+The reporting and analytics side of mainframe work: large scans, joins, sorts and aggregations over a standard data set.
+- **Data and queries:** generated with TPC's own `dbgen` and `qgen` from the TPC-H kit (spec revision 3.0.1 at the time
+  of writing; use the latest revision on tpc.org and name it in every result). Each user downloads the kit from tpc.org
+  and accepts the TPC EULA. It is never included in this repository (see section 6).
+- **Databases:** PostgreSQL on x86 and on Linux on Z, and Db2 for z/OS in phase 2. The query text follows the kit, with
+  only the dialect changes the spec permits, each one listed in the FDR.
+- **Compliance-ready:** the harness implements every rule of the TPC-H specification that can be implemented on the
+  platform:
+  - permitted scale factors only (1, 10, 30, 100, 300 and up; never others);
+  - exact dbgen population, and query output validated against the kit's reference answers;
+  - the power test and the throughput test, with the required number of query streams plus the refresh stream (RF1/RF2);
+  - the ACID tests, including durability by power loss on platforms we fully control;
+  - the FDR and executive summary in TPC's format, and pricing under the TPC Pricing Specification where it can be done
+    with public list prices.
+- **How results are labelled:** until an independent TPC-certified audit is passed and the result is accepted by the
+  TPC, every result is published as **"TPC-H-derived; not comparable to published TPC-H results"**, as academic
+  research with no marketing claims (TPC EULA clause 4c). TPC metric names (e.g. QphH@Size) are never used for our
+  numbers. Rules that could not be met on a platform are listed in its FDR.
+- **Also used as batch:**
+  - the queries can run as the batch load underneath the online track, with reporting against the live database;
+  - dbgen's LINEITEM data can be the standard input for the B2 extract/sort/merge job.
+- **End goal:** an audited, official TPC-H result on at least one configuration, if a sponsor funds the audit and
+  pricing.
+
 ## 2. Platforms
 - **Phase 1:**
   - x86 PC on bare-metal Linux;
@@ -89,3 +115,18 @@ Results are always reported with and without the extension.
 ## 5. Out of scope (v0.1)
 - Audited or official benchmark status (TPC/SPEC). Results are research results. This kit is not a TPC benchmark, and results must not be presented as TPC results or described with TPC benchmark names. A separately sponsored, audited run of an actual TPC benchmark is listed as a stretch goal in ROADMAP.md.
 - DB2, IMS and MQ variants of CardDemo (later, possibly).
+
+## 6. Using TPC materials
+TPC benchmark kits and specifications are licensed by the Transaction Processing Performance Council under their own
+EULAs. To stay within them:
+1. **Download, never vendor.** TPC kits are never committed to this repository. Scripts fetch them from tpc.org, or
+   point the user there to accept the EULA.
+2. **Label every derived result** as "TPC-x-derived; not comparable to published TPC-x results", unless the result was
+   audited and accepted by the TPC.
+3. **No TPC names or metrics on our own workloads.** The online track (CardDemo-based) is not TPC-C- or TPC-E-derived
+   and is never described as such. TPC metric names (tpmC, tpsE, QphH@Size, and so on) are used only for official
+   results.
+4. **Academic framing only:** no marketing claims based on TPC-derived results.
+
+TPC, TPC-H, TPC-C, TPC-E, TPC-DS, TPC-DI, TPCx-AI, TPCx-V, QphH and related names are trademarks of the Transaction
+Processing Performance Council.

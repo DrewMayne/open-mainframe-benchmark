@@ -23,5 +23,12 @@ What we commit to:
 - **Independence.** You may review drafts for factual accuracy, but results are not subject to approval.
 - **Hygiene.** No credentials, internal hostnames or private data ever enter this repository.
 
+## TPC materials
+If you work on a TPC-derived part of the benchmark, follow SPEC.md section 6:
+- never commit TPC kits or spec text;
+- label every derived result "not comparable to published TPC results";
+- never use TPC names or metrics for our own workloads;
+- no marketing claims.
+
 ## Licence
 Contributions are under the Apache License 2.0 (inbound = outbound).
