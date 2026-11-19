@@ -1,0 +1,10 @@
+Open Mainframe Benchmark
+Copyright 2026 Andrew Mayne and contributors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Third-party components adopted later (for example AWS CardDemo, Copyright Amazon.com, Inc. or its affiliates,
+Apache License 2.0) will be listed here with their own copyright and licence notices.
+
+IBM, IBM Z, LinuxONE, z/OS, CICS and DFSORT are trademarks of International Business Machines Corporation.
+This project is independent and is not affiliated with or endorsed by IBM, AWS, HP/HPE or any other vendor named.
