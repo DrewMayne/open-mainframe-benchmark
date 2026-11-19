@@ -31,6 +31,13 @@ platforms' curves will differ in shape, and those differences will be reported, 
 ## H5: batch elapsed time
 The batch suite's elapsed time alongside online work will be **1.2-2.0× its alone time** on Linux at default priority.
 
+## Added 2026-11-19 (spec v0.1.1, two tracks; still before any kit run)
+- **H1j (Java track):** with the same JVM family (Semeru/OpenJ9) and no accelerators, the per-core throughput ratio of
+  LinuxONE IFL to x86 core will be **within 0.15 of the COBOL track's ratio** (H1) for the same transaction set. If the
+  gap is larger, the compiler (GnuCOBOL vs JIT), not the hardware, is driving H1.
+- **H6 (z/OS, Java track, phase 2):** enabling zIIPs will leave Java-track throughput per engine **within ±10%**, while
+  moving **≥ 80% of the CPU time** off general CPs. That is a cost effect, not a speed effect.
+
 ## Notes
 - These are the maintainer's predictions, made to be tested, not claims.
 - A single pilot run on a 2-core x86 PC (not this kit) informed H3a. It found ~0.57 of alone, flat across 27 mixes. It is

@@ -1,7 +1,8 @@
 # Open Mainframe Benchmark
 
-An open, reproducible benchmark specification and kit for comparing IBM Z / LinuxONE with x86 servers. It runs COBOL
-online transactions and COBOL batch together, from the same source on every platform.
+An open, reproducible benchmark specification and kit for comparing IBM Z / LinuxONE with x86 servers. It runs online
+transactions and batch together, from the same source on every platform, in two tracks: **Java** (the same JVM
+everywhere, for the hardware question) and **COBOL** (based on AWS CardDemo, for the migration question).
 
 **Status: early design (v0.1). No kit code and no results yet.** This repository publishes the plan, the specification
 draft and the pre-registered hypotheses *before* any measurement. Anyone can then check that the results answer the

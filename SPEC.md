@@ -1,12 +1,29 @@
-# Open Mainframe Benchmark: specification, draft v0.1 (2026-11-19)
+# Open Mainframe Benchmark: specification, draft v0.1.1 (2026-11-19)
 
 Status: draft for comment. Items marked **(proposed)** are not yet decided. Version numbers follow semantic versioning:
-results always name the spec version they ran against.
+results always name the spec version and track they ran against.
+
+Changes in v0.1.1: two implementation tracks (Java first, then COBOL) under one spec (1.0, 1.5).
 
 ## 1. Workload
 
+### 1.0 Two tracks, one specification
+The benchmark has two implementation tracks. They share the same transactions, data, batch suite, accelerated
+extension, driver, metrics, run rules and FDR. Results always name their track.
+- **Java track (built first).** The transaction and batch logic is written in Java and runs on the same JVM family
+  (IBM Semeru / OpenJ9) on x86 Linux, Linux on Z and z/OS. Because the code and the JIT are the same everywhere, it
+  answers the hardware question most cleanly. On z/OS it also shows the effect of zIIP engines, which run Java work.
+  Its accelerated steps use the standard Java APIs: `java.util.zip` (DFLTCC on Z through Semeru), JCE with OpenJCEPlus
+  (CPACF on Z), and ONNX Runtime or the zDNN-backed path for scoring.
+- **COBOL track.** The CardDemo-based application in COBOL (1.1). It answers the migration and rehosting question,
+  because COBOL/CICS business applications are what those claims are about. On z/OS it uses IBM Enterprise COBOL
+  under CICS. On Linux it uses GnuCOBOL. **Caveat, stated with every COBOL-track result:** GnuCOBOL compiles via C and
+  is not the compiler production mainframes use, so Linux-on-Z COBOL figures don't represent Enterprise COBOL on z/OS.
+- **Track equivalence:** both tracks must produce identical business results (account balances, posted transactions,
+  statements) from the same seed. That is checked by a shared golden-output test.
+
 ### 1.1 Base application (proposed)
-- **Core: [AWS CardDemo](https://github.com/aws-samples/aws-mainframe-modernization-carddemo)** (Apache 2.0). It is a COBOL credit-card management application: CICS online transactions over VSAM (KSDS with alternate indexes), plus a batch suite.
+- **Core (COBOL track; the Java track reimplements the same transactions): [AWS CardDemo](https://github.com/aws-samples/aws-mainframe-modernization-carddemo)** (Apache 2.0). It is a COBOL credit-card management application: CICS online transactions over VSAM (KSDS with alternate indexes), plus a batch suite.
 - **Why CardDemo:** it already exists, it is open, and it is used to test mainframe migration tooling, including performance. Results on it can be compared directly with migration claims.
 - **On z/OS:** it runs as-is (CICS, VSAM, JCL, DFSORT).
 - **On Linux (s390x and x86):** CICS and VSAM are replaced by a thin portable layer:
@@ -34,6 +51,7 @@ These are optional steps added to the online path, each a single library call so
 Results are always reported with and without the extension.
 
 ### 1.5 Data
+- **Storage per track (proposed):** the COBOL track uses GnuCOBOL indexed files on Linux and VSAM on z/OS. The Java track uses a portable keyed store, to be chosen in v0.2. Both load from the same generated record files.
 - A deterministic generator with a scale factor S (accounts = 10,000 × S, transactions per account stated).
 - The same seed gives byte-identical data files on every platform. Golden checks compare decompressed bytes, because hardware and software deflate output differ.
 
