@@ -1,6 +1,8 @@
-# Compliance checklist: analytics track (TPC-H-derived) against TPC-H revision 3.0.1
+# Compliance checklist: Derived from TPC-H analytics track, against TPC-H revision 3.0.1
 
-> **TPC-H-derived; not comparable to published TPC-H results.** "Met" below means that the harness implements the
+> **This workload is derived from the TPC-H Benchmark and is not comparable to published TPC-H Benchmark results, as this implementation does not comply with all requirements of the TPC-H Benchmark.**
+>
+> "Met" below means that the harness implements the
 > rule. It is not an audit finding, and no result from this track is a TPC result.
 
 The status reflects the state on **2026-11-19**. Nothing has run on a database yet, so every "implemented" row is
@@ -102,6 +104,14 @@ The three status columns are the PC (WSL2 VM, shared PostgreSQL 16 instance on t
 | 8.3 | FDR contents | fdr.py fills every item it can measure; the rest is marked "TODO (operator)" | impl | impl | n/a yet |
 | 8.3.8.8 | Times truncated to 0.01 s | metrics.truncate_hundredth | met | met | n/a yet |
 | 9 | Independent audit by a TPC-certified auditor | None. This is the end goal only if a sponsor funds it (SPEC.md 1.6) | NOT MET | NOT MET | NOT MET |
+
+## TPC Policies v6.20 (use of the name, derived works)
+| Clause | Requirement | How we meet it | PC | Linux on Z | z/OS |
+| --- | --- | --- | --- | --- | --- |
+| Policies 8.1.4 | The prefix "Derived from" before every use of the TPC-H name for our work | README, COMPLIANCE, STATUS, the FDR and the figure names say "Derived from TPC-H ..." (common.LABEL and the names); the unit tests check that the FDR and README carry no "TPC-H-derived" wording | met | met | met |
+| Policies 8.1.4 | A derived work too similar to the standard is subject to fair use (8.2); using the name needs the TPC's written permission | **Written TPC permission is being requested** before any result using the name is published. Until it is granted, publish.py refuses to write the public copy unless `TPC_PERMISSION=granted` (unit-tested) | open (permission requested) | same | same |
+| Policies 8.1.4 | No Primary or Optional Metric of the standard in a derived work | Metric names are never used. The composite figure is still computed with the clause 5.4.3 formula under a neutral name, which may count as using the metric: open question in STATUS.md | open | open | open |
+| Policies 8.1.5 | The derived-work disclaimer, verbatim | common.DISCLAIMER in every FDR (both editions) and in the README, COMPLIANCE and QUERY-MODIFICATIONS (unit-tested against the policy text) | met | met | met |
 
 ## Project run rules that interact with TPC-H
 - SPEC.md 4.1 (at least 5 runs per point): **exempted** for this track (coordinator's decision, 2026-11-19; see the

@@ -1,4 +1,4 @@
-# Status: analytics track A1 (TPC-H-derived)
+# Status: Derived from TPC-H analytics track (milestone A1)
 
 Updated: 2026-11-19, before GO. Status: **built and unit-tested; nothing has run on a database yet. Waiting for
 "GO: realreq finished".**
@@ -43,6 +43,12 @@ All files are uncommitted in the working tree (branch `main` of the local clone)
 5. **Clause 1.5.1:** COMPLIANCE.md now says "met for availability; pricing not addressed".
 6. **FDR disclosures:** every FDR now states the release.h 3.0.0 versus 3.0.1 mismatch, and states "SF <n> cannot
    be checked against TPC reference data" whenever the kit ships no reference data for that SF (SF 10 and 30).
+7. **TPC Policies v6.20, 8.1.4 and 8.1.5** (checked by the coordinator, policies text lines 3085-3109):
+   - every public mention of the name for our work now reads "Derived from TPC-H ...";
+   - every FDR (both editions) and the README carry the 8.1.5 disclaimer verbatim (`common.DISCLAIMER`);
+   - written TPC permission is being requested. Until it is granted, `py/publish.py` refuses to write the public
+     results copy unless `TPC_PERMISSION=granted`. In the SF 1 window this means the public-copy step prints
+     REFUSED while the raw run is copied to `E:\tpc\results\` as before. Unit-tested.
 
 ## Waiting for GO (the SF 1 window, about 1.5-2 h, on the existing `oobe` rig)
 Setup before the run:
@@ -96,10 +102,28 @@ If Q17 or Q20 runs far longer than that, I'll report it with the plan (GEN-05) r
    dbgen's O_TOTALPRICE does not satisfy it exactly, that is a finding, not something to loosen.
 
 ## Open questions
-- None blocking. One reading for the coordinator to confirm: the public copy also leaves out query **output rows**
-  (decision 4 listed what to publish but did not name output rows).
+- **Policies 8.1.4, second paragraph:** "The use of any Primary Metric or Optional Metric of a TPC Benchmark
+  Standard in a work that is derived from TPC material is not allowed."
+  - The harness computes the composite with the clause 5.4.3 formula and prints it under a neutral name in both
+    FDR editions. It does the same for the power and throughput figures, which the spec calls secondary numerical
+    quantities, not primary metrics.
+  - A neutral name may not be enough if the number is the primary metric itself.
+  - Options: (a) keep it, and ask about it in the permission request; (b) leave the composite out of the public
+    FDR until permission is granted, and keep it in the full edition as an internal sanity number; (c) drop it.
+  - Nothing is changed until you decide.
+- One reading for the coordinator to confirm: the public copy also leaves out query **output rows** (decision 4
+  listed what to publish but did not name output rows).
 
 ## Uncommitted
-Branch `main` of `C:\Users\Andrew\source\open-mainframe-benchmark`. Everything under `analytics/tpch/` is new and
-deliberately uncommitted for review. Nothing else in the repo was changed. The public results folder (`results/`)
-will appear only after the window runs.
+Branch `main` of `C:\Users\Andrew\source\open-mainframe-benchmark`. The harness was committed by someone else as
+`da59611` ("Analytics track A1: TPC-H-derived harness ..."; that subject line predates the "Derived from TPC-H"
+wording).
+
+The Policies 8.1.4/8.1.5 update is uncommitted, for review:
+- modified: COMPLIANCE.md, QUERY-MODIFICATIONS.md, README.md, STATUS.md, pg/postgresql.tpch.conf, py/common.py,
+  py/fdr.py, py/publish.py, sql/schema.sql, tests/test_pure.py;
+- new: `.gitattributes`, which keeps LF endings in a Windows checkout. Every working file had CRLF endings, which
+  would break the bash scripts in WSL. They are now LF; git's diff ignores the change because the committed blobs
+  are already LF.
+
+The public results folder (`results/`) appears only after a run, and only with `TPC_PERMISSION=granted`.

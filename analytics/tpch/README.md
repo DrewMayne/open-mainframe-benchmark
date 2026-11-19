@@ -1,17 +1,37 @@
-# Analytics track: TPC-H-derived (milestone A1)
+# Derived from TPC-H analytics track (milestone A1)
 
-> **TPC-H-derived; not comparable to published TPC-H results.** These are academic research results with no
+> **Status: plan and notes only.** The harness code for this track is kept private until the TPC grants written
+> permission to use the benchmark name for derived work (TPC Policies 8.1.4). This README describes the planned
+> procedure; the scripts it names are not in this repository yet.
+
+
+> **This workload is derived from the TPC-H Benchmark and is not comparable to published TPC-H Benchmark results, as this implementation does not comply with all requirements of the TPC-H Benchmark.**
+>
+> **Derived from TPC-H; not comparable to published TPC-H Benchmark results.** These are academic research results with no
 > marketing claims (TPC EULA clause 4.c). They are not TPC Benchmark Results and have not been audited, and TPC
 > metric names are never used for them (SPEC.md section 6).
 
 This track measures the reporting and analytics side of mainframe work: large scans, joins, sorts and
-aggregations over the TPC-H data set and its 22 queries, run on PostgreSQL (x86 first, then Linux on Z; Db2 for
+aggregations over the Derived from TPC-H data set and its 22 queries, run on PostgreSQL (x86 first, then Linux on Z; Db2 for
 z/OS in phase 2). It follows SPEC.md 1.6. The harness implements every TPC-H rule that can be implemented on the
 platform. [COMPLIANCE.md](COMPLIANCE.md) maps each clause to how it is met, or to why it cannot be on a given
 platform.
 
 **No TPC material is in this repository**: no kit code, query templates, specification text or reference data.
 Every script reads your own extracted kit through `TPCH_KIT`.
+
+**Use of the TPC-H name (TPC Policies v6.20, 8.1.4 and 8.1.5).**
+- Every public mention of the benchmark name for our work carries the prefix "Derived from", e.g. "Derived from
+  TPC-H analytics track" or "Derived from TPC-H Query 5".
+- Every FDR, and this README, carries the 8.1.5 disclaimer verbatim, quoted at the top of this page.
+- Under 8.1.4, a derived work that is judged too similar to the standard falls under the TPC's fair use rules
+  (Policies 8.2). This track runs the full query set with the full run rules, so it may be judged too similar.
+  **Written TPC permission is therefore being requested** before any result using the name is published.
+- Until permission is granted, `py/publish.py` refuses to write the public results copy unless the environment
+  variable `TPC_PERMISSION=granted` is set. Set it only once the written permission exists. Raw runs kept outside
+  the repository are not affected.
+- 8.1.4 also says a derived work may not use any Primary or Optional Metric of the standard. See STATUS.md, open
+  questions, for what that means for the composite figure.
 
 ## 1. Get the kit
 1. Download **TPC-H Tools** from tpc.org (TPC Current Specifications > TPC-H > download the tools). Accept the TPC
@@ -62,7 +82,8 @@ timing, qgen's raw and parameter logs) and a `manifest.json` (CPU, cores, memory
 non-default and per-database settings, the role, the kit revision and release.h, the reference-data check, build
 hashes, SF, seeds and the git commit).
 
-**What is published in the repository** (`results/`): timings, validation verdicts, ACID verdicts, manifests,
+**What is published in the repository** (`results/`, and only once `TPC_PERMISSION=granted`; see "Use of the
+TPC-H name" above): timings, validation verdicts, ACID verdicts, manifests,
 instance-settings snapshots, the seeds (`seeds.json`) and a public edition of the FDR. Not published: query text,
 qgen output (raw text and parameter logs) and query output rows, because all of them are derived from TPC
 material. Anyone with the kit regenerates the exact queries from the seeds (`py/gen_queries.py ... --seed0`).
@@ -79,7 +100,7 @@ with counts, and refuses the copy if anything resembling query text gets in.
 - **Timing**: each query from the submission of its text to the submission of the next one, and the last query to
   its last row (5.3.7.2). Rounding follows 5.3.7.5, and Ts is rounded up per 5.3.6.2.
 - **Derived figures** (clause 5.4, computed as sanity numbers only), named neutrally:
-  "power-test figure", "throughput-test figure" and "composite queries-per-hour x SF (TPC-H-derived, not
+  "power-test figure", "throughput-test figure" and "composite queries-per-hour x SF (Derived from TPC-H, not
   comparable)". The run reported is the one with the lower composite (5.3.2).
 - **Validation**: PASS or FAIL per query against the kit's `dbgen/answers`, with the clause 2.1.3.5 precision rules
   (`py/answers.py` lists where they are stricter than the kit's cmpq.pl).
