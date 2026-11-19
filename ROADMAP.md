@@ -8,6 +8,9 @@
 | M3 | s390x leg on a LinuxONE / Linux on Z platform whose terms permit benchmarking; H1-H5 phase 1 results | access being arranged |
 | M4 | Technical report (preprint) with all raw data | planned |
 | M5 | Phase 2: x86 with QAT/AMX; z/OS with CICS, VSAM, DFSORT and WLM; MIPS-to-x86-core calibration | access being arranged |
+| M6 | Peer-reviewed reproducibility: submit the report and kit for artifact evaluation (e.g. ACM ICPE), so that independent reviewers re-run it | planned |
+| M7 | Open cost model: a separate report in which every cost assumption is a visible, editable input, fed by the measured ratios. No hidden utilisation or licence assumptions | later |
+| Stretch | An audited run of an actual TPC benchmark (e.g. TPC-E or TPCx-AI) on Z and x86, as a separately sponsored effort with a TPC-certified auditor | needs a sponsor |
 
 ## System access: what we're pursuing
 We need s390x and z/OS time on platforms whose terms allow benchmarking **and** publishing results. Routes in progress:

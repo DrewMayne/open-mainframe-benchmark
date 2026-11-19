@@ -66,7 +66,8 @@ Results are always reported with and without the extension.
 5. **A manifest per run:** CPU model and machine type, core and thread counts, memory, OS and kernel, compiler and library versions, configuration switches, and the git commit of the kit.
 6. **Raw output:** every raw file is kept and published with the results.
 7. **Pre-registration:** a hypothesis file entry exists, committed, before the first run that tests it.
+8. **Full Disclosure Report:** every published result comes with an FDR following [docs/FDR-TEMPLATE.md](docs/FDR-TEMPLATE.md). A result without one is not a result of this benchmark.
 
 ## 5. Out of scope (v0.1)
-- Audited or official benchmark status (TPC/SPEC). Results are research results.
+- Audited or official benchmark status (TPC/SPEC). Results are research results. This kit is not a TPC benchmark, and results must not be presented as TPC results or described with TPC benchmark names. A separately sponsored, audited run of an actual TPC benchmark is listed as a stretch goal in ROADMAP.md.
 - DB2, IMS and MQ variants of CardDemo (later, possibly).
