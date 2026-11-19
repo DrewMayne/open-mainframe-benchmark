@@ -9,6 +9,15 @@
 | M4 | Technical report (preprint) with all raw data | planned |
 | M5 | Phase 2: x86 with QAT/AMX; z/OS with CICS, VSAM, DFSORT and WLM; MIPS-to-x86-core calibration | access being arranged |
 
+## System access: what we're pursuing
+We need s390x and z/OS time on platforms whose terms allow benchmarking **and** publishing results. Routes in progress:
+- the IBM Z Academic Initiative (a research allocation);
+- the LinuxONE Community Cloud project (asking whether a written exception is possible, since its terms prohibit benchmarking);
+- the Open Mainframe Project's mainframe access program.
+
+**Advice welcome:** other routes, programmes or people to ask. Comment on
+[#1](../../issues/1) (s390x) or [#2](../../issues/2) (z/OS).
+
 ## Open questions (comment welcome)
 - **Base application:** CardDemo (proposed) or a smaller purpose-built schema?
 - **Data layer for the Linux port:** GnuCOBOL indexed files (proposed; mirrors VSAM) or a SQL variant (PostgreSQL)?
