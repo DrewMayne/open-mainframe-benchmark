@@ -27,7 +27,8 @@ What we commit to:
 ## TPC materials
 If you work on a TPC-derived part of the benchmark, follow SPEC.md section 6:
 - never commit TPC kits or spec text;
-- label every derived result "not comparable to published TPC results";
+- label every derived work "Derived from <benchmark>" and include the TPC disclaimer sentence (SPEC.md 6);
+- don't publish results that use a TPC name until the TPC's written permission is recorded;
 - never use TPC names or metrics for our own workloads;
 - no marketing claims.
 

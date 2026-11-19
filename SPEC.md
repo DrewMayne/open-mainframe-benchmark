@@ -5,6 +5,7 @@ results always name the spec version and track they ran against.
 
 Changes in v0.1.1: two implementation tracks (Java first, then COBOL) under one spec (1.0, 1.5).
 Changes in v0.2.0: analytics track, TPC-H-derived and compliance-ready (1.6); rules for using TPC materials (6).
+Changes in v0.3.1: TPC labelling aligned with TPC Policies v6.20 (8.1.4, 8.1.5); written permission requested before publishing derived results (6).
 Changes in v0.3.0: optional TPC-derived modules: TPC-E, TPC-DI, TPCx-V, plus the TPC-Pricing and TPC-Energy methods (1.7).
 
 ## 1. Workload
@@ -57,7 +58,7 @@ Results are always reported with and without the extension.
 - A deterministic generator with a scale factor S (accounts = 10,000 × S, transactions per account stated).
 - The same seed gives byte-identical data files on every platform. Golden checks compare decompressed bytes, because hardware and software deflate output differ.
 
-### 1.6 Analytics track: TPC-H-derived, compliance-ready (proposed)
+### 1.6 Analytics track: derived from TPC-H, compliance-ready (proposed)
 The reporting and analytics side of mainframe work: large scans, joins, sorts and aggregations over a standard data set.
 - **Data and queries:** generated with TPC's own `dbgen` and `qgen` from the TPC-H kit (spec revision 3.0.1 at the time
   of writing; use the latest revision on tpc.org and name it in every result). Each user downloads the kit from tpc.org
@@ -73,7 +74,7 @@ The reporting and analytics side of mainframe work: large scans, joins, sorts an
   - the FDR and executive summary in TPC's format, and pricing under the TPC Pricing Specification where it can be done
     with public list prices.
 - **How results are labelled:** until an independent TPC-certified audit is passed and the result is accepted by the
-  TPC, every result is published as **"TPC-H-derived; not comparable to published TPC-H results"**, as academic
+  TPC, every result is published as **"Derived from TPC-H"** with the TPC's required disclaimer (section 6), as academic
   research with no marketing claims (TPC EULA clause 4c). TPC metric names (e.g. QphH@Size) are never used for our
   numbers. Rules that could not be met on a platform are listed in its FDR.
 - **Also used as batch:**
@@ -139,8 +140,14 @@ TPC benchmark kits and specifications are licensed by the Transaction Processing
 EULAs. To stay within them:
 1. **Download, never vendor.** TPC kits are never committed to this repository. Scripts fetch them from tpc.org, or
    point the user there to accept the EULA.
-2. **Label every derived result** as "TPC-x-derived; not comparable to published TPC-x results", unless the result was
-   audited and accepted by the TPC.
+2. **Label every derived work and result** as the TPC Policies require (v6.20, clauses 8.1.4 and 8.1.5):
+   - the prefix **"Derived from"** before every use of the benchmark name (e.g. "Derived from TPC-H Query 5");
+   - this disclaimer, verbatim, with the benchmark name filled in: *"This workload is derived from the TPC-H Benchmark
+     and is not comparable to published TPC-H Benchmark results, as this implementation does not comply with all
+     requirements of the TPC-H Benchmark."*
+   - A derived work judged too similar to the standard falls under the TPC's fair-use rules. So before results that
+     use a TPC benchmark name are published, **the TPC's written permission is requested** (Policies 8.1.4), and the
+     publishing scripts refuse to run until it is recorded.
 3. **No TPC names or metrics on our own workloads.** The online track (CardDemo-based) is not TPC-C- or TPC-E-derived
    and is never described as such. TPC metric names (tpmC, tpsE, QphH@Size, and so on) are used only for official
    results.

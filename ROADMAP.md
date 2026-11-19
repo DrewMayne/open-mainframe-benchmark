@@ -11,7 +11,7 @@
 | M5 | Phase 2: x86 with QAT/AMX; z/OS with CICS, VSAM, DFSORT and WLM (COBOL track on Enterprise COBOL; Java track with and without zIIPs); MIPS-to-x86-core calibration | access being arranged |
 | M6 | Peer-reviewed reproducibility: submit the report and kit for artifact evaluation (e.g. ACM ICPE), so that independent reviewers re-run it | planned |
 | M7 | Open cost model: a separate report in which every cost assumption is a visible, editable input, fed by the measured ratios. No hidden utilisation or licence assumptions | later |
-| A1 | Analytics track (TPC-H-derived, compliance-ready) on PostgreSQL x86: SF 1 and 10, power and throughput tests, refresh streams, answer validation, ACID tests (with power-loss durability on our own hardware) | planned |
+| A1 | Analytics track (derived from TPC-H, compliance-ready; publication after TPC written permission) on PostgreSQL x86: SF 1 and 10, power and throughput tests, refresh streams, answer validation, ACID tests (with power-loss durability on our own hardware) | planned |
 | A2 | Analytics on Linux on Z, then Db2 for z/OS (phase 2); queries as batch underneath the online track | access being arranged |
 | T1 | TPC-Pricing / TPC-Energy methods applied to the FDR pricing appendix and energy section (x86) | planned |
 | T2 | TPC-DI-derived batch ETL module on PostgreSQL x86, then Linux on Z / z/OS | planned |
