@@ -108,7 +108,7 @@ The three status columns are the PC (WSL2 VM, shared PostgreSQL 16 instance on t
 ## TPC Policies v6.20 (use of the name, derived works)
 | Clause | Requirement | How we meet it | PC | Linux on Z | z/OS |
 | --- | --- | --- | --- | --- | --- |
-| Policies 8.1.4 | The prefix "Derived from" before every use of the TPC-H name for our work | README, COMPLIANCE, STATUS, the FDR and the figure names say "Derived from TPC-H ..." (common.LABEL and the names); the unit tests check that the FDR and README carry no "TPC-H-derived" wording | met | met | met |
+| Policies 8.1.4 | The prefix "Derived from" before every use of the TPC-H name for our work | README, COMPLIANCE, STATUS, the FDR and the figure names say "Derived from TPC-H ..." (common.LABEL and the names); the unit tests check that the FDR and README carry no "derived from TPC-H" wording | met | met | met |
 | Policies 8.1.4 | A derived work too similar to the standard is subject to fair use (8.2); using the name needs the TPC's written permission | **Written TPC permission is being requested** before any result using the name is published. Until it is granted, publish.py refuses to write the public copy unless `TPC_PERMISSION=granted` (unit-tested) | open (permission requested) | same | same |
 | Policies 8.1.4 | No Primary or Optional Metric of the standard in a derived work | Metric names are never used. The composite figure is still computed with the clause 5.4.3 formula under a neutral name, which may count as using the metric: open question in STATUS.md | open | open | open |
 | Policies 8.1.5 | The derived-work disclaimer, verbatim | common.DISCLAIMER in every FDR (both editions) and in the README, COMPLIANCE and QUERY-MODIFICATIONS (unit-tested against the policy text) | met | met | met |

@@ -114,16 +114,6 @@ If Q17 or Q20 runs far longer than that, I'll report it with the plan (GEN-05) r
 - One reading for the coordinator to confirm: the public copy also leaves out query **output rows** (decision 4
   listed what to publish but did not name output rows).
 
-## Uncommitted
-Branch `main` of `C:\Users\Andrew\source\open-mainframe-benchmark`. The harness was committed by someone else as
-`da59611` ("Analytics track A1: TPC-H-derived harness ..."; that subject line predates the "Derived from TPC-H"
-wording).
-
-The Policies 8.1.4/8.1.5 update is uncommitted, for review:
-- modified: COMPLIANCE.md, QUERY-MODIFICATIONS.md, README.md, STATUS.md, pg/postgresql.tpch.conf, py/common.py,
-  py/fdr.py, py/publish.py, sql/schema.sql, tests/test_pure.py;
-- new: `.gitattributes`, which keeps LF endings in a Windows checkout. Every working file had CRLF endings, which
-  would break the bash scripts in WSL. They are now LF; git's diff ignores the change because the committed blobs
-  are already LF.
-
-The public results folder (`results/`) appears only after a run, and only with `TPC_PERMISSION=granted`.
+## Where the code lives
+The harness code for this track is kept in a private repository until the TPC grants written permission to use the
+benchmark name for derived work (TPC Policies 8.1.4). This public repository holds the plan and notes only.

@@ -38,16 +38,16 @@ The load generator always runs off the system under test and reaches it over TCP
 
 ## Analytics and TPC-derived modules
 All follow SPEC section 6.
-- **TPC-H-derived, on Db2 for z/OS (about 1-2 weeks):**
+- **Derived from TPC-H, on Db2 for z/OS (about 1-2 weeks):**
   - build dbgen with z/OS Open XL C (watching for EBCDIC), or generate off-box and transfer;
   - load with the Db2 LOAD utility;
   - run the queries via JDBC, with the dialect changes the specification permits;
   - an accelerator (IDAA) run is an optional, separately labelled variant.
-- **TPC-E-derived, on Db2 for z/OS (about 3-4 weeks):** EGen built with Open XL C++ or run off-box; transactions as
+- **Derived from TPC-E, on Db2 for z/OS (about 3-4 weeks):** EGen built with Open XL C++ or run off-box; transactions as
   Db2 stored procedures, driven from off-box.
-- **TPC-DI-derived (about 2-3 weeks):** generator run on z/OS Java or off-box; ETL as COBOL, DFSORT and Db2 batch.
+- **Derived from TPC-DI (about 2-3 weeks):** generator run on z/OS Java or off-box; ETL as COBOL, DFSORT and Db2 batch.
   This is the most z/OS-native module.
-- **TPCx-V-derived:** not applicable to z/OS. On IBM Z, consolidation means Linux guests under z/VM or KVM, which is a
+- **Derived from TPCx-V:** not applicable to z/OS. On IBM Z, consolidation means Linux guests under z/VM or KVM, which is a
   separate port.
 
 ## Measurement on z/OS (about 1-2 weeks)
@@ -82,7 +82,7 @@ owner's written permission.
 ## Suggested order
 1. Java track (fastest route to equal-code z/OS numbers, plus the zIIP effect).
 2. COBOL/CardDemo track.
-3. Analytics on Db2 for z/OS, then the TPC-DI-derived batch ETL.
-4. TPC-E-derived.
+3. Analytics on Db2 for z/OS, then the batch ETL module derived from TPC-DI.
+4. The OLTP module derived from TPC-E.
 
 Access and the availability of Db2 for z/OS are the gating items, not the code.

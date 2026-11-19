@@ -83,22 +83,25 @@ The reporting and analytics side of mainframe work: large scans, joins, sorts an
 - **End goal:** an audited, official TPC-H result on at least one configuration, if a sponsor funds the audit and
   pricing.
 
-### 1.7 Optional TPC-derived modules (proposed)
+### 1.7 Optional modules derived from TPC benchmarks (proposed)
 Each module answers a question the core tracks don't. Each is optional, run only when its question matters, and
-follows section 6. Revisions are as listed on tpc.org on 2026-11-19; results name the revision used.
-- **TPC-E (v1.14.0, EGen kit). A standard OLTP yardstick.** The brokerage OLTP workload, run on PostgreSQL / Db2 next
+follows section 6: every module is labelled "Derived from" its TPC benchmark, and carries that benchmark's 8.1.5 disclaimer. Revisions are as listed on tpc.org on 2026-11-19; results name the revision used.
+- **Derived from TPC-E (v1.14.0, EGen kit). A standard OLTP yardstick.** A brokerage OLTP workload derived from TPC-E, run on PostgreSQL / Db2 next
   to our CardDemo track. It shows whether our online-track ratios hold on a recognised OLTP mix, and it is the nearest
   standard analogue to zRef. It is a separate module, and CardDemo is never derived from it.
-- **TPC-DI (v1.1.0, DIGen kit; listed by the TPC as obsolete, so no new official results are possible). Batch ETL.**
+- **Derived from TPC-DI (v1.1.0, DIGen kit; listed by the TPC as obsolete, so no new official results are possible). Batch ETL.**
   It loads a warehouse from multiple source formats, including fixed-width files, with historical and incremental
   loads. It is the nightly batch job in its most mainframe-like form, measured as elapsed time and CPU for each load
   phase.
-- **TPCx-V (v2.1.10, kit). Consolidation.** Many database VMs with shifting load on one host. It tests the
+- **Derived from TPCx-V (v2.1.10, kit). Consolidation.** Many database VMs with shifting load on one host. It tests the
   consolidation claims (how many VMs per LinuxONE against per x86 host, under the same service levels) on KVM or z/VM
   on Z and KVM on x86.
-- **TPC-Pricing (v2.9.0) and TPC-Energy (v1.5.0). Methods, not workloads.** Pricing defines how the optional pricing
+- **Methods derived from TPC-Pricing (v2.9.0) and TPC-Energy (v1.5.0). Methods, not workloads.** Pricing defines how the optional pricing
   appendix and the open cost model (M7) are built, from public list prices with stated assumptions. Energy defines how
-  power is measured where it can be (on x86 we control). On shared Z it can't be measured, and the FDR says so.
+  power is measured where it can be (RAPL on x86 we control; docs/methods/energy.md). On IBM z17 / LinuxONE 5, per-partition
+  power is reported to the operating system (Linux `zpwr`, z/OS SMF 70.1 via APAR OA66018, the z/VM 7.4 monitor), but
+  IBM describes it as apportioned rather than measured. It is recorded in an optional FDR field labelled "vendor
+  estimate; not measured" and kept out of per-watt comparisons. Older Z generations: not measurable, and the FDR says so.
 
 ## 2. Platforms
 - **Phase 1:**
@@ -148,7 +151,7 @@ EULAs. To stay within them:
    - A derived work judged too similar to the standard falls under the TPC's fair-use rules. So before results that
      use a TPC benchmark name are published, **the TPC's written permission is requested** (Policies 8.1.4), and the
      publishing scripts refuse to run until it is recorded.
-3. **No TPC names or metrics on our own workloads.** The online track (CardDemo-based) is not TPC-C- or TPC-E-derived
+3. **No TPC names or metrics on our own workloads.** The online track (CardDemo-based) is not TPC-C- or derived from TPC-E
    and is never described as such. TPC metric names (tpmC, tpsE, QphH@Size, and so on) are used only for official
    results.
 4. **Academic framing only:** no marketing claims based on TPC-derived results.

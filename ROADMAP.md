@@ -14,21 +14,21 @@
 | A1 | Analytics track (derived from TPC-H, compliance-ready; publication after TPC written permission) on PostgreSQL x86: SF 1 and 10, power and throughput tests, refresh streams, answer validation, ACID tests (with power-loss durability on our own hardware) | planned |
 | A2 | Analytics on Linux on Z, then Db2 for z/OS (phase 2); queries as batch underneath the online track | access being arranged |
 | T1 | TPC-Pricing / TPC-Energy methods applied to the FDR pricing appendix and energy section (x86) | planned |
-| T2 | TPC-DI-derived batch ETL module on PostgreSQL x86, then Linux on Z / z/OS | planned |
-| T3 | TPC-E-derived OLTP module beside the online track (x86 first) | planned |
-| T4 | TPCx-V-derived consolidation module (KVM on x86; KVM or z/VM on Z) | access being arranged |
+| T2 | Derived from TPC-DI batch ETL module on PostgreSQL x86, then Linux on Z / z/OS | planned |
+| T3 | Derived from TPC-E OLTP module beside the online track (x86 first) | planned |
+| T4 | Derived from TPCx-V consolidation module (KVM on x86; KVM or z/VM on Z) | access being arranged |
 | Stretch | An audited run of an actual TPC benchmark (e.g. TPC-E or TPCx-AI) on Z and x86, as a separately sponsored effort with a TPC-certified auditor | needs a sponsor |
 
 ## Other TPC benchmarks, ranked (derived, labelled, never vendored)
-The high-priority rows are now adopted as optional modules (SPEC 1.7; milestones T1-T4). The others stay candidates.
+Modules derived from the high-priority rows are planned (SPEC 1.7; milestones T1-T4); the others stay candidates. These rows describe the TPC's own benchmarks; any work of ours based on them is labelled "Derived from" and carries the TPC disclaimer (SPEC 6).
 Revisions as on tpc.org, 2026-11-19: TPC-H 3.0.1, TPC-E 1.14.0, TPC-DI 1.1.0 (obsolete), TPCx-V 2.1.10, TPC-Energy 1.5.0, TPC-Pricing 2.9.0.
 
 | Benchmark | What it is | Why it matters here | Priority |
 | --- | --- | --- | --- |
-| TPC-E (adopted) | Brokerage OLTP: complex, read-heavy transactions | The closest standard analogue to zRef and to CICS-style work; a familiar OLTP yardstick beside our CardDemo track | high |
-| TPC-DI (adopted; obsolete at TPC) | Data integration: batch ETL from multiple source formats, including fixed-width files, into a warehouse | The nightly batch load, in its most mainframe-like form | high |
-| TPCx-V (adopted) | Virtualization: many database VMs with shifting load on one host | Tests the consolidation claims (N VMs per LinuxONE vs x86) directly | high |
-| TPC-Pricing, TPC-Energy (adopted) | Common methodologies for price and energy metrics | Method for the open cost model (M7) and for energy where it can be measured | high (method only) |
+| TPC-E (module derived from it planned) | Brokerage OLTP: complex, read-heavy transactions | The closest standard analogue to zRef and to CICS-style work; a familiar OLTP yardstick beside our CardDemo track | high |
+| TPC-DI (module derived from it planned; obsolete at TPC) | Data integration: batch ETL from multiple source formats, including fixed-width files, into a warehouse | The nightly batch load, in its most mainframe-like form | high |
+| TPCx-V (module derived from it planned) | Virtualization: many database VMs with shifting load on one host | Tests the consolidation claims (N VMs per LinuxONE vs x86) directly | high |
+| TPC-Pricing, TPC-Energy (methods derived from them) | Common methodologies for price and energy metrics | Method for the open cost model (M7) and for energy where it can be measured | high (method only) |
 | TPC-C | Classic order-entry OLTP (spec only; HammerDB's TPROC-C is the common derived kit) | A widely recognised OLTP baseline on PostgreSQL and Db2 | medium |
 | TPC-DS | Modern decision support: 99 queries plus data maintenance | A broader analytics check beside TPC-H | medium |
 | TPCx-AI | End-to-end AI pipelines (data prep, training, serving) | Relevant to the Telum AI accelerator; stack portability to s390x unknown | medium |

@@ -1,5 +1,10 @@
 # Vendors measure mainframes; almost nobody else does
 
+> **Note on TPC names in this review.** Where third-party sources describe their own workloads or results with TPC
+> benchmark names (e.g. "TPC-C-like", "TPC-E-derived"), those are the sources' claims, quoted for context. They are
+> not TPC results and are not comparable to published TPC results; official TPC results are on tpc.org.
+
+
 Status: review as of 2026-11-19. Compiled from six research strands (academic; IBM material; vendors, rehosting and consolidation; analysts, TCO and critiques; standard benchmarks and community; zRef). This is a research review, not an endorsement of any source.
 
 Provenance markers are carried over from the notes unchanged:
