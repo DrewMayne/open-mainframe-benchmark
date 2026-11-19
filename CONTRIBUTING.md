@@ -22,6 +22,7 @@ What we commit to:
 - **Disclosure.** The configuration (core counts, SMT, sharing and capping, other load) and any constraint you set are published with the results. Your support is acknowledged, unless you ask us not to name you.
 - **Independence.** You may review drafts for factual accuracy, but results are not subject to approval.
 - **Hygiene.** No credentials, internal hostnames or private data ever enter this repository.
+- **Functional checks are not measurements.** On a system without benchmark permission, we only compile and run small pass/fail checks, and we never record or publish performance data from it (docs/PORTING-zOS.md).
 
 ## TPC materials
 If you work on a TPC-derived part of the benchmark, follow SPEC.md section 6:
