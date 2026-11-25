@@ -138,7 +138,7 @@ Sources are marked "fetched" (page read) as in [platforms.md](../platforms.md).
   - With the reason, e.g. "shared CPC; no energy counter for this partition is visible to us. Machine power is
     reported for the whole CPC to its owner (HMC)", or "z/VM guest; partition power not available to the guest".
   - No per-watt normalisation is computed.
-- **Proposed (REVIEW): on z17, where the partition can read IBM's figures** (`zpwr`, SMF 70.1 or z/VM monitor):
+- **On z17, where the partition can read IBM's figures** (`zpwr`, SMF 70.1 or z/VM monitor; SPEC 1.7):
   - The FDR may record them in a separate field, "IBM firmware-apportioned partition power", with CPU, storage and
     I/O watts averaged over the measured window.
   - The field is labelled "vendor estimate; not measured; not comparable with RAPL or wall power".
