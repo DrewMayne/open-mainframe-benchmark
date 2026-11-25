@@ -122,4 +122,4 @@ To stay within other benchmark owners' terms:
    never described with another benchmark's name, and other benchmarks' metric names are never used for our numbers.
 4. **Academic framing only:** no marketing claims based on results derived from benchmark material.
 
-TPC and TPC Benchmark are trademarks of the Transaction Processing Performance Council.
+Trademarks used in this specification are listed in [NOTICE](NOTICE).

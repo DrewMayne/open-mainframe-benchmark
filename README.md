@@ -1,5 +1,8 @@
 # Open Mainframe Benchmark
 
+*Not a project of the Open Mainframe Project or The Linux Foundation, and not affiliated with either. See
+[NOTICE](NOTICE) for trademarks.*
+
 An open, reproducible benchmark specification and kit for comparing IBM Z / LinuxONE with x86 servers. It runs online
 transactions and batch together, from the same source on every platform, in two tracks: **Java** (the same JVM
 everywhere, for the hardware question) and **COBOL** (based on AWS CardDemo, for the migration question).
