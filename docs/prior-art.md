@@ -939,7 +939,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 - HP original, "Mainframe Alternative Sizing -- Technical white paper", document 4AA4-2452ENW, at http://h20195.www2.hp.com/V2/GetPDF.aspx/4AA4-2452ENW.pdf: dead. It redirects to psnow.ext.hpe.com and returns 404; www.hpe.com/psnow/doc/4AA4-2452ENW timed out; the tool could not reach web.archive.org.
 - Mirrors:
   - https://manualzz.com/doc/24646236/mainframe-alternative-sizing%E2%80%94technical-white-paper: dead (HTTP 403).
-  - https://pdfslide.net/documents/mainframe-alternative-sizingtechnical-white-paper.html: dead (redirects to a 404).
+  - pdfslide.net mirror: dead; the URL now redirects to a different domain (checked 2026-11-25), so no link is given.
 - Search snippets of the manualzz mirror (not verified):
   - "Sizing is done with zRef, a reference application suite of batch and CICS workloads".
   - The aim is to compare "relative throughput between various HP Mission-Critical Converged Infrastructure systems and an IBM System z mainframe running the same z/OS batch and CICS application".
@@ -2207,7 +2207,7 @@ All strands used WebSearch and WebFetch only. PDFs that WebFetch could not parse
 - **Dead ends:**
   - The HP PDF (404) and hpe.com psnow (timeout).
   - Wayback (not reachable by the tool).
-  - manualzz (403) and pdfslide (redirect to a 404).
+  - manualzz (403) and pdfslide (now redirects to a different domain).
   - The CAF page (redirect) and its GitHub source (404).
   - techcommunity (login); info.lzlabs.com (ENOTFOUND); LinkedIn articles by Ming Lu and Dale Vecchio (403).
 - **Not tried:** the "zRefBU" exact phrase, HPE community blogs, the asysco.com/ibm/ whitepaper, and the Micro Focus/OpenText archives.
