@@ -17,7 +17,7 @@ Across about 125 de-duplicated items, almost no independent, reproducible, same-
 - IBM, or studies IBM commissioned;
 - HP(E) and the rehosting vendors, whose proprietary zRef benchmark is the closest published analogue to a CICS-under-batch-sort test.
 
-No audited TPC, SPEC, MLPerf or Sort Benchmark entry for any IBM mainframe was found, and IBM said on record (1998, 2003) that it chose not to publish. IBM's accelerator figures (AIU, DFLTCC, Z Sort, CPACF) compare Z with an older Z, with a general core on the same chip, or with software on the same box. None compares Z with x86 software. Its x86 comparisons mostly rest on one of two things:
+No audited TPC, SPEC, MLPerf or Sort Benchmark entry for any IBM mainframe was found, and IBM said on record (1998, 2003) that it chose not to publish. Most of IBM's accelerator figures (AIU, DFLTCC, Z Sort, CPACF) compare Z with an older Z, with a general core on the same chip, or with software on the same box. IBM's inference comparisons with x86 (IB01; IB04 fn1 and fn4) run the x86 inference remotely or use different software on each side; none found runs the same in-process code at the same batch size on both. IBM's x86 comparisons mostly rest on one of two things:
 - a remote x86 server reached over injected network delay;
 - an estate model built on assumed x86 utilisation.
 
@@ -28,12 +28,13 @@ Equal-core tests of sort, compression, AI per transaction, signatures, a mixed w
 - **Independent same-lab work is almost absent.** The only independent academic head-to-head that was fully read is FitzGerald (Binghamton, 2014): 4 zEC12 cores against a 4-core Xeon X3440 with HT off, SysBench, 95% confidence intervals and t-tests ([report](https://www.ibm.com/support/pages/zvm/devpages/dfitzger/report.pdf), fetched; title, author and date spot-checked). Its result is split. x86 led on CPU. s390x led on memory write (30-173%) and on MySQL at L0/L1, but fell off sharply under nested I/O.
 - **The reproducible community items are few and small.** golang/go#82520 gives P-256 ECDH ns/op on z15/z16/z17, accelerated against pure Go ([issue](https://github.com/golang/go/issues/82520), fetched, spot-checked). goboltbench (2025) times bbolt inserts on a Marist LinuxONE guest against EPYC and Graviton3 ([repo](https://github.com/jankammerath/goboltbench), fetched). A LINUX-390 post (2020) times gzip on z14 against z15 ([post](https://www.mail-archive.com/linux-390@vm.marist.edu/msg72967.html), fetched). A GitHub crypto suite exists but is marked low trust.
 - **No mainframe appears in any standard benchmark.** No TPC, SPEC, MLPerf or Sort Benchmark (1987-2023) entry for an IBM mainframe was found. An IBM VP said in 1998 that IBM "has run the TPC-C test on MVS systems, but never released them" ([Tech Monitor](https://www.techmonitor.ai/?p=92089), fetched). In 2003 IBM said "we typically don't run industry standard performance benchmarks for any software on the mainframe" (press, not fetched; from search snippet). These are absences found by search, not exhaustive database queries.
-- **IBM's accelerator figures are always Z against Z.**
+- **Most of IBM's accelerator figures are Z against Z, and its x86 accelerator comparisons are not like for like.**
   - Telum AIU: 22x latency against a SIMD core on the same chip (ISCA 2022, not fetched; from search snippet).
   - DFLTCC: 24-42x against software zlib on 4 z15 IFLs ([GSE UK 2021](https://conferences.gs-uk.org/2021/presentations/2AV.pdf), fetched).
   - Z Sort: 20-30% less elapsed time and up to 40% less CPU, against **z14**, not against Z Sort switched off ([SHARE blog](https://blog.share.org/Article/peeking-under-the-hood-of-sort-acceleration-on-z15), fetched).
   - CPACF P-256: 48,660 signatures/s on one z15 CPACF ([6K2653EJ](https://ibm.com/downloads/cas/6K2653EJ), fetched).
   - None of these has an x86-software baseline, and that is the main gap our tests fill.
+  - The exceptions are IBM's inference comparisons with x86. IB01 sets z16 inference co-located with a CICS transaction (WMLz on zCX) against TensorFlow Serving on an x86 server behind 60 ms of added network delay, simulating a remote cloud. In IBM's AI Toolkit footnotes (IB04), fn1 matches one z17 accelerator against a remote x86 server running Triton with OpenVINO on CPU (AMX), and fn4 compares Snap ML on the z16 accelerator with NVIDIA FIL on 6 Ice Lake cores.
 - **IBM's x86 comparisons come in three types:**
   - **Co-location against a remote x86.** The z16's "20x lower response time" added 60 ms of `tc-netem` delay on the x86 path ([M65ZR5DV](https://ibm.com/downloads/cas/M65ZR5DV), fetched).
   - **Estate extrapolation.** "Up to 2,944 x86 cores" is mostly 2,688 modelled non-production cores at 7-15% utilisation ([Signal65](https://signal65.com/wp-content/uploads/2025/10/Signal65-TCO-Analysis_Workload-Consolidation-on-IBM-LinuxONE.pdf), fetched).
@@ -2130,7 +2131,7 @@ The searches found no published work on any of the following. That is a search-b
    - CPACF ECDSA/EdDSA/AES against x86 OpenSSL with AES-NI or AVX-512 at matched OpenSSL versions.
    - Telum AIU against x86 CPU inference (AMX/AVX-512) in-process at batch 1.
    - Z Sort against GNU sort and Java sort.
-   - Every published accelerator figure is Z against Z.
+   - No published accelerator figure found runs the same code in-process, at the same batch size, on Z and on x86.
 2. **Absolute per-transaction (batch 1) inference latency on z16/z17.** IBM gives only relative figures (7.5x, -48%).
 3. **Z Sort on and off on the same machine.** IBM's baseline is z14.
 4. **Online response time and CPU per transaction under concurrent batch, measured on both z/OS (WLM) and Linux (scheduler/cgroups) at equal cores.** zRef measured only the rehosted side; REDP-5170 measured only the Z side.

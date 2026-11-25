@@ -13,15 +13,21 @@ questions as they were asked.
 > are published yet.
 
 ## Why
-Published mainframe-against-server comparisons are almost all vendor-run. The best-known workload for sizing mainframe
-replacements (HP's "zRef", z/OS Reference Application) is proprietary, its original paper is no longer online, and its
-results can't be reproduced. IBM's own accelerator figures compare one generation of Z with another, and its x86
-comparisons mostly rest on estate models or added network delay. No audited TPC, SPEC, MLPerf or Sort Benchmark result
-exists for any IBM mainframe. See [docs/prior-art.md](docs/prior-art.md): 125 sources reviewed, each marked by
-independence and by whether we read the primary text.
+Public measurements of IBM Z and x86 servers running the same work are scarce. Most published comparisons come from
+a vendor of one side, IBM or an x86 or rehosting vendor, and the last independent head-to-head with confidence
+intervals that we found is from 2014. See [docs/prior-art.md](docs/prior-art.md): 125 sources reviewed, each marked by
+independence and by whether we read the primary text. Among its findings:
+- HP's "zRef" (z/OS Reference Application), a workload used to size mainframe replacements, is proprietary. We could
+  not retrieve its original paper, and its results can't be reproduced independently.
+- IBM's published accelerator figures mostly compare Z with Z (an older generation, a general-purpose core, or
+  software on the same machine). Its x86 comparisons include estate models, remote x86 servers with added network
+  delay, and a few core-matched tests.
+- We found no audited TPC, SPEC or MLPerf result for any IBM mainframe, and no Sort Benchmark entry. These are
+  searches, not exhaustive queries of each results database; the Sort Benchmark records page was checked in full.
 
-This project aims to fill that gap in the open: same code, equal cores, repeated runs with confidence intervals, every
-script and raw file published, and predictions written down before the data exists.
+This project aims to fill that gap in the open, with numbers that IBM, x86 vendors and customers can all re-run:
+same code, equal cores, repeated runs with confidence intervals, every script and raw file published, and
+predictions written down before the data exists.
 
 ## What it measures
 - **Per-core throughput:** the same COBOL workload on a LinuxONE IFL and an x86 core.
