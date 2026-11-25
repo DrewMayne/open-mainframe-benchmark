@@ -16,4 +16,5 @@ labels: platform-access, help wanted
 
 **May we acknowledge you by name?** (yes / no)
 
-Please don't post credentials or internal hostnames here. We'll arrange details privately.
+Please don't post credentials or internal hostnames here. Details are arranged through this issue first, then
+through a private channel the maintainer provides there.

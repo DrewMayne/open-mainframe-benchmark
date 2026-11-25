@@ -92,4 +92,5 @@ Apache License 2.0, see [LICENSE](LICENSE). Any third-party code adopted later (
 ## About this project
 Maintained by Andrew Mayne, Durham College. An independent project, not a Durham College publication.
 
-Contributions and critique are welcome, especially methodological critique.
+Contributions and critique are welcome, especially methodological critique. To report a security issue, see
+[SECURITY.md](SECURITY.md).
