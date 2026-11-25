@@ -89,4 +89,7 @@ published with the results. Offers of access: open a
 Apache License 2.0, see [LICENSE](LICENSE). Any third-party code adopted later (for example AWS CardDemo, also Apache
 2.0) keeps its own licence and notices; see [NOTICE](NOTICE).
 
-Maintainer: Andrew Mayne. Contributions and critique are welcome, especially methodological critique.
+## About this project
+Maintained by Andrew Mayne, Durham College. An independent project, not a Durham College publication.
+
+Contributions and critique are welcome, especially methodological critique.

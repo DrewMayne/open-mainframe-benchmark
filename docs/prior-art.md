@@ -5,12 +5,12 @@
 > not TPC results and are not comparable to published TPC results; official TPC results are on tpc.org.
 
 
-Status: review as of 2026-11-19. Compiled from six research strands (academic; IBM material; vendors, rehosting and consolidation; analysts, TCO and critiques; standard benchmarks and community; zRef). This is a research review, not an endorsement of any source.
+Status: review as of 2026-11-19. The catalogue was compiled by AI research assistants in six research strands (academic; IBM material; vendors, rehosting and consolidation; analysts, TCO and critiques; standard benchmarks and community; zRef), and the maintainer is responsible for its content (see the README, "About this project"). This is a research review, not an endorsement of any source.
 
 Each entry carries one of these provenance markers:
-- "fetched" means a researcher read the primary page or PDF text.
+- "fetched" means the primary page or PDF text was retrieved and read.
 - "not fetched; from search snippet; not verified" means only a search-engine summary was seen. Such figures are not verified and are not to be relied on until the primary source is read.
-- "spot-checked" means a second reader re-checked the figure against the fetched source.
+- "spot-checked" means a second, separate pass re-checked the figure against the fetched source.
 - "our arithmetic" marks a derived figure that no source states.
 
 Across about 125 de-duplicated items, almost no independent, reproducible, same-lab measurement of an IBM Z machine against an x86 server exists. There is one academic head-to-head with statistics, a 2014 Binghamton master's project with 4 cores a side. Beyond it are a handful of small community runs: a Go issue with ns/op on z15/z16/z17, a bbolt insert benchmark on a Marist LinuxONE guest, and one mailing-list gzip timing. Almost everything with numbers comes from a party selling one side:
@@ -139,7 +139,7 @@ Where strands disagree on fetch status, the entry says which strand fetched it.
 
 **AC01. "A Comparative Analysis of Nested Virtualization in x86_64 and S390x Hypervisors"**
 - **Who / when:** Daniel FitzGerald (advisor Dennis Foreman), Binghamton University, Watson School, Masters Termination Project v1.0, 14 Dec 2014. Hosted on IBM's z/VM devpages.
-- **URL:** https://www.ibm.com/support/pages/zvm/devpages/dfitzger/report.pdf (fetched, PDF text extracted; title, author and date spot-checked by a second reader).
+- **URL:** https://www.ibm.com/support/pages/zvm/devpages/dfitzger/report.pdf (fetched, PDF text extracted; title, author and date spot-checked by a second pass).
 - **Compared:**
 
   | | s390x | x86 |
@@ -924,7 +924,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 - TmaxSoft captions one diagram "zRef Overview from zRef Manual", so a manual exists. No copy was found.
 
 **URLs and fetch status**
-- HP original, "Mainframe Alternative Sizing -- Technical white paper", document 4AA4-2452ENW, at http://h20195.www2.hp.com/V2/GetPDF.aspx/4AA4-2452ENW.pdf: dead. It redirects to psnow.ext.hpe.com and returns 404; www.hpe.com/psnow/doc/4AA4-2452ENW timed out; the tool could not reach web.archive.org.
+- HP original, "Mainframe Alternative Sizing -- Technical white paper", document 4AA4-2452ENW, at http://h20195.www2.hp.com/V2/GetPDF.aspx/4AA4-2452ENW.pdf: dead. It redirects to psnow.ext.hpe.com and returns 404; www.hpe.com/psnow/doc/4AA4-2452ENW timed out; web.archive.org could not be reached.
 - Mirrors:
   - https://manualzz.com/doc/24646236/mainframe-alternative-sizing%E2%80%94technical-white-paper: dead (HTTP 403).
   - pdfslide.net mirror: dead; the URL now redirects to a different domain (checked 2026-11-25), so no link is given.
@@ -935,7 +935,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 - Another meaning of the name: zref is also an unrelated LaTeX cross-referencing package by Heiko Oberdiek, https://ctan.org/pkg/zref?lang=de (not fetched; from search snippet; not verified). No IBM Z reference architecture, GitHub project or s390x tool called zRef was found.
 
 **Workload design** (from the TmaxSoft study, fetched, unless stated otherwise)
-- "zRef is based on the TPC-E benchmark, but it was not built to 'achieve the highest throughput possible' benchmark. zRef was programmed to be as much like a real-world 'mainframe' as possible". This quote was spot-checked by a second reader.
+- "zRef is based on the TPC-E benchmark, but it was not built to 'achieve the highest throughput possible' benchmark. zRef was programmed to be as much like a real-world 'mainframe' as possible". This quote was spot-checked by a second pass.
 - Coding style: "SQL calls to Db2 are simple and many, often using a position cursor and retrieving a single table row at a time", with COBOL "coding habits that date back to the 1980s".
 - Database: 33 tables taken from the TPC-E schema.
 - Online: "10 CICS transactions processed by more than 30 executable CICS programs that read, update, and insert data into a DB2 database and optionally log audit information (write) to a VSAM ESDS file", submitted by TN3270 "users".
@@ -977,7 +977,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 **VN02. "TmaxSoft OpenFrame and Microsoft Azure Mainframe Migration Sizing Study"**
 - **Who / when:** TmaxSoft with Microsoft. The vendors strand dates the study to 2020. The PDF footer reads "(c) TmaxSoft 2023" and its metadata was last modified 2023-10-10.
 - **URLs:**
-  - https://www.tmaxsoft.com/upload/eBookMgmt/20231219134111167015.pdf (fetched by the zRef strand; figures spot-checked by a second reader).
+  - https://www.tmaxsoft.com/upload/eBookMgmt/20231219134111167015.pdf (fetched by the zRef strand; figures spot-checked by a second pass).
   - Blog: https://www.tmaxsoft.com/openframe-on-azure-vs-system-z-apps-and-infrastructure-who-wins (fetched; Kelly McClure).
   - Press page: https://www.tmaxsoft.com/en/press/view?seq=218&pageIndex=1&pageUnit=12&searchKeyword=nto+the+wide+blue+yonder%3A+Mainframe+modernization+on+Microsoft+Azur&searchUseYn=Y (fetched; Karthik Masilamani).
   - The older study URL, https://us.tmaxsoft.com/wp-content/uploads/TmaxSoft_Azure-Benchmark-Study.pdf, failed DNS. The vendors strand saw the TPS figures only as a snippet; the zRef strand later read them in the full PDF.
@@ -1583,9 +1583,9 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **CM01. golang/go#82520: "use CPACF PCC for X25519, P-384 and P-521"**
 - **Who / when:** ashokpariya0 on GitHub; opened 26 Oct 2026.
-- **URL:** https://github.com/golang/go/issues/82520 (fetched; the P-256 figures were spot-checked by a second reader).
+- **URL:** https://github.com/golang/go/issues/82520 (fetched; the P-256 figures were spot-checked by a second pass).
 - **Compared:** z15 (8561), z16 (3931) and z17 (9175). On each, the normal build is compared with a `purego` build. On z17, Go is also compared with OpenSSL 3.2.2 with PCC disabled.
-- **Workload:** BenchmarkECDH (ns/op) and the cost of one scalar multiplication. Per the issue, the benchmark is key generation plus ECDH, median of 5 runs (a second reader fetched the issue on 2026-11-19).
+- **Workload:** BenchmarkECDH (ns/op) and the cost of one scalar multiplication. Per the issue, the benchmark is key generation plus ECDH, median of 5 runs (a second pass fetched the issue on 2026-11-19).
 - **Headline:**
   - P-256 ECDH, accelerated against pure Go (spot-checked):
 
@@ -1599,7 +1599,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
   - X25519, P-384 and P-521 ECDH show no gain, because Go does not use PCC for them yet.
   - Cost per scalar multiplication on z17, Go against OpenSSL with PCC disabled: X25519 about 95 against 17 us; P-256 about 50 against 33; P-384 about 528 against 63; P-521 about 1,408 against 102.
   - OpenSSL with PCC is "~5-7x faster" for X25519.
-  - P-384 ECDSA verify (BenchmarkVerify/P384) on z17 is 94.7 us accelerated against 1,145 us pure Go; the reporter notes that Go already uses KDSA for ECDSA (a second reader fetched the issue on 2026-11-19).
+  - P-384 ECDSA verify (BenchmarkVerify/P384) on z17 is 94.7 us accelerated against 1,145 us pure Go; the reporter notes that Go already uses KDSA for ECDSA (a second pass fetched the issue on 2026-11-19).
 - **Quality / independence:** an open issue that anyone can reproduce with `go test -bench`. The contributor is IBM-adjacent. There are no x86 numbers.
 - **Maps to:** crypto.
 - **Useful to us:** the best public per-operation cross-check for our CPACF signature runs. The same benchmark can run on the Ryzen to give the x86 column that the issue lacks. Its z15/z16/z17 ordering also shows that generation-to-generation differences are not monotonic.
@@ -2116,7 +2116,7 @@ The searches found no published work on any of the following. That is a search-b
 
 ## 7. Search log (merged from the six strands)
 
-All strands used WebSearch and WebFetch only. PDFs that WebFetch could not parse were downloaded and read with pdftotext. No host connections were made, nothing was run, and nothing was posted.
+All strands used web search and page fetches only. PDFs that could not be parsed that way were downloaded and read with pdftotext. This is desk research: no system was measured and no benchmark was run for it.
 
 ### Absence findings and how each was checked
 
@@ -2128,7 +2128,7 @@ All strands used WebSearch and WebFetch only. PDFs that WebFetch could not parse
 | No **Sort Benchmark** mainframe entry (1987-2023) | Fetched sortbenchmark.org and checked the full records page across the Gray, Minute, Joule, Cloud, Penny and Datamation categories (SB05). The academic strand also searched for AlphaSort/Datamation and DFSORT. | Checked against the primary page. |
 | No **HammerDB** LinuxONE against x86 comparison | Search "HammerDB LinuxONE x86 comparison PostgreSQL TPROC-C" (SB07). | Search-based. |
 | No **Phoronix** article on IBM Z | Searches "Phoronix IBM Z s390x benchmark", "phoronix z15/z16/LinuxONE Larabel" and "phoronix s390x DFLTCC" (SB09). | Search-based. |
-| No peer-reviewed Z against x86 same-lab paper since 2014 | Academic-strand searches (condensed below), plus one analysts-strand search. | Search-based. arXiv full text was not searchable with these tools. |
+| No peer-reviewed Z against x86 same-lab paper since 2014 | Academic-strand searches (condensed below), plus one analysts-strand search. | Search-based. arXiv full text could not be searched. |
 | No independent Telum against x86 inference benchmark | Benchmarks strand queries on zDLC, ONNX and fraud latency, and on the z16 19x/20x footnote, plus an IBM-strand search (condensed below). | Search-based. |
 | No WLM against cgroups study | Benchmarks strand "noisy neighbour cgroups vs WLM" (extended), plus IBM- and academic-strand searches (condensed below). | Search-based. |
 
@@ -2164,7 +2164,7 @@ All strands used WebSearch and WebFetch only. PDFs that WebFetch could not parse
 
 **Analysts, TCO and critiques (29 queries)**
 - **Searches:** Edison Group (no LinuxONE study; only Oracle-funded SPARC work, https://www.oracle.com/jp/a/tech/docs/technical-resources/edison-sparc-s7-wp.pdf, not fetched); Solitaire Interglobal (no original report; only second-hand IBM citations); Forrester TEI; Wikibon/Floyer (no mainframe TCO); Watson on MIPS; Register critiques; TPC absence; Rubin/Arcati; IDC 2024-25 (none newer than 2020); ITIC; MIPS rules of thumb; Heirloom TPC-C; Clabby (only old IBM-hosted papers); Phoronix (dead end); LSPR caveat; sceptical analysts; HN; the 32.5 cores/IFL ratio; the z10 critique; BMC and Kyndryl surveys; Principled Technologies, ESG and Quark+Lepton (dead end); academic SPEC (dead end); Telum critique; Gartner (second-hand only); Rubin critique (none).
-- **Fetch failures:** c0t0d0s0 (410); web.archive.org (not reachable by the tool); Omdia (403); the share.confex.com "TCO Lessons Learned" PDF (DNS); the Broadcom Rubin PDF (redirect).
+- **Fetch failures:** c0t0d0s0 (410); web.archive.org (could not be reached); Omdia (403); the share.confex.com "TCO Lessons Learned" PDF (DNS); the Broadcom Rubin PDF (redirect).
 
 **Standard benchmarks and community (about 45 calls)**
 - **Searches:**
@@ -2181,7 +2181,7 @@ All strands used WebSearch and WebFetch only. PDFs that WebFetch could not parse
 - **Searches:** zRef HPE; zRef TPC-E CICS COBOL MIPS; zRef GitHub s390x; "4AA4-2452ENW" (spam hits only); "Mainframe Alternative Sizing" DL980; Microsoft 288/170; TmaxSoft zRef; zRef Superdome/Micro Focus; Asysco 18,000 MIPS; LzLabs zRef (x2); other meanings of zRef; MIPS-per-core critiques; zRefCICS/BL860c.
 - **Dead ends:**
   - The HP PDF (404) and hpe.com psnow (timeout).
-  - Wayback (not reachable by the tool).
+  - Wayback (could not be reached).
   - manualzz (403) and pdfslide (now redirects to a different domain).
   - The CAF page (redirect) and its GitHub source (404).
   - techcommunity (login); info.lzlabs.com (ENOTFOUND); LinkedIn articles by Ming Lu and Dale Vecchio (403).
