@@ -29,7 +29,7 @@ extension, driver, metrics, run rules and FDR. Results always name their track.
 ### 1.1 Base application (proposed)
 - **Core (COBOL track; the Java track reimplements the same transactions): [AWS CardDemo](https://github.com/aws-samples/aws-mainframe-modernization-carddemo)** (Apache 2.0). It is a COBOL credit-card management application: CICS online transactions over VSAM (KSDS with alternate indexes), plus a batch suite.
 - **Why CardDemo:** it already exists, it is open, and it is used to test mainframe migration tooling, including performance. Results on it can be compared directly with migration claims.
-- **On z/OS:** it runs as-is (CICS, VSAM, JCL, DFSORT).
+- **On z/OS:** it installs as shipped (CICS, VSAM, JCL, DFSORT). Running its batch and online work together needs configuration changes, or changes to the batch programs if their file access is routed through CICS (see 4.3 and docs/PORTING-zOS.md).
 - **On Linux (s390x and x86):** CICS and VSAM are replaced by a thin portable layer:
   - indexed files through GnuCOBOL file I/O;
   - a pool of long-lived COBOL workers driven by the load generator, in place of CICS;
@@ -101,6 +101,7 @@ Methods, not workloads:
 1. **Repeats:** at least 5 runs per point, in randomised order, with warm-up excluded. Report the mean and a 95% confidence interval, plus the median and spread.
 2. **Load modes:** closed loop for capacity. Open loop at 50, 70, 90, 100, 110 and 120% of measured capacity for the degradation curve.
 3. **Batch alongside online:** the measured window must span whole batch cycles, or be synchronised to the cycle start. A window that samples only one phase of a batch job biases the result; we found this in our own pilot.
+   On z/OS, CardDemo as shipped does not run batch and online together: its batch sequence first closes the files in CICS (CLOSEFIL), its main VSAM clusters are SHAREOPTIONS(2 3), all 18 programs are CONCURRENCY(QUASIRENT), and all 8 files are STRINGS(1) and RECOVERY(NONE). Running both together there needs a way for batch to share the files with CICS: either VSAM record-level sharing (RLS), which needs a coupling facility (and Transactional VSAM, a separately priced feature, if the files are made recoverable), or batch file access routed through CICS (the external CICS interface, EXCI); threadsafe program definitions or several CICS regions; and string and buffer tuning. These changes are part of the z/OS configuration and are disclosed with it (docs/PORTING-zOS.md).
 4. **Pinning:** cores pinned on both sides, and frequency governor and SMT recorded.
 5. **A manifest per run:** CPU model and machine type, core and thread counts, memory, OS and kernel, compiler and library versions, configuration switches, and the git commit of the kit.
 6. **Raw output:** every raw file is kept and published with the results.
