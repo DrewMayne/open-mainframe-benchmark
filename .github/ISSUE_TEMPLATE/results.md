@@ -4,7 +4,7 @@ about: Submit results from a run of the kit
 labels: results
 ---
 
-**Spec version:** (e.g. v0.1)
+**Spec version:** (e.g. v0.3.2)
 
 **Platform:** (machine, cores or IFLs, SMT, OS, kernel)
 

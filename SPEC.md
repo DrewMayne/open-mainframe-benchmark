@@ -1,13 +1,13 @@
-# Open Mainframe Benchmark: specification, draft v0.3.2 (2026-11-26)
+# Open Mainframe Benchmark: specification, draft v0.3.2 (2026-11-25)
 
 Status: draft for comment. Items marked **(proposed)** are not yet decided. Version numbers follow semantic versioning:
 results always name the spec version and track they ran against.
 
 Changes in v0.1.1: two implementation tracks (Java first, then COBOL) under one spec (1.0, 1.5).
 Changes in v0.2.0: an optional analytics module derived from industry-standard benchmark material (1.6), and rules for using third-party benchmark materials (6).
-Changes in v0.3.1: labelling of derived work aligned with the benchmark owner's published policies; written permission requested before publishing derived results (6).
 Changes in v0.3.0: further optional modules derived from benchmark material, plus pricing and energy methods (1.7).
-Changes in v0.3.2 (2026-11-26), a withdrawal: the optional modules derived from benchmark material, and the rules specific to them, are withdrawn until the benchmark owners' permission is in place (1.6, 1.7, 6). HYPOTHESES.md is unchanged.
+Changes in v0.3.1: labelling of derived work aligned with the benchmark owner's published policies; written permission requested before publishing derived results (6).
+Changes in v0.3.2 (2026-11-25), corrections and a withdrawal: CardDemo on z/OS needs configuration changes to run batch and online together (1.1, 4.3); CPC power is shown on the HMC for older Z machines (1.7); IBM's capacity ratings are per processor model (3); Db2 (5); version labels made consistent. The optional modules derived from benchmark material, and the rules specific to them, are withdrawn until the benchmark owners' permission is in place (1.6, 1.7, 6). HYPOTHESES.md is unchanged.
 
 ## 1. Workload
 
@@ -37,7 +37,7 @@ extension, driver, metrics, run rules and FDR. Results always name their track.
 - The port must not change business logic. Differences are listed in a PORTING.md with the reason for each.
 
 ### 1.2 Online transactions
-- The CardDemo online set (account view and update, card list and update, transaction list, view and add, bill payment), weighted by a **transaction mix table** (to be defined in v0.2, with the weights published).
+- The CardDemo online set (account view and update, card list and update, transaction list, view and add, bill payment), weighted by a **transaction mix table** (to be defined in a later spec version, milestone M1b, with the weights published).
 - Think time is zero in closed-loop mode. In open-loop mode, an arrival rate is offered (see section 4).
 
 ### 1.3 Batch suite
@@ -55,7 +55,7 @@ These are optional steps added to the online path, each a single library call so
 Results are always reported with and without the extension.
 
 ### 1.5 Data
-- **Storage per track (proposed):** the COBOL track uses GnuCOBOL indexed files on Linux and VSAM on z/OS. The Java track uses a portable keyed store, to be chosen in v0.2. Both load from the same generated record files.
+- **Storage per track (proposed):** the COBOL track uses GnuCOBOL indexed files on Linux and VSAM on z/OS. The Java track uses a portable keyed store, to be chosen in a later spec version. Both load from the same generated record files.
 - A deterministic generator with a scale factor S (accounts = 10,000 × S, transactions per account stated).
 - The same seed gives byte-identical data files on every platform. Golden checks compare decompressed bytes, because hardware and software deflate output differ.
 
@@ -65,8 +65,8 @@ only once the benchmark owners' permission is in place; until then, none is desc
 
 ### 1.7 Pricing and energy methods (proposed)
 Methods, not workloads:
-- **Pricing:** the optional pricing appendix and the open cost model (M7) are built from public list prices, with
-  every assumption stated.
+- **Pricing:** the optional pricing appendix of an FDR uses published list prices only, with every assumption
+  stated (docs/FDR-TEMPLATE.md section 8). The open cost model (M7) builds on it.
 - **Energy:** power is measured where it can be (RAPL on x86 we control; docs/methods/energy.md).
   On IBM z17 ME1 / LinuxONE Emperor 5 (machine type 9175), per-partition power is reported to the operating system
   (Linux `zpwr`, z/OS SMF 70.1 via APAR OA66018, the z/VM monitor on z/VM 7.3 with APAR VM66823 and on z/VM 7.4),
@@ -108,7 +108,7 @@ Methods, not workloads:
 7. **Pre-registration:** a hypothesis file entry exists, committed, before the first run that tests it.
 8. **Full Disclosure Report:** every published result comes with an FDR following [docs/FDR-TEMPLATE.md](docs/FDR-TEMPLATE.md). A result without one is not a result of this benchmark.
 
-## 5. Out of scope (v0.1)
+## 5. Out of scope
 - Audited or official benchmark status (TPC/SPEC). Results are research results. This kit is not a TPC benchmark, and results must not be presented as TPC results or described with TPC benchmark names. A separately sponsored, audited run of an actual TPC benchmark is listed as a stretch goal in ROADMAP.md.
 - Db2, IMS and MQ variants of CardDemo (later, possibly).
 

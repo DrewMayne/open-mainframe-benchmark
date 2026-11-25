@@ -1,6 +1,6 @@
 # Energy method: what we can actually measure
 
-Status: draft for comment, 2026-11-19. Applies to the energy fields of an FDR and to the "per watt" normalisation in
+Status: **notes** (draft method for comment), 2026-11-19. Applies to the energy fields of an FDR and to the "per watt" normalisation in
 SPEC section 3. See SPEC section 1.7.
 
 Sources are marked "fetched" (page read) as in [platforms.md](../platforms.md).

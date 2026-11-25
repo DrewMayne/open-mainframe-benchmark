@@ -7,13 +7,29 @@ An open, reproducible benchmark specification and kit for comparing IBM Z / Linu
 transactions and batch together, from the same source on every platform, in two tracks: **Java** (the same JVM
 everywhere, for the hardware question) and **COBOL** (based on AWS CardDemo, for the migration question).
 
-**Status: early design (v0.1). No kit code and no results yet.** This repository publishes the plan, the specification
-draft and the pre-registered hypotheses *before* any measurement. Anyone can then check that the results answer the
-questions as they were asked.
+**Status: early design (spec draft v0.3.2). No kit code and no results yet.** This repository publishes the plan,
+the specification draft and the pre-registered hypotheses *before* any measurement. Anyone can then check that the
+results answer the questions as they were asked. The hypotheses were registered against spec v0.1 (H1-H5) and
+v0.1.1 (H1j, H6).
 
+## Status at a glance
 > **Optional modules withdrawn for now.** Optional modules derived from industry-standard benchmark material are
 > in preparation and kept private until the benchmark owners' permission is in place. No kit code and no results
 > are published yet.
+
+Status words, used the same way on every page: **planned** (on the roadmap; nothing written yet), **notes** (a plan,
+design or method in this repository; no code), **withdrawn** (in preparation, but not described here until the
+benchmark owners' permission is in place), and **done**.
+
+| Part | Where | Status | Code |
+| --- | --- | --- | --- |
+| Specification, hypotheses, FDR template | [SPEC.md](SPEC.md), [HYPOTHESES.md](HYPOTHESES.md), [docs/FDR-TEMPLATE.md](docs/FDR-TEMPLATE.md) | notes: spec draft v0.3.2; hypotheses registered against v0.1 and v0.1.1 | none |
+| Java track (M1, M1b) | not started | planned (M1 is next) | none |
+| COBOL track (M2) | not started | planned | none |
+| s390x and z/OS legs (M3, M5) | [docs/platforms.md](docs/platforms.md), [docs/PORTING-zOS.md](docs/PORTING-zOS.md) | planned; access sought ([#1](../../issues/1), [#2](../../issues/2)) | none |
+| Optional modules derived from benchmark material | not in this repository | withdrawn | private |
+| Pricing and energy methods (T1) | [docs/FDR-TEMPLATE.md](docs/FDR-TEMPLATE.md) section 8, [docs/methods/energy.md](docs/methods/energy.md) | notes (draft) | none |
+| Prior-art review | [docs/prior-art.md](docs/prior-art.md) | notes | none |
 
 ## Why
 Public measurements of IBM Z and x86 servers running the same work are scarce. Most published comparisons come from
@@ -40,8 +56,8 @@ predictions written down before the data exists.
 - **Batch elapsed time,** alone and alongside online work.
 
 ## Documents
-- [SPEC.md](SPEC.md): workload, platforms, metrics and run rules (draft v0.1)
-- [HYPOTHESES.md](HYPOTHESES.md): the pre-registered predictions H1 to H5
+- [SPEC.md](SPEC.md): workload, platforms, metrics and run rules (draft v0.3.2)
+- [HYPOTHESES.md](HYPOTHESES.md): the pre-registered predictions H1 to H6, plus H1j
 - [ROADMAP.md](ROADMAP.md): milestones and open questions
 - [docs/prior-art.md](docs/prior-art.md): review of prior mainframe-against-server measurements
 - [docs/platforms.md](docs/platforms.md): s390x and x86 platform and toolchain facts, with sources
