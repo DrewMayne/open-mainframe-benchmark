@@ -67,7 +67,7 @@ Evidence status, in full:
 - Latest documented: "Current L1CC resides on LinuxONE Emperor III (z15 technology)" (2021 IBM deck, fetched).
 - Before that: Marist installed the "world's first" LinuxONE III in October 2019 to power the cloud (fetched, https://www.marist.edu/-/marist-first-linuxone-iii).
 - 2019: Emperor II (z14) and Rockhopper II (z14 ZR1) (fetched, 2019 deck slide 7).
-- We found NO source saying it moved to LinuxONE 4 (z16) or LinuxONE 5 (z17), so whether it has Telum or an AIU is unknown. Running `lscpu` or reading `/proc/cpuinfo` on a VM would show the machine type (8561 = z15, 3931 = z16, 9175 = z17).
+- We found NO source saying it moved to LinuxONE 4 (z16) or LinuxONE 5 (z17), so whether it has Telum or an AIU is unknown. Running `lscpu` or reading `/proc/cpuinfo` on a VM would show the machine type: 8561 or 8562 = z15, 3931 or 3932 = z16, 9175 or 9176 = z17. The LinuxONE models use the same types (for example 3932 for LinuxONE Rockhopper 4, 9175 for LinuxONE Emperor 5 and 9176 for LinuxONE Rockhopper 5). Sources, fetched 2026-11-25: the IBM Redbooks "IBM z15 (8561) Technical Guide" (SG24-8851) and "IBM z15 (8562) Technical Guide" (SG24-8852, https://www.redbooks.ibm.com/abstracts/sg248852.html); APAR VM66624, which adds 3932-A02, -AGZ, -LA2 and -AGL (https://www.ibm.com/support/pages/apar/vm66624); and IBM's list of z/VM service for the z17 family, which gives type 9175 models ME1 and ML1 and type 9176 models ME2, ML2, MER and MLR (https://www.ibm.com/support/pages/zvm/service/vmreqz17.html).
 
 **Shared vs dedicated, SMT.** Not documented anywhere we found. Being a z/VM guest in a "shared public cloud" (2023 blog, fetched) implies shared IFLs, but that is inference, not a source.
 

@@ -67,11 +67,14 @@ only once the benchmark owners' permission is in place; until then, none is desc
 Methods, not workloads:
 - **Pricing:** the optional pricing appendix and the open cost model (M7) are built from public list prices, with
   every assumption stated.
-- **Energy:** power is measured where it can be (RAPL on x86 we control; docs/methods/energy.md). On IBM z17 /
-  LinuxONE 5, per-partition power is reported to the operating system (Linux `zpwr`, z/OS SMF 70.1 via APAR OA66018,
-  the z/VM 7.4 monitor), but IBM describes it as apportioned rather than measured. It is recorded in an optional FDR
-  field labelled "vendor estimate; not measured" and kept out of per-watt comparisons. Older Z generations: not
-  measurable, and the FDR says so.
+- **Energy:** power is measured where it can be (RAPL on x86 we control; docs/methods/energy.md).
+  On IBM z17 ME1 / LinuxONE Emperor 5 (machine type 9175), per-partition power is reported to the operating system
+  (Linux `zpwr`, z/OS SMF 70.1 via APAR OA66018, the z/VM monitor on z/VM 7.3 with APAR VM66823 and on z/VM 7.4),
+  but IBM describes it as apportioned rather than measured. For machine type 9176 (z17 ME2 and MER, LinuxONE
+  Rockhopper 5) this is not verified. It is recorded in an optional FDR field labelled "vendor estimate; not
+  measured" and kept out of per-watt comparisons. Older Z generations: no partition figure is visible to the
+  operating system, and the FDR says so; CPC power is shown on the HMC to the machine's owner
+  (docs/methods/energy.md).
 
 ## 2. Platforms
 - **Phase 1:**
@@ -92,7 +95,7 @@ Methods, not workloads:
 - **Interference:** online capacity and p99 with batch present, divided by the same without batch.
 - **Steal time** and other-load indicators on shared platforms.
 - **Normalisations:** per core at the stated clock, and per watt where measurable (RAPL on x86; Z guests generally cannot meter, which is stated). Per dollar is optional, using published list prices with assumptions stated.
-- **MIPS:** never derived from Linux runs. A calibration of MIPS to x86 cores per workload class is planned for phase 2, against z/OS and the measured configuration's published capacity rating.
+- **MIPS:** never derived from Linux runs. A calibration of MIPS to x86 cores per workload class is planned for phase 2, against z/OS and IBM's capacity data for the measured processor model. IBM's published capacity ratings are per processor model (the LSPR multi-image table, which IBM uses as the basis for MIPS and MSUs); for a specific LPAR configuration, IBM's LSPR FAQ points to its zPCR tool (LPAR Configuration Capacity Planning).
 
 ## 4. Run rules
 1. **Repeats:** at least 5 runs per point, in randomised order, with warm-up excluded. Report the mean and a 95% confidence interval, plus the median and spread.
@@ -106,7 +109,7 @@ Methods, not workloads:
 
 ## 5. Out of scope (v0.1)
 - Audited or official benchmark status (TPC/SPEC). Results are research results. This kit is not a TPC benchmark, and results must not be presented as TPC results or described with TPC benchmark names. A separately sponsored, audited run of an actual TPC benchmark is listed as a stretch goal in ROADMAP.md.
-- DB2, IMS and MQ variants of CardDemo (later, possibly).
+- Db2, IMS and MQ variants of CardDemo (later, possibly).
 
 ## 6. Benchmark materials from third parties
 To stay within other benchmark owners' terms:
