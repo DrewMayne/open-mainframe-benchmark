@@ -92,5 +92,10 @@ Apache License 2.0, see [LICENSE](LICENSE). Any third-party code adopted later (
 ## About this project
 Maintained by Andrew Mayne, Durham College. An independent project, not a Durham College publication.
 
+AI tools assisted with research compilation and drafting. Each prior-art entry marks how its sources were seen:
+fetched and read, not fetched, or seen only in a search-result snippet (marked "not verified"). On 2026-11-25 a
+sample of entries was re-checked against their sources, and the eight that differed were corrected. The maintainer
+is responsible for the content; corrections are welcome as issues.
+
 Contributions and critique are welcome, especially methodological critique. To report a security issue, see
 [SECURITY.md](SECURITY.md).
