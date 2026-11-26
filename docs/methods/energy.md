@@ -1,6 +1,6 @@
 # Energy method: what we can actually measure
 
-Status: draft for comment, 2026-11-19. Applies to the energy fields of an FDR and to the "per watt" normalisation in
+Status: **notes** (draft method for comment), 2026-11-19. Applies to the energy fields of an FDR and to the "per watt" normalisation in
 SPEC section 3. See SPEC section 1.7.
 
 Sources are marked "fetched" (page read) as in [platforms.md](../platforms.md).
@@ -97,8 +97,10 @@ Sources are marked "fetched" (page read) as in [platforms.md](../platforms.md).
 ### 3.1 Findings (neutral)
 - **No RAPL-style counter for Linux on Z.** The Linux RAPL drivers above are x86 drivers: the powercap driver matches
   only Intel, AMD and Hygon CPUs (`intel_rapl_msr.c`).
-- **z15 and earlier:** we found no IBM source for per-partition power. CPC-level figures existed on the HMC; the only
-  source for that is a non-IBM 2026 talk (Velocity Software), so it is weak.
+- **z15 and earlier:** we found no IBM source for per-partition power. CPC-level power is shown on the HMC: on z15
+  the Monitors Dashboard task produces power consumption data, and the Environmental Efficiency Statistics task gives
+  historical power consumption for the CPC, with CSV export (IBM z15 (8561) Technical Guide, SG24-8851, sections
+  10.5.5 and 11.4.1, fetched). Like the z16 figures below, it is read on the HMC.
 - **z16 and LinuxONE 4: partition power on the HMC, for the machine's owner.**
   - A SHARE 2023 session says the z16 single-frame model introduced power reporting by partition, using
     "underlying hardware monitoring and algorithms" that the abstract does not describe (fetched).
@@ -106,7 +108,7 @@ Sources are marked "fetched" (page read) as in [platforms.md](../platforms.md).
     partition, starting with LinuxONE 4, and that the HMC Web Services API exposes power data (fetched).
   - The open-source HMC Prometheus exporter added a per-partition power metric for z16 in April 2024 (fetched).
   - All of this is read from the HMC, i.e. by the CPC owner or operator, not from inside the partition.
-- **z17 and LinuxONE Emperor 5 (machine type 9175): partition power visible to the operating system.**
+- **z17 ME1 and LinuxONE Emperor 5 (machine type 9175): partition power visible to the operating system.**
   - IBM's z17 Technical Introduction (SG24-8580-01) says z17 reports power at LPAR level, with support in z/OS, z/VM
     and Linux on IBM Z (fetched).
   - **Linux:** `zpwr` (s390-tools) shows the partition's CPU, storage and I/O power. It also shows CPC total,
@@ -117,9 +119,12 @@ Sources are marked "fetched" (page read) as in [platforms.md](../platforms.md).
     - Readings are refreshed on an interval (10 s in IBM's example) and may be cached.
   - **z/OS:** SMF type 70 subtype 1 records gain CPC- and LPAR-level power fields (APAR OA66018, z17, closed
     2025-05-09, fetched).
-  - **z/VM:** z/VM 7.4 adds monitor record domain 0 record 25. Without Global Performance Data it holds only the
-    current LPAR's data (APAR VM66823; record MRSYTPOW; fetched). The Performance Toolkit APAR VM66826 says the data
-    exists only on z17 9175 (fetched).
+  - **z/VM:** monitor record domain 0 record 25 (MRSYTPOW) carries the power data. Without Global Performance Data
+    it holds only the current LPAR's data (record description, fetched). APAR VM66823, z/VM 7.3 support for the
+    z17 9175, adds CPC- and LPAR-level power to the z/VM monitor (closed 2025-06-12, fetched). The z/VM 7.4
+    Performance Toolkit APAR VM66826 says the data exists only on z17 9175 (fetched).
+  - **Machine type 9176** (z17 ME2 and MER, LinuxONE Rockhopper 5 ML2 and MLR): VM66823 and VM66826 name only 9175.
+    Whether 9176 reports the same data is not verified.
 - **How the partition figures are derived:**
   - IBM's z/VM dashboard deck (April 2025, fetched) calls the LPAR's figure an apportionment, based on the LPAR's
     configuration and resource use. It says the split to guests is an approximation, and that part of a Z machine's
@@ -138,7 +143,7 @@ Sources are marked "fetched" (page read) as in [platforms.md](../platforms.md).
   - With the reason, e.g. "shared CPC; no energy counter for this partition is visible to us. Machine power is
     reported for the whole CPC to its owner (HMC)", or "z/VM guest; partition power not available to the guest".
   - No per-watt normalisation is computed.
-- **Proposed (REVIEW): on z17, where the partition can read IBM's figures** (`zpwr`, SMF 70.1 or z/VM monitor):
+- **On z17, where the partition can read IBM's figures** (`zpwr`, SMF 70.1 or z/VM monitor; SPEC 1.7):
   - The FDR may record them in a separate field, "IBM firmware-apportioned partition power", with CPU, storage and
     I/O watts averaged over the measured window.
   - The field is labelled "vendor estimate; not measured; not comparable with RAPL or wall power".
@@ -189,8 +194,10 @@ IBM Z
 - zpwr man page: https://dyn.manpages.debian.org/testing/s390-tools/zpwr.1 (fetched)
 - Kernel `diag324.c`: https://raw.githubusercontent.com/torvalds/linux/master/arch/s390/kernel/diag/diag324.c (fetched)
 - APAR OA66018 (z/OS SMF 70.1 power, z17): https://www.ibm.com/support/pages/apar/OA66018 (fetched)
-- APAR VM66823 (z/VM monitor power): https://www.ibm.com/support/pages/apar/VM66823 (fetched)
-- APAR VM66826 (Performance Toolkit; z17 only): https://www.ibm.com/support/pages/apar/VM66826 (fetched)
+- APAR VM66823 (z/VM 7.3 support for z17 9175, including monitor power): https://www.ibm.com/support/pages/apar/VM66823 (fetched)
+- APAR VM66826 (z/VM 7.4 Performance Toolkit; z17 9175 only): https://www.ibm.com/support/pages/apar/VM66826 (fetched)
+- IBM, z/VM service required for the IBM z17 family (machine types 9175 and 9176): https://www.ibm.com/support/pages/zvm/service/vmreqz17.html (fetched)
+- IBM z15 (8561) Technical Guide, SG24-8851, sections 10.5.5 and 11.4.1 (HMC power monitoring): https://www.redbooks.ibm.com/redbooks/pdfs/sg248851.pdf (fetched)
 - z/VM MRSYTPOW record: https://www.ibm.com/support/pages/zvm/pubs/mon750/mrsytpow.html (fetched)
 - IBM, "Dashboard for z/VM Energy Consumption" (April 2025): https://www.ibm.com/support/pages/zvm/related/perfkit/datapump/pdppower.pdf (fetched)
 - SHARE 2023 session 31249: https://share.org/Events/Past-Events/Proceedings/Proceeding-Details/31249-partition-power-monitoring-with-the-new-hmc-environmental-dashboard-and-wsapi (fetched; abstract only)

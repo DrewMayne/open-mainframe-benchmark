@@ -5,19 +5,19 @@
 > not TPC results and are not comparable to published TPC results; official TPC results are on tpc.org.
 
 
-Status: review as of 2026-11-19. Compiled from six research strands (academic; IBM material; vendors, rehosting and consolidation; analysts, TCO and critiques; standard benchmarks and community; zRef). This is a research review, not an endorsement of any source.
+Status: review as of 2026-11-19. The catalogue was compiled by AI research assistants in six research strands (academic; IBM material; vendors, rehosting and consolidation; analysts, TCO and critiques; standard benchmarks and community; zRef), and the maintainer is responsible for its content (see the README, "About this project"). This is a research review, not an endorsement of any source.
 
-Provenance markers are carried over from the notes unchanged:
-- "fetched" means a researcher read the primary page or PDF text.
-- "not fetched; from search snippet" means only a search-engine summary was seen, so the figure is unverified.
-- "spot-checked" means a second reader re-checked the figure against the fetched source.
-- "my arithmetic" marks a derived figure that no source states.
+Each entry carries one of these provenance markers:
+- "fetched" means the primary page or PDF text was retrieved and read.
+- "not fetched; from search snippet; not verified" means only a search-engine summary was seen. Such figures are not verified and are not to be relied on until the primary source is read.
+- "spot-checked" means a second, separate pass re-checked the figure against the fetched source.
+- "our arithmetic" marks a derived figure that no source states.
 
 Across about 125 de-duplicated items, almost no independent, reproducible, same-lab measurement of an IBM Z machine against an x86 server exists. There is one academic head-to-head with statistics, a 2014 Binghamton master's project with 4 cores a side. Beyond it are a handful of small community runs: a Go issue with ns/op on z15/z16/z17, a bbolt insert benchmark on a Marist LinuxONE guest, and one mailing-list gzip timing. Almost everything with numbers comes from a party selling one side:
 - IBM, or studies IBM commissioned;
 - HP(E) and the rehosting vendors, whose proprietary zRef benchmark is the closest published analogue to a CICS-under-batch-sort test.
 
-No audited TPC, SPEC, MLPerf or Sort Benchmark entry for any IBM mainframe was found, and IBM said on record (1998, 2003) that it chose not to publish. IBM's accelerator figures (AIU, DFLTCC, Z Sort, CPACF) compare Z with an older Z, with a general core on the same chip, or with software on the same box. None compares Z with x86 software. Its x86 comparisons mostly rest on one of two things:
+No audited TPC, SPEC, MLPerf or Sort Benchmark entry for any IBM mainframe was found, and IBM said on record (1998, 2003) that it chose not to publish. Most of IBM's accelerator figures (AIU, DFLTCC, Z Sort, CPACF) compare Z with an older Z, with a general core on the same chip, or with software on the same box. IBM's inference comparisons with x86 (IB01; IB04 fn1 and fn4) run the x86 inference remotely or use different software on each side; none found runs the same in-process code at the same batch size on both. IBM's x86 comparisons mostly rest on one of two things:
 - a remote x86 server reached over injected network delay;
 - an estate model built on assumed x86 utilisation.
 
@@ -27,13 +27,14 @@ Equal-core tests of sort, compression, AI per transaction, signatures, a mixed w
 
 - **Independent same-lab work is almost absent.** The only independent academic head-to-head that was fully read is FitzGerald (Binghamton, 2014): 4 zEC12 cores against a 4-core Xeon X3440 with HT off, SysBench, 95% confidence intervals and t-tests ([report](https://www.ibm.com/support/pages/zvm/devpages/dfitzger/report.pdf), fetched; title, author and date spot-checked). Its result is split. x86 led on CPU. s390x led on memory write (30-173%) and on MySQL at L0/L1, but fell off sharply under nested I/O.
 - **The reproducible community items are few and small.** golang/go#82520 gives P-256 ECDH ns/op on z15/z16/z17, accelerated against pure Go ([issue](https://github.com/golang/go/issues/82520), fetched, spot-checked). goboltbench (2025) times bbolt inserts on a Marist LinuxONE guest against EPYC and Graviton3 ([repo](https://github.com/jankammerath/goboltbench), fetched). A LINUX-390 post (2020) times gzip on z14 against z15 ([post](https://www.mail-archive.com/linux-390@vm.marist.edu/msg72967.html), fetched). A GitHub crypto suite exists but is marked low trust.
-- **No mainframe appears in any standard benchmark.** No TPC, SPEC, MLPerf or Sort Benchmark (1987-2023) entry for an IBM mainframe was found. An IBM VP said in 1998 that IBM "has run the TPC-C test on MVS systems, but never released them" ([Tech Monitor](https://www.techmonitor.ai/?p=92089), fetched). In 2003 IBM said "we typically don't run industry standard performance benchmarks for any software on the mainframe" (press, not fetched; from search snippet). These are absences found by search, not exhaustive database queries.
-- **IBM's accelerator figures are always Z against Z.**
-  - Telum AIU: 22x latency against a SIMD core on the same chip (ISCA 2022, not fetched; from search snippet).
+- **No mainframe appears in any standard benchmark.** No TPC, SPEC, MLPerf or Sort Benchmark (1987-2023) entry for an IBM mainframe was found. An IBM VP said in 1998 that IBM "has run the TPC-C test on MVS systems, but never released them" ([Tech Monitor](https://www.techmonitor.ai/?p=92089), fetched). In 2003 IBM said "we typically don't run industry standard performance benchmarks for any software on the mainframe" (Computerworld and InfoWorld, fetched). These are absences found by search, not exhaustive database queries.
+- **Most of IBM's accelerator figures are Z against Z, and its x86 accelerator comparisons are not like for like.**
+  - Telum AIU: 22x latency against a SIMD core on the same chip (ISCA 2022, not fetched; from search snippet; not verified).
   - DFLTCC: 24-42x against software zlib on 4 z15 IFLs ([GSE UK 2021](https://conferences.gs-uk.org/2021/presentations/2AV.pdf), fetched).
   - Z Sort: 20-30% less elapsed time and up to 40% less CPU, against **z14**, not against Z Sort switched off ([SHARE blog](https://blog.share.org/Article/peeking-under-the-hood-of-sort-acceleration-on-z15), fetched).
   - CPACF P-256: 48,660 signatures/s on one z15 CPACF ([6K2653EJ](https://ibm.com/downloads/cas/6K2653EJ), fetched).
   - None of these has an x86-software baseline, and that is the main gap our tests fill.
+  - The exceptions are IBM's inference comparisons with x86. IB01 sets z16 inference co-located with a CICS transaction (WMLz on zCX) against TensorFlow Serving on an x86 server behind 60 ms of added network delay, simulating a remote cloud. In IBM's AI Toolkit footnotes (IB04), fn1 matches one z17 accelerator against a remote x86 server running Triton with OpenVINO on CPU (AMX), and fn4 compares Snap ML on the z16 accelerator with NVIDIA FIL on 6 Ice Lake cores.
 - **IBM's x86 comparisons come in three types:**
   - **Co-location against a remote x86.** The z16's "20x lower response time" added 60 ms of `tc-netem` delay on the x86 path ([M65ZR5DV](https://ibm.com/downloads/cas/M65ZR5DV), fetched).
   - **Estate extrapolation.** "Up to 2,944 x86 cores" is mostly 2,688 modelled non-production cores at 7-15% utilisation ([Signal65](https://signal65.com/wp-content/uploads/2025/10/Signal65-TCO-Analysis_Workload-Consolidation-on-IBM-LinuxONE.pdf), fetched).
@@ -42,14 +43,14 @@ Equal-core tests of sort, compression, AI per transaction, signatures, a mixed w
 - **zRef is the closest published analogue to online under concurrent batch.** It is HP's 2013 TPC-E-derived COBOL/CICS/DB2 application with a sort/merge batch job (zRefBR). TmaxSoft's Azure study gives 1,672 TPS online, and 1,409 TPS with 3 zRefBR jobs alongside (different user counts). zRefBR took 16 min with CICS running against 13 min without ([TmaxSoft study](https://www.tmaxsoft.com/upload/eBookMgmt/20231219134111167015.pdf), fetched, spot-checked). The kit is proprietary, every run is vendor-run, and HP's original paper could not be retrieved.
 - **The only published Z-side figure for batch interference** is IBM REDP-5170: CICS CPU per transaction rose "up to 15%" on a zEC12 when batch ran in the same LPAR, through cache contention ([REDP-5170](https://www.redbooks.ibm.com/redpapers/pdfs/redp5170.pdf), fetched). No study measures WLM against Linux cgroups under the same batch load.
 - **Sources contradict each other on batch.**
-  - Heirloom, a rehoster, reports a 45-minute mainframe batch job taking 8 hours after a cloud move, which it blames on about 2 ms per query ([Heirloom](https://heirloomcomputing.com/the-latency-challenge/), fetched).
-  - Microsoft halves its MIPS-per-vCPU sizing for batch (snippet).
+  - Heirloom, a rehoster, reports a 45-minute mainframe batch job taking 8 hours after a cloud move, which it illustrates with a hypothetical 2 ms per query ([Heirloom](https://heirloomcomputing.com/the-latency-challenge/), fetched).
+  - Microsoft halves its MIPS-per-vCPU sizing for batch (snippet; not verified).
   - Yet TmaxSoft's zRef study reports standalone zRefBR at 68.1 min on the z/OS baseline against 6.21 min on Azure (fetched, spot-checked).
   - Both claims are shown here, and neither is independent.
 - **Consolidation and TCO ratios are models, not per-core speed.**
   - The measured layer runs at about 9:1 to 16:1 cores at equal throughput, against older x86: 448 Broadwell cores against 50 IFLs at 48,974 tps ([G3QK9D8V](https://ibm.com/downloads/cas/G3QK9D8V), fetched); 256 older Xeon cores against 16 IFLs at about 10,000 req/s (Signal65).
-  - IBM's own old equal-core claim is about 2x per core: "2.1 times as many Node.js Web transactions" at 4 cores each (Linux Journal, not fetched; from search snippet).
-  - MIPS-per-x86-core rules in circulation range from about 8 to about 290.
+  - IBM's own old equal-core claim is about 2x per core: "2.1 times as many Node.js Web transactions" at 4 cores each (Linux Journal, fetched).
+  - MIPS-per-x86-core rules in circulation vary widely by source (VN05-VN07, VN09, VN12).
 - **Batch size and placement decide AI headlines.** IBM's inference figures use batch 128-160 and threads pinned one per chip. No IBM source gives an absolute batch-1 latency. A per-transaction (batch 1) test on a 2-CP slice that does not own an accelerator is a different regime, and IBM's numbers are not its expected value.
 
 ## 2. Top 15 most relevant items, ranked
@@ -99,7 +100,7 @@ Ranked by how directly each one informs or checks one of our eight workloads, we
     - fn4 is the only core-matched IBM inference comparison: Snap ML on 6 z16 IFLs against NVIDIA FIL on 6 Ice Lake cores, "up to 3.5x".
     - fn1 reports one z17 accelerator as "a 13-core x86 server" against current Emerald Rapids with AMX, which is a reporting unit worth borrowing ([page](https://www.ibm.com/products/ai-toolkit-for-z-and-linuxone), fetched).
 12. **Lichtenau et al. (IBM), "AI accelerator on IBM Telum processor: industrial product", ISCA 2022 [AC07].**
-    - The peer-reviewed accelerator-against-CPU ratio on the same chip: "22x speed up in latency compared to a general purpose core utilizing vector execution units", and 116k inferences/s at 1.1 ms per chip ([ACM DL](https://dl.acm.org/doi/10.1145/3470496.3533042), not fetched; from search snippet).
+    - The peer-reviewed accelerator-against-CPU ratio on the same chip: "22x speed up in latency compared to a general purpose core utilizing vector execution units", and 116k inferences/s at 1.1 ms per chip ([ACM DL](https://dl.acm.org/doi/10.1145/3470496.3533042), not fetched; from search snippet; not verified).
 13. **Linde (IBM), "IBM z16: Reasons to upgrade from your z15 or z14", 2022 [IB01].**
     - This is the clearest example of the remote-x86 trap: "20x lower response time and up to 19x higher throughput" against an 8-core Skylake TF Serving box with 60 ms of injected `tc-netem` delay.
     - Its z16 side (z/OS, zCX, a CICS caller, the public fraud model) is a configuration we can mirror ([M65ZR5DV](https://ibm.com/downloads/cas/M65ZR5DV), fetched).
@@ -108,8 +109,8 @@ Ranked by how directly each one informs or checks one of our eight workloads, we
     - Results: Marist LinuxONE 4 GB guest 2.826 s, Graviton3 1.850 s, EPYC 9R14 1.852 s, Apple M1 Pro 12.04 s. The M1 result shows storage and fsync behaviour dominate ([repo](https://github.com/jankammerath/goboltbench), fetched).
     - It has a single run and does not state vCPU counts.
 15. **Cunningham (Heirloom), "Mainframe Migration - The Latency Challenge", 2025 [VN10].**
-    - A rehoster's admission against its own interest: a batch job of 2.3 million DB reads took 45 minutes on the mainframe and 8 hours after the cloud move ([post](https://heirloomcomputing.com/the-latency-challenge/), fetched).
-    - It is direct support for a per-record-latency RMW test, though it gives no hardware specification and its own arithmetic does not explain 8 hours.
+    - A rehoster's anecdote, used to promote its own approach: a batch job of 2.3 million DB reads took 45 minutes on the mainframe and 8 hours after the cloud move ([post](https://heirloomcomputing.com/the-latency-challenge/), fetched).
+    - It is direct support for a per-record-latency RMW test, though it gives no hardware specification and its hypothetical arithmetic does not explain 8 hours.
 
 **Just outside the 15:**
 - IBM AM1PYZBB [IB11]: the only IBM measurement at **2 CPs**.
@@ -132,13 +133,13 @@ Each entry gives:
 
 Workload tags: sort, compression, AI inference, crypto, mixed grid, batch+online mix, RMW/IO, choke/limits, cost/energy.
 
-Cross-references: "Also in" names the other strand notes that carry the same item. Where strands disagree on fetch status, the entry says which strand fetched it.
+Where strands disagree on fetch status, the entry says which strand fetched it.
 
 ### 3.1 Academic and peer-reviewed (22 items)
 
 **AC01. "A Comparative Analysis of Nested Virtualization in x86_64 and S390x Hypervisors"**
 - **Who / when:** Daniel FitzGerald (advisor Dennis Foreman), Binghamton University, Watson School, Masters Termination Project v1.0, 14 Dec 2014. Hosted on IBM's z/VM devpages.
-- **URL:** https://www.ibm.com/support/pages/zvm/devpages/dfitzger/report.pdf (fetched, PDF text extracted; title, author and date spot-checked by a second reader).
+- **URL:** https://www.ibm.com/support/pages/zvm/devpages/dfitzger/report.pdf (fetched, PDF text extracted; title, author and date spot-checked by a second pass).
 - **Compared:**
 
   | | s390x | x86 |
@@ -164,11 +165,10 @@ Cross-references: "Also in" names the other strand notes that carry the same ite
   - It is the closest precedent to our equal-core design (4 vs 4 here, 2 vs 2 for us).
   - Borrow: matched core counts, SMT/HT off, the same kernel build on both sides, and CI plus t-test reporting.
   - Gap it leaves: no accelerators and no modern hardware. Our runs add both.
-- **Also in:** benchmarks_community item 16.
 
 **AC02. "Data Compression Accelerator on IBM POWER9 and z15 Processors: Industrial Product"**
 - **Who / when:** Abali et al., IBM. ISCA 2020, industry track (peer-reviewed).
-- **URL:** https://aminer.org/pub/5f0d85c69fced0a24be4f052/data-compression-accelerator-on-ibm-power-and-z-processors-industrial-product (not fetched; from search snippet). The aminer page returned only a header.
+- **URL:** https://aminer.org/pub/5f0d85c69fced0a24be4f052/data-compression-accelerator-on-ibm-power-and-z-processors-industrial-product (not fetched; from search snippet; not verified). The aminer page returned only a header.
 - **Compared:** the z15 on-chip DEFLATE unit (NXU) against prior-generation and zEDC baselines. The unit is shared by the 12 cores of a chip through L3 and driven by the synchronous DFLTCC instruction.
 - **Workload:** compression.
 - **Headline:** "up to 280 GB/s data compression rate" on a fully configured z15. No x86 baseline appears in the snippet.
@@ -181,7 +181,7 @@ Cross-references: "Also in" names the other strand notes that carry the same ite
 
 **AC03. "Integration of z15 processor-based DEFLATE acceleration into IBM z/OS"**
 - **Who / when:** J.D. Bradbury, A. Chatterjee et al. IBM Journal of Research and Development 64(5/6), 2020.
-- **URL:** https://www.bohrium.com/paper-details/integration-of-z15-processor-based-deflate-acceleration-into-ibm-z-os/812571668235943937-2701 (not fetched; from search snippet). The IBM Research page redirects to a 404.
+- **URL:** https://www.bohrium.com/paper-details/integration-of-z15-processor-based-deflate-acceleration-into-ibm-z-os/812571668235943937-2701 (not fetched; from search snippet; not verified). The IBM Research page redirects to a 404.
 - **Compared:** two paths into the accelerator:
   - user-space zlib, which runs DFLTCC synchronously;
   - DFSMS access methods, which go through a System Assist Processor asynchronously.
@@ -195,7 +195,7 @@ Cross-references: "Also in" names the other strand notes that carry the same ite
 
 **AC04. "Design and verification of DEFLATE acceleration as an architected instruction in z15"**
 - **Who / when:** IBM. IBM JRD, 2020.
-- **URL:** https://www.aminer.org/pub/5ff7d26fd4150a363cb6b43a/design-and-verification-of-deflate-acceleration-as-an-architected-instruction-in-z (not fetched; from search snippet).
+- **URL:** https://www.aminer.org/pub/5ff7d26fd4150a363cb6b43a/design-and-verification-of-deflate-acceleration-as-an-architected-instruction-in-z (not fetched; from search snippet; not verified).
 - **Compared:** none. This is a hardware design paper; it includes a dynamic-Huffman table generator.
 - **Workload:** compression.
 - **Headline:** no benchmark.
@@ -205,7 +205,7 @@ Cross-references: "Also in" names the other strand notes that carry the same ite
 
 **AC05. "Design of the IBM z15 microprocessor"**
 - **Who / when:** IBM. IBM JRD 64(5/6), 2020, pp. 7:1-7:18.
-- **URL:** https://ieeexplore.ieee.org/document/9138680 ; https://www.researchgate.net/publication/344562481_Design_of_the_IBM_z15_microprocessor (not fetched; from search snippet).
+- **URL:** https://ieeexplore.ieee.org/document/9138680 ; https://www.researchgate.net/publication/344562481_Design_of_the_IBM_z15_microprocessor (not fetched; from search snippet; not verified).
 - **Compared:** z15 against z14.
 - **Workload:** the abstract mentions the hardware sort accelerator.
 - **Headline:** no sort speedups were visible.
@@ -238,7 +238,7 @@ Cross-references: "Also in" names the other strand notes that carry the same ite
 
 **AC07. "AI accelerator on IBM Telum processor: industrial product"**
 - **Who / when:** Lichtenau et al., IBM. ISCA 2022, industry track. DOI 10.1145/3470496.3533042.
-- **URL:** https://dl.acm.org/doi/10.1145/3470496.3533042 ; https://unpaywall.org/10.1145%2F3470496.3533042 (not fetched; ACM returned 403, and the numbers come from IBM Research and Unpaywall snippets).
+- **URL:** https://dl.acm.org/doi/10.1145/3470496.3533042 ; https://unpaywall.org/10.1145%2F3470496.3533042 (not fetched; ACM returned 403, and the numbers come from IBM Research and Unpaywall snippets; not verified).
   - Related: the Hot Chips 33 Telum slides (Jacobi), https://hc33.hotchips.org/assets/program/conference/day1/HC2021.C1.3%20IBM%20Cristian%20Jacobi.pdf (not fetched).
 - **Compared:** the on-chip AIU against a general-purpose Telum core using its vector units, on the same chip.
 - **Workload:** "a global bank customer credit card fraud detection model" (LSTM-class).
@@ -247,7 +247,7 @@ Cross-references: "Also in" names the other strand notes that carry the same ite
   - 116k inferences/s at 1.1 ms on one chip.
   - Over 3.5 million/s at about 1.2 ms on 32 chips.
   - Over 200 TFLOPS on 32 chips; more than 40% per-socket growth over z15.
-  - 3.5M/s x 86,400 is about 300 billion/day, which matches the z16 marketing figure (my arithmetic, IBM strand).
+  - 3.5M/s x 86,400 is about 300 billion/day, which matches the z16 marketing figure (our arithmetic, IBM strand).
 - **Quality / independence:**
   - Peer-reviewed, but IBM-authored, with an IBM-chosen model.
   - Conflict flag: a search also returned an "ICS 2025" listing with the same title and numbers. The academic strand suspects a conflation; cite ISCA 2022.
@@ -255,24 +255,23 @@ Cross-references: "Also in" names the other strand notes that carry the same ite
 - **Useful to us:**
   - The only peer-reviewed accelerator-vs-CPU ratio on the same chip. It is the analogue of our AIU-vs-CPU-per-transaction test.
   - Gap: no x86 or GPU baseline.
-- **Also in:** ibm_material A5; benchmarks_community item 12.
 
 **AC08. "IBM Telum: a 16-Core 5+ GHz DCM"**
 - **Who / when:** O. Geva, C. Berry et al. ISSCC 2022.
-- **URL:** https://researcher.ibm.com/publications/ibm-telum-a-16-core-5-ghz-dcm (not fetched; from search snippet).
+- **URL:** https://researcher.ibm.com/publications/ibm-telum-a-16-core-5-ghz-dcm (not fetched; from search snippet; not verified).
 - **Compared:** none; circuit design only.
 - **Chip:** 22B transistors per chip, 8 cores, a 32 MB L2 per core. Press coverage adds a virtual 256 MB L3 and 2 GB L4.
 - **Workload:** none.
 - **Headline:** none.
 - **Quality / independence:** IBM, peer-reviewed. Sources disagree on whether the package is a DCM or a single module.
 - **Maps to:** context for AI inference and for choke/limits (cache).
-- **Related:** ISSCC 2015, "22nm Next-Generation IBM System z Microprocessor" (z13 against zEC12 only), https://unpaywall.org/10.1109/ISSCC.2015.7062930 (not fetched; from search snippet).
+- **Related:** ISSCC 2015, "22nm Next-Generation IBM System z Microprocessor" (z13 against zEC12 only), https://unpaywall.org/10.1109/ISSCC.2015.7062930 (not fetched; from search snippet; not verified).
 - **Useful to us:** cache sizes for explaining noisy-neighbour effects on a shared LPAR.
 
 **AC09. "IBM Telum II processor and IBM Spyre Accelerator chip for AI"**
 - **Who / when:** C. Berry, IBM. Hot Chips 2024.
 - **URL:** https://www.hc2024.hotchips.org/assets/program/conference/day1/04_HC2024.IBM.CBerry.final.pdf (fetched, PDF text extracted).
-  - Related: the Telum II announcement blog, https://www.ibm.com/blog/announcement/telum-ii (not fetched; from search snippet). IBM itself says there that "TOPS alone don't tell the whole story".
+  - Related: the Telum II announcement blog, https://www.ibm.com/blog/announcement/telum-ii (not fetched; from search snippet; not verified). IBM itself says there that "TOPS alone don't tell the whole story".
 - **Compared:** Telum II against Telum I only. The slides say "All projections are based on pre-release hardware".
 - **Workload:** the fraud model at github.com/IBM/ai-on-z-fraud-detection.
   - Footnote: "extrapolated from IBM internal tests" on a z16 LPAR with 48 IFLs and 128 GB, Ubuntu 20.04, "8 parallel threads each pinned to the first core of a different chip", batch 128.
@@ -304,7 +303,7 @@ Cross-references: "Also in" names the other strand notes that carry the same ite
 - **Useful to us:**
   - The closest published shape to our document-size x AI-checks x signatures grid: inference inside an online transaction.
   - A measured 2-CP figure is a more defensible unit than a 200-CP extrapolation.
-  - 228K / 200 CPs is about 1.1K tx/s per CP, as extrapolated, not measured (my arithmetic).
+  - 228K / 200 CPs is about 1.1K tx/s per CP, as extrapolated, not measured (our arithmetic).
 
 **AC11. "Fast Quantum-Safe Cryptography on IBM Z"**
 - **Who / when:** J. Bradbury and B. Hess, IBM. Accepted paper at the NIST 3rd PQC Standardization Conference, 2021.
@@ -315,7 +314,7 @@ Cross-references: "Also in" names the other strand notes that carry the same ite
   - and against Skylake, ARMv8-A and ARMv7-M cycle counts **taken from the literature**, not run in the same lab.
 - **Workload:** SIKE encaps+decaps; Dilithium2 using the CPACF SHA-3 instructions.
 - **Headline:**
-  - SIKE is 4.1-4.7x faster than portable C.
+  - SIKE encaps+decaps is 4.1-5.0x faster than portable C (Table 1: 4.3x, 4.1x, 4.9x and 5.0x for p434 to p751; the text gives 4.2x for p503).
   - Encaps+decaps, in thousands of cycles:
 
     | Parameter set | z15 | Skylake |
@@ -336,7 +335,7 @@ Cross-references: "Also in" names the other strand notes that carry the same ite
 
 **AC12. "The RNI-based LSPR and The IBM z14 Performance Brief"**
 - **Who / when:** D. Hutton, IBM. CMG 2017.
-- **URL:** https://cmg.org/wp-content/plugins/s2member-files/proceedings/2017/433_Hutton.pdf (not fetched; from search snippet).
+- **URL:** https://cmg.org/wp-content/plugins/s2member-files/proceedings/2017/433_Hutton.pdf (not fetched; from search snippet; not verified).
 - **Compared:** Z generations.
 - **Workload:** LSPR capacity categories.
 - **Headline:**
@@ -348,7 +347,7 @@ Cross-references: "Also in" names the other strand notes that carry the same ite
 
 **AC13. "Mainframe Capacity Management"**
 - **Who / when:** Johnson. CMG 2017 (slides).
-- **URL:** https://cmg.org/wp-content/plugins/s2member-files/proceedings/2017/224a_Johnson.pdf (not fetched; from search snippet).
+- **URL:** https://cmg.org/wp-content/plugins/s2member-files/proceedings/2017/224a_Johnson.pdf (not fetched; from search snippet; not verified).
 - **Compared:** none.
 - **Workload:** capacity-management practice.
 - **Headline:** argues that mainframe capacity management should extend to cloud. No quantitative comparison.
@@ -358,7 +357,7 @@ Cross-references: "Also in" names the other strand notes that carry the same ite
 
 **AC14. "Adaptive algorithms for managing a distributed data processing workload"**
 - **Who / when:** J. Aman, C.K. Eilert, D. Emmes, P. Yocom, D. Dillenberger. IBM Systems Journal 36(2):242-283, 1997.
-- **URL:** https://research.ibm.com/publications/adaptive-algorithms-for-managing-a-distributed-data-processing-workload ; https://dblp1.uni-trier.de/rec/bibtex/journals/ibmsj/AmanEEYD97 (not fetched; from search snippet).
+- **URL:** https://research.ibm.com/publications/adaptive-algorithms-for-managing-a-distributed-data-processing-workload ; https://dblp1.uni-trier.de/rec/bibtex/journals/ibmsj/AmanEEYD97 (not fetched; from search snippet; not verified).
 - **Compared:** none.
 - **Workload:** OS/390 WLM goal-mode algorithms across a Parallel Sysplex.
 - **Headline:** a design paper; no cross-platform results.
@@ -378,7 +377,7 @@ Cross-references: "Also in" names the other strand notes that carry the same ite
 
 **AC16. "System z and z/OS unique Characteristics"**
 - **Who / when:** W.G. Spruth. Universität Tübingen technical report WSI-2010-03, 2010.
-- **URL:** https://tobias-lib.uni-tuebingen.de/xmlui/handle/10900/49392 ; PDF https://publikationen.uni-tuebingen.de/xmlui/bitstream/handle/10900/49392/pdf/report_spruth_2010.pdf?sequence=1 (fetch failed with ECONNREFUSED; from search snippet).
+- **URL:** https://tobias-lib.uni-tuebingen.de/xmlui/handle/10900/49392 ; PDF https://publikationen.uni-tuebingen.de/xmlui/bitstream/handle/10900/49392/pdf/report_spruth_2010.pdf?sequence=1 (fetch failed with ECONNREFUSED; from search snippet; not verified).
 - **Compared:** qualitative only. As of 2010, x86, Itanium and SPARC had "no equivalent to the System z LPAR implementation".
 - **Workload:** none measured.
 - **Headline:** lists about 40 mainframe technologies.
@@ -389,7 +388,7 @@ Cross-references: "Also in" names the other strand notes that carry the same ite
 
 **AC17. AlphaSort**
 - **Who / when:** Nyberg, Barclay, Cvetanovic, Gray, Lomet. SIGMOD 1994, pp. 233-242; VLDB Journal 4(4), 1995.
-- **URL:** https://courses.cs.washington.edu/courses/cse590q/05wi/paper/p233-nyberg.pdf (not fetched; from search snippet).
+- **URL:** https://courses.cs.washington.edu/courses/cse590q/05wi/paper/p233-nyberg.pdf (not fetched; from search snippet; not verified).
 - **Compared:** commodity Alpha processors with SCSI disks, against a 32-CPU Hypercube and a Cray Y-MP.
 - **Workload:** the Datamation sort: 1M 100-byte records with 10-byte keys.
 - **Headline:**
@@ -402,7 +401,7 @@ Cross-references: "Also in" names the other strand notes that carry the same ite
 
 **AC18. Bresnahan and Greenstein: mainframe to client/server adoption**
 - **Who / when:** Brookings Papers on Economic Activity: Microeconomics, 1996.
-- **URL:** https://www.brookings.edu/wp-content/uploads/1996/01/1996_bpeamicro_bresnahan.pdf (not fetched; from search snippet).
+- **URL:** https://www.brookings.edu/wp-content/uploads/1996/01/1996_bpeamicro_bresnahan.pdf (not fetched; from search snippet; not verified).
 - **Compared:** establishments moving from mainframe to client/server.
 - **Workload:** none; economic duration models.
 - **Headline:** high "co-invention" costs slowed adoption.
@@ -412,7 +411,7 @@ Cross-references: "Also in" names the other strand notes that carry the same ite
 
 **AC19. Duncan and Lele: Telogy Inc. mainframe replacement case study**
 - **Who / when:** Journal of Software Maintenance 8:321-344, 1996.
-- **URL:** https://onlinelibrary.wiley.com/doi/abs/10.1002/(SICI)1096-908X(199609)8:5%3C321::AID-SMR135%3E3.0.CO;2-4 (not fetched; from search snippet).
+- **URL:** https://onlinelibrary.wiley.com/doi/abs/10.1002/(SICI)1096-908X(199609)8:5%3C321::AID-SMR135%3E3.0.CO;2-4 (not fetched; from search snippet; not verified).
 - **Compared:** a mainframe replaced by client/server.
 - **Workload:** none measured.
 - **Headline:** a case study.
@@ -432,7 +431,7 @@ Cross-references: "Also in" names the other strand notes that carry the same ite
 
 **AC21. "Detecting Noisy Neighbors in CPU-Isolated Cgroups Environments"**
 - **Who / when:** ICPE 2025.
-- **URL:** https://dl.acm.org/doi/10.1145/3676151.3719376 (not fetched; from search snippet).
+- **URL:** https://dl.acm.org/doi/10.1145/3676151.3719376 (not fetched; from search snippet; not verified).
 - **Compared:** Linux cgroups only; there is no Z side.
 - **Workload:** co-located containers, instrumented for scheduler latency and preemption with eBPF.
 - **Headline:** cgroups "don't fully prevent performance interference".
@@ -453,11 +452,11 @@ Cross-references: "Also in" names the other strand notes that carry the same ite
 
 ### 3.2 IBM material (31 items)
 
-Everything in this section is the vendor's own material, so IBM is the interested party. Apart from the public fraud model and Acme Air, none of it ships a runnable harness. Where a figure says "my arithmetic", the IBM strand derived it.
+Everything in this section is the vendor's own material, so IBM is the interested party. Apart from the public fraud model and Acme Air, none of it ships a runnable harness. Where a figure says "our arithmetic", the IBM strand derived it.
 
 **IB01. "IBM z16: Reasons to upgrade from your z15 or z14"**
 - **Author, org, year:** Edward L. Linde II, IBM, 2022.
-- **URL:** https://ibm.com/downloads/cas/M65ZR5DV (fetched). Also reported by Network World, https://www.networkworld.com/article/3655975/ibm-z16-a-mainframe-designed-for-ai-hybrid-cloud-security-and-open-source.html, and IBM REDP-5712, https://www.redbooks.ibm.com/redpapers/pdfs/redp5712.pdf (both not fetched; from search snippet).
+- **URL:** https://ibm.com/downloads/cas/M65ZR5DV (fetched). Also reported by Network World, https://www.networkworld.com/article/3655975/ibm-z16-a-mainframe-designed-for-ai-hybrid-cloud-security-and-open-source.html, and IBM REDP-5712, https://www.redbooks.ibm.com/redpapers/pdfs/redp5712.pdf (both not fetched; from search snippet; not verified).
 - **Compared:**
   - z16 side: a z/OS 2.4 LPAR with 8 CPs, 16 zIIPs and 8 GB, running WMLz (OSCE) on zCX.
   - x86 side: TensorFlow Serving 2.4 on Ubuntu 20.04.3, 8 Skylake Xeon Gold cores at 2.30 GHz with HT, 1.5 TB of memory, RAID5 SSD.
@@ -475,8 +474,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 - **Maps to:** AI inference, batch+online mix, crypto, cost/energy.
 - **Useful to us:**
   - The z16 side is a configuration we can mirror: z/OS, zCX, a CICS caller and the public model.
-  - Per-engine ceilings from the extrapolated figures (my arithmetic): about 24k encrypted CICS-VSAM tx/s per CP (fn14), and about 9.6k HTTPS tx/s per IFL (fn15).
-- **Also in:** benchmarks_community item 14.
+  - Per-engine ceilings from the extrapolated figures (our arithmetic): about 24k encrypted CICS-VSAM tx/s per CP (fn14), and about 9.6k HTTPS tx/s per IFL (fn15).
 
 **IB02. IBM z17 product page**
 - **Author, org, year:** IBM, 2025.
@@ -487,14 +485,13 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 - **Quality / independence:** vendor extrapolation from one thread.
 - **Maps to:** AI inference.
 - **Useful to us:** batch 160 is far from our batch 1, so this headline is not the expected value for a per-transaction test.
-- **Also in:** vendors C14.
 
 **IB03. "AI on IBM Z" page**
 - **Author, org, year:** IBM, 2025.
 - **URL:** https://ibm.com/z/artificial-intelligence (fetched).
 - **Also covered:**
-  - The zDLC 5.0.0 blog (Sunny Anand, 2025-06-10): "up to 48% reduction in latency for single-threaded inference" against z16. https://community.ibm.com/community/user/blogs/sunny-anand/2025/06/10/ibm-z-deep-learning-compiler-500 (not fetched; from search snippet).
-  - A Software AG reprint of "5.6x fewer cores" against 28 Sapphire Rapids cores, https://www.softwareag.com/en/?p=10347 (not fetched; from search snippet).
+  - The zDLC 5.0.0 blog (Sunny Anand, 2025-06-10): "up to 48% reduction in latency for single-threaded inference" against z16. https://community.ibm.com/community/user/blogs/sunny-anand/2025/06/10/ibm-z-deep-learning-compiler-500 (not fetched; from search snippet; not verified).
+  - A Software AG reprint of "5.6x fewer cores" against 28 Sapphire Rapids cores, https://www.softwareag.com/en/?p=10347 (not fetched; from search snippet; not verified).
 - **Compared:** z17 against z16. Both had 2 GCPs and 4 zIIPs with SMT, 256 GB, z/OS V3R1 and IBM Z Deep Learning Compiler 4.3.0.
 - **Workload:** the synthetic CCFD model.
 - **Headline:**
@@ -504,7 +501,6 @@ Everything in this section is the vendor's own material, so IBM is the intereste
   - The IBM strand's arithmetic: 5M/s x 86,400 = 432 billion/day, which does not match "450 billion".
 - **Maps to:** AI inference.
 - **Useful to us:** this is the only IBM test found at **batch 1 on a 2-GCP z/OS LPAR**, the closest IBM configuration to our slice. It gives no absolute latency, though.
-- **Also in:** vendors C14.
 
 **IB04. "AI Toolkit for IBM Z and LinuxONE" page**
 - **Author, org, year:** IBM, 2025-26.
@@ -528,7 +524,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 - **Useful to us:**
   - fn4 is the only **core-matched** IBM inference comparison (6 vs 6).
   - fn1's unit, "x86 cores equivalent to one accelerator", is worth borrowing for the AI grid.
-- **Also in:** benchmarks_community item 13; the analysts strand's C04 (Cambrian-AI, AN02) uses the fn1 test.
+- **See also:** AN02 (Cambrian-AI) uses the fn1 test.
 
 **IB05. "IBM z16 Integrated Accelerator for AI" (Washington Systems Center deck)**
 - **Author, org, year:** IBM WSC, 2023.
@@ -556,12 +552,11 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 - **Quality / independence:** vendor, Z against Z. All figures are "up to", and no configurations are given.
 - **Maps to:** compression.
 - **Useful to us:** if our Java runs on Semeru/IBM Java on z/OS, Deflater should reach the accelerator but GZIPOutputStream gains much less. State which API was used.
-- **Also in:** academic supporting sources; benchmarks_community section 2.
 
 **IB07. "Linux on IBM Z and LinuxONE: What's New" (GSE UK 2021, session 2AV)**
 - **Author, org, year:** Stefan Raspl, IBM Germany R&D, November 2021.
 - **URL:** https://conferences.gs-uk.org/2021/presentations/2AV.pdf (fetched).
-- **Also covered** (all from search snippets, not fetched):
+- **Also covered** (all from search snippets, not fetched; not verified):
   - IBM Docs, https://www.ibm.com/docs/en/linuxonibm/lddd/lddd_r_zedc.html and https://www.ibm.com/docs/en/linuxonibm/lddd/lddd_c_zedc_know.html
   - A SHARE session PDF, https://linklings.s3.amazonaws.com/organizations/SHARE/share26/submissions/stype112/5CRWX-IBM_copy214s2.pdf (HTTP 403).
   - These repeat "up to 42x" and say output is "roughly equivalent to gzip level 1" against gzip's default of 6.
@@ -574,7 +569,6 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 - **Maps to:** compression.
 - **Useful to us:** the closest analogue to our DFLTCC against software zlib test; rerun these exact files.
   - Gap: no decompression figures, no compression ratios, small files, and no x86 side.
-- **Also in:** vendors C17.
 
 **IB08. zlib PR #410 and the Linux kernel DFLTCC series**
 - **Author, org, year:** Ilya Leoshkevich (zlib PR, 15 Mar 2019) and Mikhail Zaslonko with Leoshkevich (kernel series, 3 Jan 2020), IBM.
@@ -597,7 +591,6 @@ Everything in this section is the vendor's own material, so IBM is the intereste
   - The four corpora (zeroes, random ASCII, Dickens, vmlinux) are reusable.
   - The table shows that speedup depends on the data: zeroes are the worst case.
   - It contradicts IB07 (24-42x) and the zlib-ng figure in CM05 ("110x"). Buffer size, level and corpus explain the spread.
-- **Also in:** ibm_material B3; benchmarks_community item 5.
 
 **IB09. "HOWTO: Exploiting Hardware Compression in zlib with IBM z15"**
 - **Author, org, year:** Stefan Raspl, IBM, 16 Oct 2019.
@@ -638,7 +631,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 **IB12. "Peeking Under the Hood of Sort Acceleration on z15"**
 - **Author, org, year:** Joseph Gentile and Anna Shugol, IBM, SHARE blog, 2020-12-16.
 - **URL:** https://blog.share.org/Article/peeking-under-the-hood-of-sort-acceleration-on-z15 (fetched).
-- **Also covered:** IBM Support's DFSORT page, https://www.ibm.com/support/pages/dfsort, and User Guide PH03207 (not fetched; from search snippet). They repeat the figures and name ICE267I as the message that reports whether Z Sort was used.
+- **Also covered:** IBM Support's DFSORT page, https://www.ibm.com/support/pages/dfsort, and User Guide PH03207 (not fetched; from search snippet; not verified). They repeat the figures and name ICE267I as the message that reports whether Z Sort was used.
 - **Compared:** dedicated z15 against dedicated z14.
   - The Db2 REORG test used LPARs with 4 GCPs, 1 zIIP and 512 GB.
 - **Workload:**
@@ -655,7 +648,6 @@ Everything in this section is the vendor's own material, so IBM is the intereste
   - The baseline is z14 software sort, not Z Sort switched off on the same z15. Our ZSORT on/off contrast on z17 is cleaner.
   - Borrow the record-size, key-length and record-count grid.
   - The gain shrinks for long records, where I/O dominates.
-- **Also in:** academic supporting sources; benchmarks_community item 4.
 
 **IB13. "IBM z15 Performance of Cryptographic Operations (CPACF, CEX7S)"**
 - **Author, org, year:** IBM Marketing Communications, Server Group, May 2020.
@@ -676,7 +668,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 - **Useful to us:**
   - About 48.7k P-256 signatures/s per CP on z15 is the reference for "signatures per payment". Our ICSF, libica or Java API path may land higher or lower.
   - Verify is about 2.5x slower than sign, so the payment test must say which operation it times.
-- **Contradiction (encryption overhead):** IBM's own figures vary: 2.6% field average (IB11), 0.49% for CICS/Db2 (IB14), and about +7.6% for encrypted IMS VSAM (7.47 against 6.94). The IMS figure comes from https://community.ibm.com/community/user/ibmz-and-linuxone/blogs/paul-gandolfo/2023/03/07/osamldsencryption (not fetched; from search snippet).
+- **Contradiction (encryption overhead):** IBM's own figures vary: 2.6% field average (IB11), 0.49% for CICS/Db2 (IB14), and about +7.6% for encrypted IMS VSAM (7.47 against 6.94). The IMS figure comes from https://community.ibm.com/community/user/ibmz-and-linuxone/blogs/paul-gandolfo/2023/03/07/osamldsencryption (not fetched; from search snippet; not verified).
 
 **IB14. "Ready for the Cloud with IBM z/OS Container Extensions"**
 - **Author, org, year:** IBM IT Economics, February 2021.
@@ -687,13 +679,13 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 - **Workload:** JMeter driving a 50,000-user banking simulation.
   - Footnote 11: CICS 5.4 + Db2 12 in an LPAR with 8 CPs, 1 zIIP and 32 GB, driven by Rational Performance Tester with 50,000 users, with DFSMS encryption plus compression on against off.
 - **Headline:**
-  - Monolithic: 3,572 against 1,996 TPS per core ("44% more").
-  - Microservices: 1,515 against 702 TPS per core ("54% more").
+  - Monolithic: "44% more" transactions per second per core (fn9). The fn13 TCO model is set to 3,572 against 1,996 TPS per core.
+  - Microservices: "54% more" (fn10). The fn12 TCO model is set to 1,515 against 702 TPS per core.
   - 3-year TCO 43% and 69% lower.
   - fn11: "10,108 TPS per utilized processor" unencrypted against 10,059 encrypted (0.49%).
 - **Quality / independence:** vendor.
   - The x86 side pays a network and SSL hop to the database, its hardware is old (Haswell), and the TCO assumptions favour Z: x86 dev/test at 100% of production against 25% on Z.
-  - The IBM strand's arithmetic: 3,572/1,996 = 1.79x and 1,515/702 = 2.16x. These are larger than the "44%" and "54%" headlines, and the paper does not explain the gap.
+  - The per-core TPS figures are the TCO models' settings ("configured to run an average of", fn12-13), which give 3,572/1,996 = 1.79x and 1,515/702 = 2.16x for Z. The measured-results footnotes (fn9-10) give no per-core numbers, but the body text says the microservices scenario "delivered on average two times more transactions per core" (Figure 3), in line with 2.16x. The headlines' 44% and 54% match 1 - 1,996/3,572 and 1 - 702/1,515 (our arithmetic): the x86 shortfall, stated as "more" for Z, which understates the ratio.
 - **Maps to:** batch+online mix (online), crypto, cost/energy.
 - **Useful to us:**
   - "TPS per core" is the unit of our mixed grid.
@@ -701,16 +693,15 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **IB15. IBM LinuxONE 5 page**
 - **Author, org, year:** IBM, 2025.
-- **URL:** https://www.ibm.com/products/linuxone-5 (fetched).
+- **URL:** https://www.ibm.com/products/linuxone-5 (fetched; re-checked 2026-11-25).
 - **Compared:** one 9175 Max136 (136 configurable PUs) against 23 x86 servers, each with "two 5th gen Intel Xeon Platinum 8592+ processors and 64 cores per CPU". Both sides ran RHEL 9.5 with KVM.
 - **Workload:** WebSphere Liberty v25 + EDB Postgres for Kubernetes v1.25 on OCP 4.17, "extrapolated to a complete customer IT solution".
-- **Headline:** "do the work of up to 2,944 cores", and up to 76% lower 5-year TCO against x86 "three-year-old and older".
+- **Headline:** one Max136 against 23 compared x86 servers (fn1), and up to 76% lower 5-year TCO against x86 "three-year-old and older" (fn2). The "up to 2,944 cores" figure is on IBM's Sustainability page (IB16, fn1), not on this page.
 - **Quality / independence:** a vendor estate model.
   - Internal contradiction: one disclaimer says "Intel Xeon Gen 2 and older", which conflicts with the 8592+ in fn1.
   - These are the Signal65 (AN01) numbers.
 - **Maps to:** cost/energy.
 - **Useful to us:** a worked example of the estate-model trap; see AN01 for how it decomposes.
-- **Also in:** vendors C14.
 
 **IB16. "Sustainability with IBM Z" page**
 - **Author, org, year:** IBM, 2025-26.
@@ -728,26 +719,24 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 - **Quality / independence:** vendor. The 23-server and 72-server figures come from different scenarios, not one error. The page gives no utilisation, test duration or power-measurement method.
 - **Maps to:** cost/energy, AI inference, mixed grid.
 - **Useful to us:** MegaCard (github.com/IBM/megacard-standalone, per AN02) is a public OLTP app that could seed our online test.
-- **Also in:** analysts C02.
 
 **IB17. IBM LinuxONE Emperor 4 / Rockhopper 4 page**
 - **Author, org, year:** IBM, 2023.
 - **URL:** https://www.ibm.com/uk-en/products/linuxone-emperor-4 (fetched).
-- **Also covered** (all not fetched; from search snippet):
+- **Also covered** (all not fetched; from search snippet; not verified):
   - Network World, https://www.networkworld.com/article/3673296/ibm-launches-fourth-gen-linuxone-servers.html
   - The Malaysian IBM page, https://www.ibm.com/my-en/products/linuxone-emperor-4
   - NAND Research, https://nand-research.com/tag/linuxone/
-  - The Linux on IBM Z FAQ, https://ibm.com/downloads/cas/O8W6EJ0P ("16x fewer cores", "extrapolated using IDC QPI metrics")
+- **Linux on IBM Z FAQ,** https://ibm.com/downloads/cas/O8W6EJ0P: the May 2025 edition served there (ZSQ03011-USEN-51, fetched 2026-11-25) does not contain the consolidation figures a search snippet had attributed to it, so none is cited from it.
 - **Compared:** one 3932 Max 68 (68 IFLs, 7 TB) against **36** two-socket Skylake Xeon Gold servers with 40 cores each, 1,440 cores in total.
 - **Workload:** consolidation.
-- **Headline:** 75% less energy. Press and the FAQ add 50% less floor space.
+- **Headline:** 75% less energy. Press adds 50% less floor space (snippet only; not verified).
 - **Quality / independence:** a vendor model with **no measured wall power on either side**.
   - x86 power uses February 2023 IDC QPI values "reduced to 55%" on the basis of field observation, with PUE 1.55.
   - Z power comes from the IBM Power Estimator.
   - IBM pages attach the 75% to different models.
 - **Maps to:** cost/energy.
 - **Useful to us:** if we measure the Ryzen at the wall, the result is not comparable unless the z17 side is modelled the same way.
-- **Also in:** benchmarks_community items 22 and section 4.
 
 **IB18. "MongoDB on IBM Z Performance Tuning Guide" v1.0**
 - **Author, org, year:** Marc Beyerle, IBM, 2026-05-18.
@@ -782,8 +771,8 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 - **Author, org, year:** IBM Support.
 - **URLs:**
   - https://www.ibm.com/support/pages/lspr-faq (fetched).
-  - https://www.ibm.com/support/pages/system/files/inline-files/CPU%20MF%20Formulas%20April%202025_0.pdf (not fetched; from search snippet).
-  - https://www.ibm.com/support/pages/system/files/inline-files/SC28118726.pdf (not fetched; from search snippet).
+  - https://www.ibm.com/support/pages/system/files/inline-files/CPU%20MF%20Formulas%20April%202025_0.pdf (not fetched; from search snippet; not verified).
+  - https://www.ibm.com/support/pages/system/files/inline-files/SC28118726.pdf (not fetched; from search snippet; not verified).
 - **Compared:** IBM Z generations only.
 - **Workload:** the LSPR workload categories.
 - **Headline:**
@@ -810,7 +799,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 **IB22. IBM REDP-5170, "IBM CICS Performance Series: Effective Monitoring for CICS Performance Benchmarks"**
 - **Author, org, year:** J. Burgess and M. Mandelli, IBM, 2015.
 - **URL:** https://www.redbooks.ibm.com/redpapers/pdfs/redp5170.pdf (fetched and text-extracted by the academic strand; the IBM strand saw it as a snippet).
-- **Also covered:** SHARE session 8916, "Optimizing your Batch Window", https://share.confex.com/share/116/webprogram/Handout/Session8916/S8916%20Optimizing%20your%20Batch%20Window.pdf (not fetched; from search snippet). It is WLM guidance without footnoted numbers.
+- **Also covered:** SHARE session 8916, "Optimizing your Batch Window", https://share.confex.com/share/116/webprogram/Handout/Session8916/S8916%20Optimizing%20your%20Batch%20Window.pdf (not fetched; from search snippet; not verified). It is WLM guidance without footnoted numbers.
 - **Compared:** the same zEC12 LPAR with and without "other batch-type work in separate address spaces".
 - **Workload:** a CICS benchmark.
 - **Headline:** CICS CPU per transaction rose by "up to 15% more CPU", through cache contention (higher CPI). This holds even with dedicated CPs, because the CPs share L3 per chip and L4 per book.
@@ -823,33 +812,31 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **IB23. IBM REDP-5461, "Scale up for Linux on IBM Z"**
 - **Author, org, year:** IBM.
-- **URL:** https://www.redbooks.ibm.com/redpapers/pdfs/redp5461.pdf (not fetched; from search snippet).
-- **Compared:** LinuxONE Emperor II IFLs against a Lenovo SR650 (Skylake).
-- **Workload:** database applications.
+- **URL:** https://www.redbooks.ibm.com/redpapers/pdfs/redp5461.pdf (fetched 2026-11-25).
+- **Compared:** LinuxONE Emperor II against "x86 alternatives". No test configuration is given.
+- **Workload:** Java applications (the speed claim); a general statement on utilisation.
 - **Headline:**
-  - "up to 50% faster than x86 alternatives".
-  - "1.9 to 2.8 x's more throughput for database applications".
-  - x86 typically runs at 40-60% utilisation, against Z above 90%.
+  - Emperor II "delivers industry-leading Java performance that runs applications up to 50% faster than on x86 alternatives".
+  - x86 "typically runs at 40-60% utilization", against Z at "over 90% for sustained periods of time".
 - **Quality / independence:** vendor.
-- **Maps to:** RMW/IO, cost/energy.
-- **Useful to us:** a per-core database ratio (about 2-3x) far below the consolidation headlines. The 90% against 40-60% figure is an assumption, and our choke tests could test it.
+- **Maps to:** choke/limits, cost/energy.
+- **Useful to us:** the 90% against 40-60% figure is an assumption, and our choke tests could test it.
 
 **IB24. IBM REDP-5032, "Understanding the Value of Your Mainframe"**
 - **Author, org, year:** IBM.
-- **URL:** https://www.redbooks.ibm.com/redpapers/pdfs/redp5032.pdf ; also https://public.dhe.ibm.com/software/uk/pdf/zEnterprise/redp5032.pdf (both not fetched; from search snippet).
+- **URL:** https://www.redbooks.ibm.com/redpapers/pdfs/redp5032.pdf (fetched 2026-11-25); also https://public.dhe.ibm.com/software/uk/pdf/zEnterprise/redp5032.pdf (not fetched).
 - **Compared:** CICS/COBOL against virtualised x86.
 - **Workload:** core banking.
 - **Headline:**
   - The CICS/COBOL platform "required 4.6 times fewer cycles per user interaction".
   - It also cites a migration that needed six 8-core x86 servers where one was assumed.
-  - It reports an observed "8 MIPS/core" on Linux.
 - **Quality / independence:** vendor.
 - **Maps to:** batch+online mix, cost/energy.
-- **Useful to us:** the IBM end of the MIPS-per-core range (8). It is the opposite of zRef's conclusion (VN01).
+- **Useful to us:** IBM's own core-banking cycles ratio (4.6x). It is the opposite of zRef's conclusion (VN01).
 
 **IB25. Linux Journal "Geek Guide: IBM LinuxONE" and article (relaying IBM claims)**
 - **Author, org, year:** Linux Journal, about 2015-2018.
-- **URLs:** https://www.linuxjournal.com/sites/default/files/2018-11/GeekGuide-IBM-LinuxONE.pdf ; https://www.linuxjournal.com/content/ibm-linuxone-provides-new-options-linux-deployment (not fetched; from search snippet).
+- **URLs:** https://www.linuxjournal.com/sites/default/files/2018-11/GeekGuide-IBM-LinuxONE.pdf ; https://www.linuxjournal.com/content/ibm-linuxone-provides-new-options-linux-deployment (the Geek Guide PDF fetched 2026-11-25; the article not fetched).
 - **Compared:** z13-era LinuxONE against x86, "when the systems each utilize four cores".
 - **Workload:** Node.js web transactions; MongoDB 3.0.4.
 - **Headline:** "2.1 times as many Node.js Web transactions as x86"; 1.9-2.1x on MongoDB.
@@ -859,7 +846,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **IB26. "Accelerating big integer crypto" (Go crypto/big on z16)**
 - **Author, org, year:** Kiran M. Vijay, IBM Community, 2026-04-20.
-- **URL:** https://community.ibm.com/community/user/blogs/kiran-m-vijay/2026/04/20/accelerating-big-integer-crypto (not fetched; from search snippet).
+- **URL:** https://community.ibm.com/community/user/blogs/kiran-m-vijay/2026/04/20/accelerating-big-integer-crypto (not fetched; from search snippet; not verified).
 - **Compared:** new vectorised Montgomery multiplication against older s390x Go code.
 - **Workload:** big-integer crypto.
 - **Headline:** "up to 62%", merged in Go 1.26.
@@ -899,7 +886,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **IB30. "Transforming the Economics of IT" (z13-era TCO deck)**
 - **Author, org, year:** Craig Bender, IBM.
-- **URL:** https://public.dhe.ibm.com/software/os/systemz/pdf/12-Craig_Bender_-_Transforming_the_Economics_of_IT.pdf (not fetched; from search snippet).
+- **URL:** https://public.dhe.ibm.com/software/os/systemz/pdf/12-Craig_Bender_-_Transforming_the_Economics_of_IT.pdf (not fetched; from search snippet; not verified).
 - **Compared:** a mainframe private cloud against an x86 private cloud and public cloud.
 - **Workload:** none measured.
 - **Headline:** about 1/3 lower 3-year cost than x86 private cloud, and about 2/3 lower than public cloud, using estimated equivalence ratios.
@@ -913,7 +900,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
   - https://www.ibm.com/docs/en/linuxonibm/lxos/lxos_osl_lonz_support.html
   - https://docs.openssl.org/3.3/man3/OPENSSL_s390xcap/
   - https://lkml.iu.edu/2601.1/11712.html
-  - All three not fetched; from search snippet.
+  - All three not fetched; from search snippet; not verified.
 - **Compared:** CPACF against software on the same box.
 - **Workload:** AES-GCM through KMA (MSA 8, from z14); single-block AES.
 - **Headline:**
@@ -937,18 +924,18 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 - TmaxSoft captions one diagram "zRef Overview from zRef Manual", so a manual exists. No copy was found.
 
 **URLs and fetch status**
-- HP original, "Mainframe Alternative Sizing -- Technical white paper", document 4AA4-2452ENW, at http://h20195.www2.hp.com/V2/GetPDF.aspx/4AA4-2452ENW.pdf: dead. It redirects to psnow.ext.hpe.com and returns 404; www.hpe.com/psnow/doc/4AA4-2452ENW timed out; the tool could not reach web.archive.org.
+- HP original, "Mainframe Alternative Sizing -- Technical white paper", document 4AA4-2452ENW, at http://h20195.www2.hp.com/V2/GetPDF.aspx/4AA4-2452ENW.pdf: dead. It redirects to psnow.ext.hpe.com and returns 404; www.hpe.com/psnow/doc/4AA4-2452ENW timed out; web.archive.org could not be reached.
 - Mirrors:
   - https://manualzz.com/doc/24646236/mainframe-alternative-sizing%E2%80%94technical-white-paper: dead (HTTP 403).
-  - https://pdfslide.net/documents/mainframe-alternative-sizingtechnical-white-paper.html: dead (redirects to a 404).
+  - pdfslide.net mirror: dead; the URL now redirects to a different domain (checked 2026-11-25), so no link is given.
 - Search snippets of the manualzz mirror (not verified):
   - "Sizing is done with zRef, a reference application suite of batch and CICS workloads".
   - The aim is to compare "relative throughput between various HP Mission-Critical Converged Infrastructure systems and an IBM System z mainframe running the same z/OS batch and CICS application".
   - The table of contents includes DL980 setup, "Cost of MIPS", a DR cost comparison, and a "zRefCICS" figure of "124 TPS at 93% CPU busy" on z/OS.
-- Another meaning of the name: zref is also an unrelated LaTeX cross-referencing package by Heiko Oberdiek, https://ctan.org/pkg/zref?lang=de (not fetched; from search snippet). No IBM Z reference architecture, GitHub project or s390x tool called zRef was found.
+- Another meaning of the name: zref is also an unrelated LaTeX cross-referencing package by Heiko Oberdiek, https://ctan.org/pkg/zref?lang=de (not fetched; from search snippet; not verified). No IBM Z reference architecture, GitHub project or s390x tool called zRef was found.
 
 **Workload design** (from the TmaxSoft study, fetched, unless stated otherwise)
-- "zRef is based on the TPC-E benchmark, but it was not built to 'achieve the highest throughput possible' benchmark. zRef was programmed to be as much like a real-world 'mainframe' as possible". This quote was spot-checked by a second reader.
+- "zRef is based on the TPC-E benchmark, but it was not built to 'achieve the highest throughput possible' benchmark. zRef was programmed to be as much like a real-world 'mainframe' as possible". This quote was spot-checked by a second pass.
 - Coding style: "SQL calls to Db2 are simple and many, often using a position cursor and retrieving a single table row at a time", with COBOL "coding habits that date back to the 1980s".
 - Database: 33 tables taken from the TPC-E schema.
 - Online: "10 CICS transactions processed by more than 30 executable CICS programs that read, update, and insert data into a DB2 database and optionally log audit information (write) to a VSAM ESDS file", submitted by TN3270 "users".
@@ -959,8 +946,8 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **Results attributed to HP itself** (second-hand only)
 - Per Durand (fetched): "1'000 MIPS of mainframe power can be replaced with better performances (on this benchmark) by a single server HP DL980 equipped with 8 Xeon E7-4870 (2.4 GHz, 10 cores / Xeon, 1 TB RAM)".
-- Microsoft CAF, attributed to "a recent HPE zRef benchmark": 288 MIPS per Intel core online (CICS) and 170 for COBOL batch. This is from a search snippet; the page now redirects (see VN07).
-- These two do not agree. 1,000 MIPS over 80 cores is about 12.5 MIPS per core if every core was busy (my arithmetic, from the zRef strand). The 288/170 figures probably come from a different, later ProLiant run, or from a per-core extrapolation. This cannot be confirmed.
+- Microsoft CAF, attributed to "a recent HPE zRef benchmark": 288 MIPS per Intel core online (CICS) and 170 for COBOL batch. This is from a search snippet (not verified); the page now redirects (see VN07).
+- These two do not agree. 1,000 MIPS over 80 cores is about 12.5 MIPS per core if every core was busy (our arithmetic, from the zRef strand). The 288/170 figures probably come from a different, later ProLiant run, or from a per-core extrapolation. This cannot be confirmed.
 
 **Every use of zRef found**
 - HP, 2013 (above).
@@ -987,12 +974,10 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 - The gap our test fills: zRef never reports the z/OS side's behaviour under the same mix. Its only z/OS figures are the baseline columns (68.1 and 161.9 min) and the snippet's "124 TPS at 93% busy". It is also never run at equal core counts.
 - Our 2-vs-2 design, with WLM on z/OS and the plain Linux scheduler or cgroups on the PC, measures what zRef leaves out.
 
-**Also in:** zref.md (all sections); vendors C10 and C12; analysts Q3; academic B4 (HPE zRef via Durand's LinkedIn version).
-
 **VN02. "TmaxSoft OpenFrame and Microsoft Azure Mainframe Migration Sizing Study"**
 - **Who / when:** TmaxSoft with Microsoft. The vendors strand dates the study to 2020. The PDF footer reads "(c) TmaxSoft 2023" and its metadata was last modified 2023-10-10.
 - **URLs:**
-  - https://www.tmaxsoft.com/upload/eBookMgmt/20231219134111167015.pdf (fetched by the zRef strand; figures spot-checked by a second reader).
+  - https://www.tmaxsoft.com/upload/eBookMgmt/20231219134111167015.pdf (fetched by the zRef strand; figures spot-checked by a second pass).
   - Blog: https://www.tmaxsoft.com/openframe-on-azure-vs-system-z-apps-and-infrastructure-who-wins (fetched; Kelly McClure).
   - Press page: https://www.tmaxsoft.com/en/press/view?seq=218&pageIndex=1&pageUnit=12&searchKeyword=nto+the+wide+blue+yonder%3A+Mainframe+modernization+on+Microsoft+Azur&searchUseYn=Y (fetched; Karthik Masilamani).
   - The older study URL, https://us.tmaxsoft.com/wp-content/uploads/TmaxSoft_Azure-Benchmark-Study.pdf, failed DNS. The vendors strand saw the TPS figures only as a snippet; the zRef strand later read them in the full PDF.
@@ -1017,11 +1002,10 @@ Everything in this section is the vendor's own material, so IBM is the intereste
   - The 1,409 TPS run used 1,500 users, against 2,000 for the 1,672 TPS run. The drop is therefore not a like-for-like measure of batch interference.
   - The "no CICS" zRefBR reference of about 13 min matches the 5xBU+3xBR concurrent-batch scenario, not the standalone 6.21 min. The study does not say which baseline it meant.
 - **Quality / independence:** vendor plus cloud provider. "Performance results may vary for each application". The IBM baseline is undisclosed.
-  - All three MIPS figures equal TPS x about 8.18, which suggests one baseline scaled linearly (my arithmetic, zRef strand). 124 TPS x 8.18 is about 1,014, consistent with a 1,000 MIPS baseline but unconfirmed.
-  - Per vCPU (my arithmetic, zRef strand): Study 1 is about 855 MIPS per application vCPU, or about 427 counting the database VM; Study 2 about 665, or 332. Whether these vCPUs are cores or hyperthreads was not checked.
+  - All three MIPS figures equal TPS x about 8.18, which suggests one baseline scaled linearly (our arithmetic, zRef strand). 124 TPS x 8.18 is about 1,014, consistent with a 1,000 MIPS baseline but unconfirmed.
+  - Per vCPU (our arithmetic, zRef strand): Study 1 is about 855 MIPS per application vCPU, or about 427 counting the database VM; Study 2 about 665, or 332. Whether these vCPUs are cores or hyperthreads was not checked.
 - **Maps to:** batch+online mix, sort, RMW/IO, cost/energy.
 - **Useful to us:** the only published pair of figures for online TPS with and without concurrent sort/merge batch, plus batch elapsed time with and without online load. It is the template for our results table.
-- **Also in:** vendors C12; zref Q4.
 
 **VN03. "MIPS Equivalent Sizing for IBM CICS COBOL Applications Migrated to Microsoft Azure" (Asysco AMT GO)**
 - **Who / when:** Microsoft AzureCAT, with partner Asysco. Syndicated 4 July 2019.
@@ -1071,18 +1055,17 @@ Everything in this section is the vendor's own material, so IBM is the intereste
   - "an F-series VM with 16 vCPUs could easily support an IBM Db2 workload coming from an LPAR with 2,400 MIPS".
   - "a virtual CPU (vCPU) roughly equates to a core on a mainframe".
 - **Quality / independence:** vendor guidance with no benchmark, and it contradicts itself. A vCPU "equates to a core", yet 1,000 MIPS per processor against 150 per vCPU means about 6.7 vCPUs per processor. The page also says the z14 has "up to 240 cores" but sizes it as "24 processors ... about 24,000 MIPS".
-- **Related rules** (all not fetched; from search snippet):
+- **Related rules** (all not fetched; from search snippet; not verified):
   - CMG 2018: "100 MIPS equates to a single core", https://www.cmg.org/2018/07/what-to-consider-when-evaluating-a-mainframe-migration/
   - Astadia, quoting Microsoft at about 150 MIPS per core: https://www.astadia.com/blog/can-you-really-save-80-of-your-annual-mainframe-operating-costs
 - **Maps to:** cost/energy.
 - **Useful to us:** the most-quoted conversion rule, and an unmeasured one. Our CPU-seconds-per-unit-of-work figures can be set beside it.
-- **Also in:** vendors C3; analysts Q3 and Q4.
 
 **VN07. Microsoft Cloud Adoption Framework, "Mainframe migration: migration strategies"**
 - **Who / when:** Microsoft, date unknown. It cites "a recent HPE zRef benchmark".
 - **URLs:**
-  - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/infrastructure/mainframe-migration/migration-strategies and https://learn.microsoft.com/id-id/azure/cloud-adoption-framework/infrastructure/mainframe-migration/migration-strategies (not fetched; from search snippet). Both now redirect to "Plan your migration", and the GitHub source returns 404.
-  - A 2022 Microsoft-Intel whitepaper reportedly repeats the figures: https://www.prowesscorp.com/wp-content/uploads/2022/06/210178-MSFT-Intel-MainframeMigration-WP-Final_V2.pdf (not fetched; from search snippet).
+  - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/infrastructure/mainframe-migration/migration-strategies and https://learn.microsoft.com/id-id/azure/cloud-adoption-framework/infrastructure/mainframe-migration/migration-strategies (not fetched; from search snippet; not verified). Both now redirect to "Plan your migration", and the GitHub source returns 404.
+  - A 2022 Microsoft-Intel whitepaper reportedly repeats the figures: https://www.prowesscorp.com/wp-content/uploads/2022/06/210178-MSFT-Intel-MainframeMigration-WP-Final_V2.pdf (not fetched; from search snippet; not verified).
 - **Compared:** HPE ProLiant Intel cores against z/OS MIPS.
 - **Workload:** zRef online and batch.
 - **Headline:** 288 MIPS per Intel core online and 170 per core for COBOL batch. The planning figures are 200 MIPS per vCPU online and 100 for batch.
@@ -1092,12 +1075,12 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **VN08. "High-Performance Mainframe Workloads on AWS with Cloud-Native Heirloom PaaS"**
 - **Who / when:** Gary Crook (Heirloom CEO), AWS APN Blog. The year was not confirmed.
-- **URL:** https://aws.amazon.com/blogs/apn/high-performance-mainframe-workloads-on-aws-with-cloud-native-heirloom-paas (the fetch returned only navigation; not fetched; from search snippet).
+- **URL:** https://aws.amazon.com/blogs/apn/high-performance-mainframe-workloads-on-aws-with-cloud-native-heirloom-paas (the fetch returned only navigation; not fetched; from search snippet; not verified).
 - **Compared:** Heirloom on AWS against a mainframe MIPS-per-TPS ratio that is not published.
 - **Workload:** a CICS/COBOL rehost.
 - **Headline:** "equivalent MIPS rating of 15,200 at a sustained transaction throughput of 1,018 transactions per second"; about $350,000 a year; AWS "not tuned".
-  - The brief's "15,000+ TPS" was not found: 15,200 is a MIPS figure.
-  - That is about 14.9 MIPS per TPS (my arithmetic, vendors strand).
+  - A "15,000+ TPS" figure was not found: 15,200 is a MIPS figure.
+  - That is about 14.9 MIPS per TPS (our arithmetic, vendors strand).
 - **Quality / independence:** vendor, published on the cloud provider's partner blog.
 - **Maps to:** batch+online mix (online), cost/energy.
 - **Useful to us:** it shows how a "MIPS-equivalent" is manufactured: TPS multiplied by a hidden ratio. Report CPU-seconds per transaction instead.
@@ -1108,33 +1091,32 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 - **Compared:** an HP Compute Cloud "Standard, Extra Large" instance (4 CPUs, 16 GB) against a "905 MIPS mainframe" equivalent.
 - **Workload:** a CICS benchmark the vendor labels "TPC-C", with 1,500 terminals.
 - **Headline:**
-  - 12,105 CICS transactions per minute, about 202/s (my arithmetic, vendors strand).
+  - 12,105 CICS transactions per minute, about 202/s (our arithmetic, vendors strand).
   - "90% lower" cost.
-  - About 226 MIPS per CPU (my arithmetic, analysts strand).
-- **Related:** Heirloom's planning "rule of thumb" of about 105 MIPS per core, https://heirloomcomputing.com/?p=2704 (not fetched; from search snippet).
+  - About 226 MIPS per CPU (our arithmetic, analysts strand).
+- **Related:** Heirloom's planning "rule of thumb" of about 105 MIPS per core, https://heirloomcomputing.com/?p=2704 (not fetched; from search snippet; not verified).
 - **Quality / independence:** vendor press release. No mainframe run and no audit; the TPC-C label is unofficial.
 - **Maps to:** batch+online mix, cost/energy.
 - **Useful to us:** a historical example of a 4-CPU cloud claim. A 4-CPU instance is close to our 2-core scale.
-- **Also in:** analysts C12.
 
 **VN10. "Mainframe Migration - The Latency Challenge"**
 - **Who / when:** Graham Cunningham, Heirloom Computing, 7 Aug 2025.
-- **URL:** https://heirloomcomputing.com/the-latency-challenge/ (fetched).
+- **URL:** https://heirloomcomputing.com/the-latency-challenge/ (fetched; re-checked 2026-11-25).
 - **Compared:** one nightly batch job on the mainframe against the same job after a cloud rehost. Hardware is not specified.
 - **Workload:** a batch job making 2.3 million database reads.
 - **Headline:**
   - "On the mainframe, with zero latency, this took 45 minutes."
   - "When we migrated to cloud, preserving all the business logic perfectly, the same job took 8 hours."
-  - Blamed on about 2 ms per query: "you've added 76 minutes of pure network latency".
-  - The article's own arithmetic (45 + 76 min) does not explain 8 hours, and no time after the fix is reported.
-- **Quality / independence:** an anecdote from a rehoster, against its commercial interest. No hardware, database or network specification.
+  - Illustrated with a hypothetical, not a measurement: "If each query takes 2 milliseconds", 2.3 million queries add "76 minutes of pure network latency".
+  - That hypothetical (45 + 76 min) does not explain 8 hours, and no time after the fix is reported.
+- **Quality / independence:** an anecdote from a rehoster, used to promote its own transpilers ("That's the challenge we're tackling at Heirloom"). No hardware, database or network specification.
 - **Maps to:** RMW/IO, batch+online mix (batch).
 - **Useful to us:** direct support for a record-at-a-time RMW test that reports per-record latency and records/s. Testing a local against a networked database on the PC would show the effect.
   - Contradiction: VN08 reports scaled-out online throughput from the same vendor, and VN02 reports batch faster after a rehost.
 
 **VN11. "Scaling for performance with AWS Mainframe Modernization and Micro Focus"**
 - **Who / when:** AWS Cloud Operations Blog.
-- **URL:** https://aws.amazon.com/blogs/mt/scaling-for-performance-with-aws-mainframe-modernization-and-micro-focus (the fetch returned navigation only; not fetched; from search snippet).
+- **URL:** https://aws.amazon.com/blogs/mt/scaling-for-performance-with-aws-mainframe-modernization-and-micro-focus (the fetch returned navigation only; not fetched; from search snippet; not verified).
 - **Compared:** Micro Focus Enterprise Server on c5.large (2 vCPU), c5.4xlarge, and 9x c5.large.
 - **Workload:** "tasks" driven by virtual users. The application is not confirmed.
 - **Headline:**
@@ -1147,28 +1129,25 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **VN12. EDS / Micro Focus / Microsoft / Unisys Enterprise Server scalability study**
 - **Who / when:** Microsoft TechNet, 2003 era.
-- **URL:** https://technet.microsoft.com/en-us/library/bb463147.aspx (not fetched; from search snippet).
+- **URL:** https://technet.microsoft.com/en-us/library/bb463147.aspx (not fetched; from search snippet; not verified).
 - **Compared:** an 8-CPU Windows system against mainframe MIPS.
 - **Workload:** not known.
 - **Headline:** about "1,715 mainframe MIPS" for 8 CPUs.
 - **Quality / independence:** vendor consortium.
 - **Maps to:** cost/energy.
-- **Useful to us:** a data point in the 8-290 MIPS-per-core spread.
+- **Useful to us:** a data point in the wide spread of MIPS-per-core figures.
 
-**VN13. Microsoft-commissioned VeriTest benchmarks of Linux on z900 against Windows Server 2003**
-- **Who / when:** Microsoft and VeriTest (Lionbridge), 2003, as covered by Computerworld, InfoWorld and LinuxInsider.
-- **URLs:** https://www.computerworld.com/article/1586930/microsoft-benchmarks-step-up-linux-assault.html ; https://www.infoworld.com/article/2224366/update-microsoft-benchmarks-step-up-linux-assault.html (not fetched; from search snippet). The original PDFs were not found.
-- **Compared:** a 2-CPU z900 LPAR running Linux, against 2x 900 MHz Xeon running Windows Server 2003. Microsoft ran the mainframe side itself.
+**VN13. Microsoft-commissioned VeriTest benchmarks of Linux on zSeries against Windows Server 2003**
+- **Who / when:** Microsoft and VeriTest (Lionbridge), 2003, as covered by Computerworld and InfoWorld (both 5 September 2003).
+- **URLs:** https://www.computerworld.com/article/1586930/microsoft-benchmarks-step-up-linux-assault.html ; https://www.infoworld.com/article/2224366/update-microsoft-benchmarks-step-up-linux-assault.html (both fetched 2026-11-25). The original PDFs were not found.
+- **Compared:** Linux on one zSeries CPU, which "performed at about the same as Windows NT 4 on one 900MHz Intel processor"; "Windows 2003 outperformed it". Microsoft ran the mainframe tests itself, and VeriTest the Intel side.
 - **Workload:** file and web serving.
 - **Headline:**
-  - Linux on the mainframe was "20 to 300 percent" below.
-  - "14 percent less performance at nearly 20 times the cost".
-  - LinuxInsider noted that IBM used a dedicated 16-CPU z900, while VeriTest used a 2-CPU LPAR.
+  - Microsoft claimed that Linux on the mainframe "lags behind Windows 2003 on Intel Corp. systems in terms of performance for the money" (InfoWorld).
   - IBM's response: "We typically don't run industry standard performance benchmarks for any software on the mainframe".
 - **Quality / independence:** an adversarial vendor. The scripts are unpublished.
 - **Maps to:** cost/energy, choke/limits.
-- **Useful to us:** the only historic 2-CPU mainframe slice comparison found, and a warning that LPAR size decided its headline. Our 2-CP slice invites the same objection, so state the slice size and that the LPAR is shared, up front.
-- **Also in:** benchmarks_community item 2.
+- **Useful to us:** a historic single-CPU comparison run by an adversarial vendor. A small mainframe slice invites objections about how it was chosen, and our 2-CP slice will face them, so state the slice size and that the LPAR is shared, up front.
 
 **VN14. Temenos public-cloud benchmarks (2022 press release, 2024 blog, 2025 report)**
 - **Who / when:** Temenos.
@@ -1205,7 +1184,6 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 - **Quality / independence:** run by IBM; a claim sheet only, with no absolute TPS. The OS differs between sides, and the latency test partly measures in-box HiperSockets.
 - **Maps to:** batch+online mix (online), RMW/IO (network), cost/energy.
 - **Useful to us:** a lesson in normalisation. Name both CPUs exactly and keep the interconnect identical.
-- **Also in:** benchmarks_community item 19.
 
 **VN16. "FUJITSU Enterprise Postgres on IBM LinuxONE: Improving your organization's data performance"**
 - **Who / when:** Fujitsu white paper, (c) 2022, stamped 2025-03-24.
@@ -1217,13 +1195,13 @@ Everything in this section is the vendor's own material, so IBM is the intereste
   - TPC-C-like throughput 1.4x, 1.8x and 2.1x at 128, 256 and 512 clients.
   - Data load 8.4x.
 - **Quality / independence:** confounded, because the software differs on each side.
-- **Related caution:** EDB's "2.1x per core" pgbench claim is for IBM Power11 against x86 (15 against 40 cores), not LinuxONE. https://mktgsite.enterprisedb.com/sites/default/files/2026-06/EDB-IBM-Power-Benchmark.pdf (not fetched; from search snippet).
+- **Related caution:** EDB's "2.1x per core" pgbench claim is for IBM Power11 against x86 (15 against 40 cores), not LinuxONE. https://mktgsite.enterprisedb.com/sites/default/files/2026-06/EDB-IBM-Power-Benchmark.pdf (not fetched; from search snippet; not verified).
 - **Maps to:** RMW/IO, batch+online mix.
 - **Useful to us:** the ratio rising with client count is a "who chokes first" curve, so report ratio against concurrency rather than a single point. Never compare different software on the two sides.
 
 **VN17. IBM LinuxONE MongoDB / YCSB decks (2015-2016)**
 - **Who / when:** IBM.
-- **URLs** (all not fetched; from search snippet):
+- **URLs** (all not fetched; from search snippet; not verified):
   - https://www.slideshare.net/slideshow/mongodb-linux-porting-performance-measurements-and-and-scaling-advantage-using-the-z13-ibm-mainframe/49050079
   - https://www.slideshare.net/slideshow/linux-one-vs-x86/64284084
   - Marist-hosted Mitran deck, May 2016: https://ecc.marist.edu/documents/367507/568146/MitranLinuxONE+Marist+MMIT+20160505+V1.0.pdf/b1666d3f-35f6-404f-9f77-eb80af47f32f
@@ -1233,12 +1211,11 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 - **Quality / independence:** vendor, and the two decks disagree.
 - **Maps to:** RMW/IO.
 - **Useful to us:** YCSB is a candidate workload, and the disagreement itself is a teaching point.
-- **Also in:** vendors Q5; benchmarks_community item 21.
 
 **VN18. "Exploring IBM Z Sort Accelerator Support in Syncsort MFX"**
 - **Who / when:** Precisely (formerly Syncsort), 28 Oct 2021.
 - **URL:** https://www.precisely.com/blog/mainframe/ibm-z-mainframe-sort-accelerator-support-in-syncsort-mfx/ (fetched).
-- **Related** (all not fetched; from search snippet):
+- **Related** (all not fetched; from search snippet; not verified):
   - PipeSort sheet: https://www.precisely.com/wp-content/uploads/2024/07/PS_Syncsort-PipeSort_240719_E_final.pdf
   - Mexican bank story: https://www.precisely.com/app/uploads/2020/06/CS_Mexican-Bank_Syncsort-MFX_E_200530_E_final.pdf
   - MFX datasheet: https://www.precisely.com/wp-content/uploads/2024/07/PS_Syncsort-MFX_240723_E_final.pdf
@@ -1258,20 +1235,20 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **VN19. Google Cloud Dual Run (Santander "Gravity")**
 - **Who / when:** Google, with Santander, 2022 onward.
-- **URLs** (all not fetched; from search snippet):
+- **URLs** (all not fetched; from search snippet; not verified):
   - https://docs.cloud.google.com/mainframe-dual-run/docs/dual-run-overview
   - https://services.google.com/fh/files/misc/google-cloud-dual-run-white-paper-mainframe-mod.pdf
   - https://www.santander.com/en/press-room/press-releases/2022/10/google-and-santander-to-help-other-companies-simplify-their-transition-from-legacy-tech-to-the-cloud
 - **Compared:** a mainframe and Google Cloud running in parallel.
 - **Workload:** production workloads, comparing functional and non-functional behaviour.
 - **Headline:** no performance numbers published.
-- **Related:** the Infosys/CNCF rehost case reports a 25% cut in development cycle time, not runtime. https://www.cncf.io/case-studies/infosysmainframe/ (not fetched; from search snippet).
+- **Related:** the Infosys/CNCF rehost case reports a 25% cut in development cycle time, not runtime. https://www.cncf.io/case-studies/infosysmainframe/ (not fetched; from search snippet; not verified).
 - **Quality / independence:** vendor; method only.
 - **Maps to:** batch+online mix (method).
 - **Useful to us:** the same-input, compare-outputs-and-timings design our grid already uses.
 
 **VN20. Linux-side interference claims from vendors (Multikernel; USPTO 9268702)**
-- **URLs:** https://multikernel.io/ ; https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/9268702 (both not fetched; from search snippet).
+- **URLs:** https://multikernel.io/ ; https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/9268702 (both not fetched; from search snippet; not verified).
 - **Compared:** Linux cgroups against each vendor's own method. There is no Z side.
 - **Workload:**
   - Multikernel: a latency-sensitive task beside a memory-hungry batch job.
@@ -1294,7 +1271,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
   - Study 2: new servers with 2x Xeon Platinum 8592+ (64C each), bought in December 2024.
   - Both sides ran the same stack: WebSphere Liberty plus EDB Postgres on OpenShift, RHEL 9.5 with KVM, and the same storage.
 - **Workload:** a web/DB transactional workload sized to about 10,000 req/s. Runs were 5 minutes: 1 minute ramping to 1,000 users, 3 minutes of test, 1 minute ramping down. Power was measured at several utilisation levels. The workload is not named in the PDF.
-- **Measured headline:** 256 older x86 cores against 16 IFLs at about 10,000 req/s, or 16:1 (my arithmetic, vendors strand).
+- **Measured headline:** 256 older x86 cores against 16 IFLs at about 10,000 req/s, or 16:1 (our arithmetic, vendors strand).
 - **Modelled headline:**
 
   | | Production cores (LinuxONE vs x86) | Non-production cores | Total cores | 5-year TCO |
@@ -1312,14 +1289,14 @@ Everything in this section is the vendor's own material, so IBM is the intereste
   - LinuxONE runs at 80-95%;
   - LinuxONE labour is 50% of x86;
   - $0.15/kWh, GSA list prices, $150k per FTE.
-- **Arithmetic** (my arithmetic, analysts and vendors strands):
+- **Arithmetic** (our arithmetic, analysts and vendors strands):
   - Study 2 production cores are 256:20 = 12.8:1, but non-production is 2,688:116 = 23:1.
   - Software is about 76% of x86 TCO ($18.4M of $24.2M).
-  - So the "2,944" headline (IB15, IB16) depends mostly on the non-production assumption.
+  - So the "2,944" headline (IB16) depends mostly on the non-production assumption.
 - **Maps to:** cost/energy, batch+online mix (online only).
 - **Useful to us:** the measured design is worth copying at small scale: fix the offered load, compare the cores needed, and meter watts.
   - Gap: no per-core figure for modern x86 at equal utilisation, and no batch, sort, crypto or AI work.
-- **Also in:** vendors C1; analysts C01; consolidation section 3.7 (cross-reference).
+- **See also:** section 3.7 (consolidation), which cross-references this entry.
 
 **AN02. "IBM LinuxONE 5 Gets Huge AI Boost"**
 - **Who / when:** Karl Freund, Cambrian-AI Research, 2025-07-21. The paper says "This white paper was sponsored by IBM", and Cambrian-AI lists IBM, Intel and NVIDIA as clients.
@@ -1339,7 +1316,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 - **Useful to us:**
   - All three code bases are public, so our mixed grid could run MegaCard plus the LSTM model on both sides, in-process, at the same batch size.
   - Our same-box design removes the network asymmetry.
-- **Also in:** IB04 fn1.
+- **See also:** IB04 fn1.
 
 **AN03. "Optimizing DFSORT Use of Z Sort Accelerator"**
 - **Who / when:** Watson & Walker, Cheryl Watson's Tuning Letter 2022 No. 2. IBM hosts the reprint.
@@ -1364,7 +1341,6 @@ Everything in this section is the vendor's own material, so IBM is the intereste
   - no INREC or OUTREC;
   - MEMLIMIT of at least 75% of the input;
   - ICE267I and SMF 16 kept as proof that Z Sort ran.
-- **Also in:** ibm_material C3.
 
 **AN04. "Mainframe vs server farm" five-year cost comparison**
 - **Who / when:** Michael Benson (Enterprise Executive, 2016), relayed by Allan Zander (DataKinetics CEO) on Planet Mainframe, 2021-09-07.
@@ -1386,13 +1362,13 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **AN05. ITIC 2023 Global Server Hardware / Server OS Reliability Survey (IBM Z results)**
 - **Who / when:** Laura DiDio, ITIC, 2023-08-22.
-- **URLs:** https://itic-corp.com/?p=3107 (fetched) ; TechChannel coverage of 2024, https://techchannel.com/industry-news/server-reliability-survey-2024/ (not fetched; from search snippet).
+- **URLs:** https://itic-corp.com/?p=3107 (fetched) ; TechChannel coverage of 2024, https://techchannel.com/industry-news/server-reliability-survey-2024/ (not fetched; from search snippet; not verified).
 - **Compared:** self-reported availability by platform, from nearly 1,900 organisations. "ITIC accepted no vendor sponsorship".
 - **Workload:** none.
 - **Headline:**
   - 96% of 200+ z16 respondents reported nine nines, which ITIC puts at "31.56 milliseconds of per-server annual downtime".
   - Power10 came in at eight nines.
-  - Another year (snippet): Z/LinuxONE III at "0.0043 minutes" of monthly unplanned outage, against 1.10 minutes for the best x86.
+  - Another year (snippet; not verified): Z/LinuxONE III at "0.0043 minutes" of monthly unplanned outage, against 1.10 minutes for the best x86.
 - **Quality / independence:** an unsponsored survey, but self-reported.
 - **Maps to:** choke/limits (availability only).
 - **Useful to us:** none for performance. It shows the "reliability" axis is survey-based.
@@ -1404,21 +1380,21 @@ Everything in this section is the vendor's own material, so IBM is the intereste
   - Deck: https://www.slideshare.net/slideshow/the-suprising-technology-economics-of-mainframes-vs-distributed-servers/9096887 (not fetched).
   - IBM-hosted copy: https://public.dhe.ibm.com/software/uk/system-z/pdf/Mainframe_Economics.pdf (not fetched).
   - 2023 Broadcom report: https://www.mainframe.broadcom.com/hubfs/01.%20Mainframe%20Software/02.%20Assets/Cross-Segment/TACO/MSD_Technology-Economics-Report-May2023.pdf (redirects).
-  - Arcati 2025: https://planetmainframe.com/arcati-2025/follow-the-leaders/ (not fetched; from search snippet).
+  - Arcati 2025: https://planetmainframe.com/arcati-2025/follow-the-leaders/ (not fetched; from search snippet; not verified).
 - **Compared:** "mainframe-heavy" against "server-heavy" organisations, by correlation across companies.
 - **Workload:** none measured.
 - **Headline:**
   - A "29% cost advantage"; computational costs "may be 30% lower".
   - An insurance claim costs about $56 in IT, $36 less than server-heavy.
   - Under $600 per ATM against over $1,000.
-  - The 2023 update (snippet): about 2,400 organisations; doubling scale cuts unit cost by ">60%" on mainframe, against about 20% for cloud and 10% for servers. Arcati 2025 says 67%.
+  - The 2023 update (snippet; not verified): about 2,400 organisations; doubling scale cuts unit cost by ">60%" on mainframe, against about 20% for cloud and 10% for servers. Arcati 2025 says 67%.
 - **Quality / independence:** correlational. No workload was metered.
 - **Maps to:** cost/energy.
 - **Useful to us:** cost per unit of work as a framing, but not comparable with measured runs.
 
 **AN07. IDC business-value studies of IBM Z (2019-2020)**
 - **Who / when:** IDC, sponsored by Broadcom and IBM, and by Rocket Software.
-- **URLs:** https://mainframe.broadcom.com/hubfs/01.%20Mainframe%20Software/02.%20Assets/Cross-Segment/MF_IDC_Infographic_The%20Business%20Value%20of%20the%20Transformative%20Mainframe-1.pdf ; https://itjungle.com/2020/09/23/modernization-trumps-migration-for-ibm-i-and-mainframe-idc-says (not fetched; from search snippet).
+- **URLs:** https://mainframe.broadcom.com/hubfs/01.%20Mainframe%20Software/02.%20Assets/Cross-Segment/MF_IDC_Infographic_The%20Business%20Value%20of%20the%20Transformative%20Mainframe-1.pdf ; https://itjungle.com/2020/09/23/modernization-trumps-migration-for-ibm-i-and-mainframe-idc-says (not fetched; from search snippet; not verified).
 - **Compared:** interviews with customers the sponsors selected.
 - **Workload:** none.
 - **Headline:**
@@ -1430,7 +1406,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **AN08. Forrester Total Economic Impact (TEI) studies touching IBM Z**
 - **Who / when:** Forrester, commissioned by vendors: IntelliMagic (July 2024), an older IBM System z study, and BMC (June 2025).
-- **URLs:** https://tei.forrester.com/go/IBM/ZIntelliMagicforzOS ; https://www.ibm.com/support/pages/more-details-ibm-zenterprise-ec12-mainframes ; https://www.bmc.com/forms/the-roi-of-mainframe-modernization-analyst-report.html (all not fetched; from search snippet).
+- **URLs:** https://tei.forrester.com/go/IBM/ZIntelliMagicforzOS ; https://www.ibm.com/support/pages/more-details-ibm-zenterprise-ec12-mainframes ; https://www.bmc.com/forms/the-roi-of-mainframe-modernization-analyst-report.html (all not fetched; from search snippet; not verified).
 - **Compared:** composite-organisation financial models.
 - **Workload:** none.
 - **Headline:** ROI of 161%, 199% and 217%.
@@ -1440,7 +1416,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **AN09. Kyndryl "State of Mainframe Modernization" 2025 and the BMC Mainframe Survey 2024/2025**
 - **Who / when:** Kyndryl and BMC.
-- **URLs** (all not fetched; from search snippet):
+- **URLs** (all not fetched; from search snippet; not verified):
   - https://www.kyndryl.com/ie/en/about-us/news/2025/09/mainframe-modernization-delivers-big-roi
   - https://www.itjungle.com/2025/09/15/positive-news-from-the-kyndryl-mainframe-modernization-report
   - https://planetmainframe.com/?p=6764
@@ -1482,21 +1458,20 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **AN12. International Technology Group survey of mainframe and LAN cost (via EDUCAUSE CAUSE 1996)**
 - **Who / when:** ITG, a consultancy, reported second-hand in 1996.
-- **URL:** https://www.educause.edu/ir/library/html/cem/cem96/cem9638.html (not fetched; from search snippet).
+- **URL:** https://www.educause.edu/ir/library/html/cem/cem96/cem9638.html (not fetched; from search snippet; not verified).
 - **Compared:** 250 sites, mainframe against LAN.
 - **Workload:** none measured.
 - **Headline:** $2,282 against $6,445 per user per year; 3 cents against 43 cents per transaction.
 - **Quality / independence:** a consultancy survey, second-hand.
 - **Maps to:** cost/energy.
 - **Useful to us:** the historical origin of "cost per transaction" framing.
-- **Also in:** academic C3.
 
 ### 3.5 Standard benchmarks (9 items)
 
 **SB01. TPC-C on mainframes: "IBM has run the TPC-C test on MVS systems, but never released them"**
 - **Who / when:** Tech Monitor / Computer Business Review, column credited to Timothy Prickett Morgan, 5 May 1998, quoting Ross Mauri (IBM VP, S/390 hardware).
 - **URL:** https://www.techmonitor.ai/?p=92089 (fetched by the analysts and benchmarks strands; the academic strand saw a snippet).
-- **Related:** the first TPC-C result ever was an IBM AS/400, not a mainframe, at 54 tpmC in September 1992. https://en.wikipedia.org/wiki/TPC-C (not fetched; from search snippet).
+- **Related:** the first TPC-C result ever was an IBM AS/400, not a mainframe, at 54 tpmC in September 1992. https://en.wikipedia.org/wiki/TPC-C (not fetched; from search snippet; not verified).
 - **Compared:** the columnist's own estimate of a G4 9672 at "30,000 or so" tpmC, against more than 52,000 for a 16-way HP V2250.
 - **Workload:** TPC-C.
 - **Headline:** the quote above. The columnist infers: "That's why IBM focuses on the relationship instead of the hardware" and "By not running, and more importantly, not winning... IBM concedes defeat".
@@ -1506,7 +1481,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **SB02. "The Truth About the TPC"**
 - **Who / when:** ITPro Today.
-- **URL:** https://itprotoday.com/early-versions/the-truth-about-the-tpc (not fetched; from search snippet).
+- **URL:** https://itprotoday.com/early-versions/the-truth-about-the-tpc (not fetched; from search snippet; not verified).
 - **Compared:** none.
 - **Workload:** TPC in general.
 - **Headline:**
@@ -1528,7 +1503,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **SB04. "Robust power management in the IBM z13"**
 - **Who / when:** IBM, about 2015.
-- **URL:** https://www.researchgate.net/publication/282538028_Robust_power_management_in_the_IBM_z13 (not fetched; from search snippet).
+- **URL:** https://www.researchgate.net/publication/282538028_Robust_power_management_in_the_IBM_z13 (not fetched; from search snippet; not verified).
 - **Compared:** z13 power projection against measurement.
 - **Workload:** SPEC CPU2006 used as a workload, not as a published score.
 - **Headline:** the power-projection error was within about 2.3%.
@@ -1563,7 +1538,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **SB07. HammerDB and pgbench on LinuxONE**
 - **Who / when:** various.
-- **URLs** (all not fetched; from search snippet):
+- **URLs** (all not fetched; from search snippet; not verified):
   - https://developer.ibm.com/tutorials/postgresql-experiences-tuning-recomendations-linux-on-ibm-z/
   - https://hammerdb.com/blog
   - https://www.linkedin.com/pulse/linuxone-truly-engineered-system-oracle-workloads-benjamin-kwan
@@ -1578,7 +1553,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **SB08. OpenBenchmarking.org (Phoronix Test Suite) uploads from LinuxONE Community Cloud**
 - **Who / when:** community uploads, 2020-2022.
-- **URLs:** https://openbenchmarking.org/result/2004234-NI-Z15ZVMSLE42&export=html ; https://openbenchmarking.org/result/2204081-JHAM-SERVERZ39 ; https://openbenchmarking.org/result/2109228-JHAM-PTSCOMP02&grr (not fetched; from search snippet; pages return 403).
+- **URLs:** https://openbenchmarking.org/result/2004234-NI-Z15ZVMSLE42&export=html ; https://openbenchmarking.org/result/2204081-JHAM-SERVERZ39 ; https://openbenchmarking.org/result/2109228-JHAM-PTSCOMP02&grr (not fetched; from search snippet; not verified; pages return 403).
 - **Compared:**
   - "IBM z15 (8561) 2 VCPUs on LinuxONE Community Cloud", running SLES 12 SP5 or openSUSE Tumbleweed on z/VM 6.4;
   - z14 on the IBM Cloud KVM free tier;
@@ -1608,9 +1583,9 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **CM01. golang/go#82520: "use CPACF PCC for X25519, P-384 and P-521"**
 - **Who / when:** ashokpariya0 on GitHub; opened 26 Oct 2026.
-- **URL:** https://github.com/golang/go/issues/82520 (fetched; the P-256 figures were spot-checked by a second reader).
+- **URL:** https://github.com/golang/go/issues/82520 (fetched; the P-256 figures were spot-checked by a second pass).
 - **Compared:** z15 (8561), z16 (3931) and z17 (9175). On each, the normal build is compared with a `purego` build. On z17, Go is also compared with OpenSSL 3.2.2 with PCC disabled.
-- **Workload:** BenchmarkECDH (ns/op) and the cost of one scalar multiplication. Per the issue, the benchmark is key generation plus ECDH, median of 5 runs (a second reader fetched the issue on 2026-11-19).
+- **Workload:** BenchmarkECDH (ns/op) and the cost of one scalar multiplication. Per the issue, the benchmark is key generation plus ECDH, median of 5 runs (a second pass fetched the issue on 2026-11-19).
 - **Headline:**
   - P-256 ECDH, accelerated against pure Go (spot-checked):
 
@@ -1624,7 +1599,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
   - X25519, P-384 and P-521 ECDH show no gain, because Go does not use PCC for them yet.
   - Cost per scalar multiplication on z17, Go against OpenSSL with PCC disabled: X25519 about 95 against 17 us; P-256 about 50 against 33; P-384 about 528 against 63; P-521 about 1,408 against 102.
   - OpenSSL with PCC is "~5-7x faster" for X25519.
-  - P-384 ECDSA verify (BenchmarkVerify/P384) on z17 is 94.7 us accelerated against 1,145 us pure Go; the reporter notes that Go already uses KDSA for ECDSA (a second reader fetched the issue on 2026-11-19).
+  - P-384 ECDSA verify (BenchmarkVerify/P384) on z17 is 94.7 us accelerated against 1,145 us pure Go; the reporter notes that Go already uses KDSA for ECDSA (a second pass fetched the issue on 2026-11-19).
 - **Quality / independence:** an open issue that anyone can reproduce with `go test -bench`. The contributor is IBM-adjacent. There are no x86 numbers.
 - **Maps to:** crypto.
 - **Useful to us:** the best public per-operation cross-check for our CPACF signature runs. The same benchmark can run on the Ryzen to give the x86 column that the issue lacks. Its z15/z16/z17 ordering also shows that generation-to-generation differences are not monotonic.
@@ -1681,7 +1656,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **CM05. zlib-ng s390 documentation**
 - **Who / when:** the zlib-ng project.
-- **URLs:** https://github.com/zlib-ng/zlib-ng ; https://fuchsia.googlesource.com/third_party/github.com/zlib-ng/zlib-ng/+/dc3b5de8cd7c7605f73f253b61fed7d39a33c036/arch/s390 (not fetched; from search snippet).
+- **URLs:** https://github.com/zlib-ng/zlib-ng ; https://fuchsia.googlesource.com/third_party/github.com/zlib-ng/zlib-ng/+/dc3b5de8cd7c7605f73f253b61fed7d39a33c036/arch/s390 (not fetched; from search snippet; not verified).
 - **Compared:** DFLTCC against software, citing IBM figures.
 - **Workload:** compression and decompression.
 - **Headline:**
@@ -1693,7 +1668,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **CM06. OpenJDK jdk-dev thread on DFLTCC output reproducibility**
 - **Who / when:** OpenJDK jdk-dev, October 2025.
-- **URL:** https://mail.openjdk.org/pipermail/jdk-dev/2025-October/010561.html (not fetched; from search snippet).
+- **URL:** https://mail.openjdk.org/pipermail/jdk-dev/2025-October/010561.html (not fetched; from search snippet; not verified).
 - **Compared:** DFLTCC output against software output.
 - **Workload:** Java Deflater tests.
 - **Headline:** the DFLTCC path "does not generate reproducible output" and writes output regardless of the flush parameter, which broke OpenJDK tests.
@@ -1716,7 +1691,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **CM08. Hercules emulator performance folklore**
 - **Who / when:** Wikipedia and mailing lists, 2002-2009.
-- **URLs:** https://en.wikipedia.org/wiki/Hercules_(emulator) ; https://classiccmp.org/mailman3/hyperkitty/list/test-drb@ccmp.vtda.org/thread/OON4LSJPMJHYV2AQHM6LWWI4C2ILKHCY ; https://forums.theregister.com/forum/all/2009/09/25/turbohercules_goes_commercial/ (not fetched; from search snippet).
+- **URLs:** https://en.wikipedia.org/wiki/Hercules_(emulator) ; https://classiccmp.org/mailman3/hyperkitty/list/test-drb@ccmp.vtda.org/thread/OON4LSJPMJHYV2AQHM6LWWI4C2ILKHCY ; https://forums.theregister.com/forum/all/2009/09/25/turbohercules_goes_commercial/ (not fetched; from search snippet; not verified).
 - **Compared:** x86 PCs emulating S/370 through z/Architecture, against real hardware.
 - **Workload:** MIPS.
 - **Headline:**
@@ -1726,13 +1701,13 @@ Everything in this section is the vendor's own material, so IBM is the intereste
   - Wikipedia notes a "lack of concrete, controlled performance comparisons".
 - **Quality / independence:** anecdotal.
 - **Maps to:** choke/limits.
-- **Useful to us:** answers students who ask "can my PC be a mainframe?".
+- **Useful to us:** it answers the question "can my PC be a mainframe?".
 
 **CM09. Hacker News threads on mainframe throughput and cost claims**
 - **Who / when:** Hacker News, 2015-2025.
 - **URLs:**
   - https://news.ycombinator.com/item?id=8945080 (2015; fetched).
-  - https://news.ycombinator.com/item?id=28456469 and https://news.ycombinator.com/item?id=43620257 (not fetched; from search snippet).
+  - https://news.ycombinator.com/item?id=28456469 and https://news.ycombinator.com/item?id=43620257 (not fetched; from search snippet; not verified).
 - **Compared:** none.
 - **Workload:** none.
 - **Headline:**
@@ -1745,7 +1720,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **CM10. "Benchmarks for Linux Applications on S/390"**
 - **Who / when:** Slashdot, 2002.
-- **URL:** https://slashdot.org/story/02/01/20/202205/benchmarks-for-linux-applications-on-s390-zseries (not fetched; from search snippet).
+- **URL:** https://slashdot.org/story/02/01/20/202205/benchmarks-for-linux-applications-on-s390-zseries (not fetched; from search snippet; not verified).
 - **Compared:** none.
 - **Workload:** none.
 - **Headline:** mainframe benchmarks try to remove I/O limits, and "MHz became very meaningless". No numbers.
@@ -1755,7 +1730,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **CM11. Martin Packer on overloaded zIIPs (IBM-MAIN)**
 - **Who / when:** Martin Packer, IBM-MAIN, 2018.
-- **URL:** https://groups.google.com/g/bit.listserv.ibm-main/c/q7zWPXa4ysc (not fetched; from search snippet).
+- **URL:** https://groups.google.com/g/bit.listserv.ibm-main/c/q7zWPXa4ysc (not fetched; from search snippet; not verified).
 - **Compared:** none.
 - **Workload:** zIIP offload.
 - **Headline:** an overloaded zIIP "could lead to performance problems... worse (!) than having no zIIP at all".
@@ -1777,18 +1752,17 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 **CM13. "Computing power comparison: mainframe versus Intel Xeon"**
 - **Who / when:** Didier Durand, Media & Tech blog, 2016-07-26; also on LinkedIn.
-- **URLs:** http://media-tech.blogspot.com/2016/07/computing-power-comparison-mainframe.html (fetched) ; https://www.linkedin.com/pulse/computing-power-comparison-mainframe-versus-intel-xeon-didier-durand (not fetched; from search snippet).
+- **URLs:** http://media-tech.blogspot.com/2016/07/computing-power-comparison-mainframe.html (fetched) ; https://www.linkedin.com/pulse/computing-power-comparison-mainframe-versus-intel-xeon-didier-durand (not fetched; from search snippet; not verified).
 - **Compared:** relays HP's 2013 zRef result: 1,000 MIPS against one DL980 with 8x E7-4870.
 - **Workload:** zRef.
 - **Headline:** "1'000 MIPS of mainframe power can be replaced with better performances (on this benchmark) by a single server HP DL980".
-- **Quality / independence:** practitioner blog, written by someone with a migration interest (his commercial position is not stated in the notes). It is the only surviving pointer to HP's paper and its document number.
+- **Quality / independence:** practitioner blog, written by someone with a migration interest (his commercial position is not stated). It is the only surviving pointer to HP's paper and its document number.
 - **Maps to:** batch+online mix, cost/energy.
 - **Useful to us:** the route to VN01.
-- **Also in:** zref Q1/Q3; academic B4.
 
 **CM14. LinuxONE Community Cloud operational talks**
 - **Who / when:** Marist and IBM, ECC 2017 and SHARE 2018.
-- **URLs:** https://ecc.marist.edu/documents/745175/860856/LinuxONE+Community+Cloud+-+ECC2017.pdf/96b8ef5f-3c79-4ede-8e40-7d7f4de1a24f ; https://www.share.org/Events/Past-Events/Proceedings/Proceeding-Details/linuxone-community-cloud-the-adventure-continues-2 (not fetched; from search snippet).
+- **URLs:** https://ecc.marist.edu/documents/745175/860856/LinuxONE+Community+Cloud+-+ECC2017.pdf/96b8ef5f-3c79-4ede-8e40-7d7f4de1a24f ; https://www.share.org/Events/Past-Events/Proceedings/Proceeding-Details/linuxone-community-cloud-the-adventure-continues-2 (not fetched; from search snippet; not verified).
 - **Compared:** none. They report operational capacity: a two-way z/VM SSI with OpenStack, over 3,600 registrations, and over 800 virtual servers at peak. The SHARE talk covers z/VM HiperDispatch problems across 10 systems hosting about 1,000 Linux servers.
 - **Workload:** none.
 - **Headline:** none against x86.
@@ -1800,7 +1774,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
 
 Cross-references in other sections:
 - AN01: the Signal65 estate model, the best-documented one.
-- IB15, IB16, IB17: IBM's 2,944-core, 72-server and 36-server footprints.
+- IB15, IB16, IB17: IBM's 23-server (2,944-core, IB16), 72-server (IB16) and 36-server (IB17) footprints.
 - IB29: the z10 "1,500 x86 servers" claim.
 
 **CS01. "Leveraging workload consolidation for lower IT costs"**
@@ -1809,10 +1783,10 @@ Cross-references in other sections:
 - **Compared (fn1, the one measured test):** a LinuxONE III with 50 cores and 2,048 GB on z/VM and RHEL, running a "competitive database", against sixteen x86 systems, each with 28 Broadwell cores and 768 GB.
 - **Workload:** a "materially identical order fulfillment database workload" at 48,974 tps.
 - **Headline:**
-  - 448 against 50 cores, about 9:1 (my arithmetic, analysts strand).
+  - 448 against 50 cores, about 9:1 (our arithmetic, analysts strand).
   - fn4: "core consolidation ratios ranging from 10 to 32.5 distributed cores to one IFL", taken from "20 IT Economics assessments". These are estimates.
   - 50% less power and 75% less floor space.
-  - Not fetched; from search snippet: a Chinese-language IBM document gives ratios "from 4.6:1 to 54:1, based on 29 customer analyses". https://ibm.com/downloads/cas/MJDPLD24
+  - Not fetched; from search snippet; not verified: a Chinese-language IBM document gives ratios "from 4.6:1 to 54:1, based on 29 customer analyses". https://ibm.com/downloads/cas/MJDPLD24
 - **Quality / independence:** vendor. "IBM's internal workload studies are not benchmark applications".
   - Energy: LinuxONE power was *estimated* with IBM's tool, while x86 power was *measured* under load. x86 utilisations come from 15 customer surveys, at $0.10/kWh and PUE 1.66.
   - LinuxONE III figures were projected from Emperor II data plus 10%.
@@ -1832,7 +1806,7 @@ Cross-references in other sections:
   - 3-year TCO savings of 7% at 100 TPS (9 IFLs against 42 x86 cores), rising to 56-60% at 1,000-2,000 TPS.
   - Footnote 17: 1,476 x86 cores at 10-20% CPU against 120 IFLs at 89% for the same 130,400 TPS, with LinuxONE III "projected from actual LinuxONE Emperor II test results".
 - **Quality / independence:** IBM-written. The x86 baseline is 2011-era and extrapolated. IBM gets a 40% discount, and non-production plus DR each add 100%.
-- **Arithmetic** (my arithmetic, vendors strand):
+- **Arithmetic** (our arithmetic, vendors strand):
   - 1,476/120 is 12.3 x86 cores per IFL.
   - The utilisation difference explains a factor of 4.5-8.9.
   - That leaves roughly 1.4-2.8x per busy core.
@@ -1842,7 +1816,6 @@ Cross-references in other sections:
   - Footnote 17 shows where consolidation ratios come from.
   - Our 2-vs-2 runs at full load measure the residual per-busy-core factor, not the 12x.
 - **Contradiction:** Temenos's own figure is 61 TPS per core on AWS (VN14).
-- **Also in:** benchmarks_community item 20.
 
 **CS03. "Nationwide Virtualizes With A Vengeance: 700 Servers Gone"**
 - **Who / when:** Charles Babcock, InformationWeek, 15 Dec 2006.
@@ -1850,7 +1823,7 @@ Cross-references in other sections:
 - **Compared:** more than 700 small Intel and Unix servers moved onto two z9 machines with 20 IFLs each (40 in total), running SUSE guests.
 - **Workload:** consolidation.
 - **Headline:**
-  - About 40 Linux guests per IFL; about 17.5 servers per IFL (my arithmetic, vendors strand).
+  - About 40 Linux guests per IFL; about 17.5 servers per IFL (our arithmetic, vendors strand).
   - About $30M saved over 3-4 years (an executive estimate).
   - IFLs at $95,000 list against about $10,000 per small server.
   - WebSphere licensing was a stated driver.
@@ -1860,7 +1833,7 @@ Cross-references in other sections:
 
 **CS04. LzLabs Software Defined Mainframe at Swisscom**
 - **Who / when:** LzLabs and Swisscom, 2019.
-- **URLs** (all not fetched; from search snippet):
+- **URLs** (all not fetched; from search snippet; not verified):
   - https://www.theregister.com/2019/05/16/lzlabs_kills_swisscoms_mainframes/
   - https://www.computerweekly.com/de/feature/Swisscom-Mainframe-Abschied-ist-Kulturwandel
   - https://www.businesswire.com/news/home/20190516005366/en/
@@ -1878,7 +1851,7 @@ Cross-references in other sections:
 
 **CS05. "z/VM vs KVM" (Velocity Software)**
 - **Who / when:** Velocity Software, a z/VM tooling vendor.
-- **URL:** https://www.velocitysoftware.com/ZVMVSKVM.pdf (not fetched; from search snippet).
+- **URL:** https://www.velocitysoftware.com/ZVMVSKVM.pdf (not fetched; from search snippet; not verified).
 - **Compared:** z/VM against KVM density.
 - **Workload:** none measured.
 - **Headline:** KVM needs about 50% more engines, based on assumed peak-utilisation targets of 90% against 60%.
@@ -1888,7 +1861,7 @@ Cross-references in other sections:
 
 **CS06. "Centralized architecture beats distributed systems: the energy efficiency of IBM Z and zLinux"**
 - **Who / when:** Bytes for Business blog, relaying IBM.
-- **URL:** https://bytesforbusiness.com/en/centralized-architecture-beats-distributed-systems-the-energy-efficiency-of-ibm-z-and-zlinux/ (not fetched; from search snippet).
+- **URL:** https://bytesforbusiness.com/en/centralized-architecture-beats-distributed-systems-the-energy-efficiency-of-ibm-z-and-zlinux/ (not fetched; from search snippet; not verified).
 - **Compared:** "39 x86 servers with a total of 2,072 cores" against one LinuxONE Emperor 4 with 125 cores.
 - **Workload:** consolidation.
 - **Headline:** energy falls from 566,448 to 143,962 kWh a year.
@@ -1898,7 +1871,7 @@ Cross-references in other sections:
 
 **CS07. "Global bank achieves 90% cost savings with mainframe offloading"**
 - **Who / when:** Ververica.
-- **URL:** https://www.ververica.com/blog/global-bank-achieves-90-cost-savings-with-mainframe-offloading (not fetched; from search snippet).
+- **URL:** https://www.ververica.com/blog/global-bank-achieves-90-cost-savings-with-mainframe-offloading (not fetched; from search snippet; not verified).
 - **Compared:** an unnamed bank's batch, before and after a streaming offload.
 - **Workload:** batch moved to streaming.
 - **Headline:** from 8+ hours to about 3 hours.
@@ -1932,12 +1905,12 @@ Cross-references in other sections:
 - **Who / when:** Joerg Moellenkamp (a Sun employee), 2008-06-12.
 - **URLs:**
   - Original: https://c0t0d0s0.org/oracle/english/2008/06/12/strange-math.c0t0d0s0.html (HTTP 410; archive unreachable).
-  - Register forum: https://forums.theregister.com/forum/all/2008/02/26/ibm_z10_mainframe/ (not fetched; from search snippet).
-  - Phoronix forum: https://www.phoronix.com/forums/forum/hardware/processors-memory/963498-ibm-z14-announced-support-added-to-llvm-clang?p=964732 (not fetched; from search snippet).
-  - ESJ counter-view: https://esj.com/articles/2008/03/18/analysis-system-z10-drastically-alters-the-mainframe-market.aspx (not fetched; from search snippet).
+  - Register forum: https://forums.theregister.com/forum/all/2008/02/26/ibm_z10_mainframe/ (not fetched; from search snippet; not verified).
+  - Phoronix forum: https://www.phoronix.com/forums/forum/hardware/processors-memory/963498-ibm-z14-announced-support-added-to-llvm-clang?p=964732 (not fetched; from search snippet; not verified).
+  - ESJ counter-view: https://esj.com/articles/2008/03/18/analysis-system-z10-drastically-alters-the-mainframe-market.aspx (not fetched; from search snippet; not verified).
 - **Compared:** the arithmetic behind IBM's claim (IB29).
 - **Workload:** consolidation.
-- **Headline (from snippets):**
+- **Headline (from snippets; not verified):**
   - The 1,500 servers broke down as "125 idle failover backups plus 1,250 test, development and QA machines running at 5 percent average utilization".
   - The claim assumed "every x86 system is only loaded at 10%".
   - It implied "a $30 million hardware investment to substitute $1 million worth of x86 servers".
@@ -1956,7 +1929,6 @@ Cross-references in other sections:
 - **Quality / independence:** conference abstract; no numbers.
 - **Maps to:** cost/energy, and every workload as a method.
 - **Useful to us:** the vocabulary for our report. Ours are performance ratios on a 2-core budget, never consolidation ratios. The content was not retrieved.
-- **Also in:** analysts Q3; benchmarks section 3; vendors Q4.
 
 **CR04. "Why Your CPU Capacity May Not Match Your Vendor Estimate"**
 - **Who / when:** Cheryl Watson's Tuning Letter; author and date not shown on the page.
@@ -1988,7 +1960,7 @@ Cross-references in other sections:
 
 **CR06. "To MIPS or not to MIPS, that is the CP question"**
 - **Who / when:** a SHARE session.
-- **URL:** https://www.share.org/Events/Past-Events/Proceedings/Proceeding-Details/to-mips-or-not-to-mips-that-is-the-cp-question-4 (not fetched; from search snippet).
+- **URL:** https://www.share.org/Events/Past-Events/Proceedings/Proceeding-Details/to-mips-or-not-to-mips-that-is-the-cp-question-4 (not fetched; from search snippet; not verified).
 - **Compared:** MIPS as a metric.
 - **Workload:** none.
 - **Headline:** it presents MIPS, in some uses, as a "Misleading Indicator of Processor Speed".
@@ -1998,7 +1970,7 @@ Cross-references in other sections:
 
 **CR07. "Break the Myth of MIPS per TPS of CICS"**
 - **Who / when:** Ming Lu, LinkedIn and Enterprise Tech Journal, 2019.
-- **URLs:** https://www.linkedin.com/pulse/break-myth-mips-per-tps-cics-new-approach-mainframe-ming-lu (dead: 403) ; https://mydigitalpublication.com/publication/?i=604583&article_id=3437642&view=articleBrowser (not fetched; from search snippet).
+- **URLs:** https://www.linkedin.com/pulse/break-myth-mips-per-tps-cics-new-approach-mainframe-ming-lu (dead: 403) ; https://mydigitalpublication.com/publication/?i=604583&article_id=3437642&view=articleBrowser (not fetched; from search snippet; not verified).
 - **Compared:** MIPS-per-TPS conversions for CICS.
 - **Workload:** CICS.
 - **Headline:** unread. It is not known whether it mentions zRef.
@@ -2008,7 +1980,7 @@ Cross-references in other sections:
 
 **CR08. Omdia on the z16 and LinuxONE rack-mount configurations**
 - **Who / when:** Omdia.
-- **URL:** https://omdia.tech.informa.com/om029183/ibm-takes-mainframe-to-the-forefront-of-cloud-with-ibm-z16-and-linuxone-rack-mount-configurations (fetch returned 403; from search snippet).
+- **URL:** https://omdia.tech.informa.com/om029183/ibm-takes-mainframe-to-the-forefront-of-cloud-with-ibm-z16-and-linuxone-rack-mount-configurations (fetch returned 403; from search snippet; not verified).
 - **Compared:** commentary on IBM's claims.
 - **Workload:** none.
 - **Headline:** IBM "has not provided the details of the exact server configuration used and has extrapolated the per core performance benchmarks to rack scale".
@@ -2018,7 +1990,7 @@ Cross-references in other sections:
 
 **CR09. IBM Community thread comparing IBM Power processors with IBM Z / LinuxONE IFLs**
 - **Who / when:** IBM Community.
-- **URL:** https://community.ibm.com/community/user/discussion/comparison-ibm-power-processor-to-ibm-z-linuxone-ifl?hlmlt=VT (not fetched; from search snippet).
+- **URL:** https://community.ibm.com/community/user/discussion/comparison-ibm-power-processor-to-ibm-z-linuxone-ifl?hlmlt=VT (not fetched; from search snippet; not verified).
 - **Compared:** none.
 - **Workload:** none.
 - **Headline:** an IFL-against-Power benchmark won't be found because "there's no sense in running it". Raw numbers are "Apples to Oranges".
@@ -2028,7 +2000,7 @@ Cross-references in other sections:
 
 **CR10. Vaskevitch, client/server text (chapter 8)**
 - **Who / when:** David Vaskevitch, in a 1990s client/server book.
-- **URL:** http://home.ubalt.edu/tdarling/puad626_share/Vaskevitch/chap08.html (not fetched; from search snippet).
+- **URL:** http://home.ubalt.edu/tdarling/puad626_share/Vaskevitch/chap08.html (not fetched; from search snippet; not verified).
 - **Compared:** a client/server application against a mainframe.
 - **Workload:** not known.
 - **Headline:** the client/server application ran "more than 12 times faster than the mainframe".
@@ -2067,7 +2039,7 @@ Cross-references in other sections:
 - **Per watt** (SB05 JouleSort records/J). An audited PC-side figure exists; no Z-side counterpart does.
 - **MIPS/LSPR equivalence: do not use it.**
   - The LSPR is Z-only by IBM's own statement (IB20).
-  - MIPS-per-x86-core rules range from about 8 (IB24) to 288 (VN07), and every "MIPS-equivalent" is TPS times an undisclosed ratio: TmaxSoft about 8.18 per TPS, Heirloom about 14.9 (my arithmetic in VN02 and VN08).
+  - MIPS-per-x86-core rules vary widely by source (VN05-VN07, VN09, VN12), and every "MIPS-equivalent" is TPS times an undisclosed ratio: TmaxSoft about 8.18 per TPS, Heirloom about 14.9 (our arithmetic in VN02 and VN08).
 
 ### Evidence that an accelerator actually ran
 
@@ -2114,9 +2086,9 @@ Cross-references in other sections:
   - Compare on the same machine (on/off) and against a current x86 part.
 - **Linear extrapolation from small LPARs:** 6 CPs to 200 CPs (AC10), 1 chip to 32 chips (AC07), 1 thread to 450 billion/day (IB02). A measured 2-CP figure must not be scaled the same way.
 - **Different software on the two sides:** Fujitsu Enterprise Postgres against PG11 (VN16); Temenos releases (VN14, CS02). Hold the program constant.
-- **Headline against footnote.** The zCX paper says 44%/54%, while its own footnotes give 1.79x and 2.16x (IB14). "450 billion/day" has two different footnotes (IB02-IB04). PUE varies from 1.55 to 1.67 across IBM pages. Cite the footnote.
+- **Headline against footnote.** The zCX paper's "44%/54% more" for Z matches the x86 shortfall in its own TCO-model settings, which give Z 1.79x and 2.16x (IB14): "X% more" and "X% less" are not the same ratio, so recompute from the footnote. "450 billion/day" has two different footnotes (IB02-IB04). PUE varies from 1.55 to 1.67 across IBM pages. Cite the footnote.
 - **Energy estimated on one side, measured on the other** (CS01, IB17).
-- **LPAR size picked to win.** The 2-CPU z900 against Xeon in 2003 (VN13). State our slice size and that the LPAR is shared, and expect the objection.
+- **Slice size set by one side.** Microsoft's 2003 comparison used Linux on one zSeries CPU (VN13). State our slice size and that the LPAR is shared, and expect the objection.
 - **Corpus and tool choice.** Zeroes understate DFLTCC (CM04, IB08). gzip and zlib take different DFLTCC paths. Small Python buffers throttle the hardware (IB09).
 - **Shared accelerators.** One AIU per chip on z16, eight per drawer on z17, and one DFLTCC unit per chip (IB05, AC02). A 2-CP slice does not own them, so contention from other tenants is possible.
 - **Host-side overhead.** Time the whole call path, not just the accelerator kernel (CM07).
@@ -2130,7 +2102,7 @@ The searches found no published work on any of the following. That is a search-b
    - CPACF ECDSA/EdDSA/AES against x86 OpenSSL with AES-NI or AVX-512 at matched OpenSSL versions.
    - Telum AIU against x86 CPU inference (AMX/AVX-512) in-process at batch 1.
    - Z Sort against GNU sort and Java sort.
-   - Every published accelerator figure is Z against Z.
+   - No published accelerator figure found runs the same code in-process, at the same batch size, on Z and on x86.
 2. **Absolute per-transaction (batch 1) inference latency on z16/z17.** IBM gives only relative figures (7.5x, -48%).
 3. **Z Sort on and off on the same machine.** IBM's baseline is z14.
 4. **Online response time and CPU per transaction under concurrent batch, measured on both z/OS (WLM) and Linux (scheduler/cgroups) at equal cores.** zRef measured only the rehosted side; REDP-5170 measured only the Z side.
@@ -2144,7 +2116,7 @@ The searches found no published work on any of the following. That is a search-b
 
 ## 7. Search log (merged from the six strands)
 
-All strands used WebSearch and WebFetch only. PDFs that WebFetch could not parse were downloaded and read with pdftotext. No host connections were made, nothing was run, and nothing was posted.
+All strands used web search and page fetches only. PDFs that could not be parsed that way were downloaded and read with pdftotext. This is desk research: no system was measured and no benchmark was run for it.
 
 ### Absence findings and how each was checked
 
@@ -2156,9 +2128,9 @@ All strands used WebSearch and WebFetch only. PDFs that WebFetch could not parse
 | No **Sort Benchmark** mainframe entry (1987-2023) | Fetched sortbenchmark.org and checked the full records page across the Gray, Minute, Joule, Cloud, Penny and Datamation categories (SB05). The academic strand also searched for AlphaSort/Datamation and DFSORT. | Checked against the primary page. |
 | No **HammerDB** LinuxONE against x86 comparison | Search "HammerDB LinuxONE x86 comparison PostgreSQL TPROC-C" (SB07). | Search-based. |
 | No **Phoronix** article on IBM Z | Searches "Phoronix IBM Z s390x benchmark", "phoronix z15/z16/LinuxONE Larabel" and "phoronix s390x DFLTCC" (SB09). | Search-based. |
-| No peer-reviewed Z against x86 same-lab paper since 2014 | Academic queries 4, 6, 14, 16, 21, 25, 29 and 30 (below), plus analysts query 25. | Search-based. arXiv full text was not searchable with these tools. |
-| No independent Telum against x86 inference benchmark | Benchmarks strand queries on zDLC, ONNX and fraud latency, and on the z16 19x/20x footnote. IBM strand query 23. | Search-based. |
-| No WLM against cgroups study | Benchmarks strand "noisy neighbour cgroups vs WLM" (extended). IBM strand query 17. Academic queries 32 and section 5. | Search-based. |
+| No peer-reviewed Z against x86 same-lab paper since 2014 | Academic-strand searches (condensed below), plus one analysts-strand search. | Search-based. arXiv full text could not be searched. |
+| No independent Telum against x86 inference benchmark | Benchmarks strand queries on zDLC, ONNX and fraud latency, and on the z16 19x/20x footnote, plus an IBM-strand search (condensed below). | Search-based. |
+| No WLM against cgroups study | Benchmarks strand "noisy neighbour cgroups vs WLM" (extended), plus IBM- and academic-strand searches (condensed below). | Search-based. |
 
 ### Queries by strand (condensed)
 
@@ -2192,7 +2164,7 @@ All strands used WebSearch and WebFetch only. PDFs that WebFetch could not parse
 
 **Analysts, TCO and critiques (29 queries)**
 - **Searches:** Edison Group (no LinuxONE study; only Oracle-funded SPARC work, https://www.oracle.com/jp/a/tech/docs/technical-resources/edison-sparc-s7-wp.pdf, not fetched); Solitaire Interglobal (no original report; only second-hand IBM citations); Forrester TEI; Wikibon/Floyer (no mainframe TCO); Watson on MIPS; Register critiques; TPC absence; Rubin/Arcati; IDC 2024-25 (none newer than 2020); ITIC; MIPS rules of thumb; Heirloom TPC-C; Clabby (only old IBM-hosted papers); Phoronix (dead end); LSPR caveat; sceptical analysts; HN; the 32.5 cores/IFL ratio; the z10 critique; BMC and Kyndryl surveys; Principled Technologies, ESG and Quark+Lepton (dead end); academic SPEC (dead end); Telum critique; Gartner (second-hand only); Rubin critique (none).
-- **Fetch failures:** c0t0d0s0 (410); web.archive.org (not reachable by the tool); Omdia (403); the share.confex.com "TCO Lessons Learned" PDF (DNS); the Broadcom Rubin PDF (redirect).
+- **Fetch failures:** c0t0d0s0 (410); web.archive.org (could not be reached); Omdia (403); the share.confex.com "TCO Lessons Learned" PDF (DNS); the Broadcom Rubin PDF (redirect).
 
 **Standard benchmarks and community (about 45 calls)**
 - **Searches:**
@@ -2209,8 +2181,8 @@ All strands used WebSearch and WebFetch only. PDFs that WebFetch could not parse
 - **Searches:** zRef HPE; zRef TPC-E CICS COBOL MIPS; zRef GitHub s390x; "4AA4-2452ENW" (spam hits only); "Mainframe Alternative Sizing" DL980; Microsoft 288/170; TmaxSoft zRef; zRef Superdome/Micro Focus; Asysco 18,000 MIPS; LzLabs zRef (x2); other meanings of zRef; MIPS-per-core critiques; zRefCICS/BL860c.
 - **Dead ends:**
   - The HP PDF (404) and hpe.com psnow (timeout).
-  - Wayback (not reachable by the tool).
-  - manualzz (403) and pdfslide (redirect to a 404).
+  - Wayback (could not be reached).
+  - manualzz (403) and pdfslide (now redirects to a different domain).
   - The CAF page (redirect) and its GitHub source (404).
   - techcommunity (login); info.lzlabs.com (ENOTFOUND); LinkedIn articles by Ming Lu and Dale Vecchio (403).
 - **Not tried:** the "zRefBU" exact phrase, HPE community blogs, the asysco.com/ibm/ whitepaper, and the Micro Focus/OpenText archives.
@@ -2241,10 +2213,10 @@ All strands used WebSearch and WebFetch only. PDFs that WebFetch could not parse
 | 3.8 Critiques and debunks | 10 |
 | **Total (de-duplicated)** | **125** |
 
-Choices I made:
+Method notes:
 - The research was split into five source-type strands plus a dedicated zRef strand.
-- I used the brief's eight-part structure in place of report-writer.md's prose-only layout, keeping only its title and BLUF paragraph. Section bodies use bullets and tables because the brief asks for catalogue fields.
-- I placed items that fit two groups in one group, with cross-references to the other:
+- Section bodies use bullets and tables, because each catalogue entry carries the same fields.
+- Items that fit two groups are placed in one group, with cross-references to the other:
   - Signal65 in analysts (AN01), cross-referenced from consolidation;
   - the Watson and Walker Z Sort reprint in analysts (AN03), as an independent consultancy even though IBM hosts it;
   - IBM's "Ugly Truths" in critiques (CR01);
@@ -2252,7 +2224,7 @@ Choices I made:
   - the Microsoft/VeriTest 2003 benchmark in vendors (VN13);
   - REDP-5170 in IBM material (IB22), although the academic strand found it;
   - the Ververica offload in consolidation (CS07).
-- I merged near-duplicates and minor related items into one entry each:
+- Near-duplicates and minor related items are merged into one entry each:
   - the zDLC blog and Software AG reprint into IB03;
   - the Joy Deng blog into IB04;
   - the IBM Docs zEDC pages into IB07;
@@ -2267,10 +2239,11 @@ Choices I made:
   - Infosys into VN19;
   - Kwan's pgbench claim into SB07;
   - the CMG 2018 and Astadia MIPS rules into VN06.
-- Where strands disagreed on fetch status, I recorded the strongest status any strand achieved and named that strand. This applies to Tech Monitor 1998, the zlib PR and LWN, REDP-5170, the TmaxSoft study and IBM/Temenos. I did not upgrade any item that no strand fetched.
-- Two Go-issue details (the "key generation plus ECDH, median of 5" wording and the P-384 ECDSA verify figures) are not in the strand notes; they were read from the issue on 2026-11-19.
-- I recorded both dates where the notes conflict: Signal65 (July against October 2025) and the TmaxSoft study (about 2020-21 against the ©2023 PDF footer).
-- I flagged two zRef ambiguities instead of resolving them: 1,409 TPS ran with a different user count from 1,672 TPS, and the 13-min no-CICS zRefBR reference matches the concurrent-batch scenario rather than the standalone 6.21 min.
-- I ranked zRef second, behind FitzGerald. zRef is the closest analogue to our online-under-batch test, but it is vendor-run and unreproducible, while FitzGerald is the only independent equal-core head-to-head.
-- I included items with unknown contents (AC20, CR07, IB19) as catalogue entries flagged for retrieval rather than dropping them, and left out the Dutch-government example (no URL recovered) and the Belgian Ministry of Finance "400K IOPS" case-study mention on the LinuxONE 5 page (the IBM strand called it uncontrolled; it appears only under Open gaps context in the notes).
-- I mapped SB05's Ryzen 5800U to the 5800X by name and generation only. I did not equate their performance.
+- Where strands disagreed on fetch status, the strongest status any strand achieved is recorded, with that strand named. This applies to Tech Monitor 1998, the zlib PR and LWN, REDP-5170, the TmaxSoft study and IBM/Temenos. No item that no strand fetched was upgraded on the strands' evidence alone.
+- On 2026-11-25 a sample of 44 entries was re-checked against their cited sources (one source could not be retrieved), and the eight that differed were corrected: AC11, IB14, IB15, IB17, IB23, IB24, VN10 and VN13. Figures not found in the cited source were removed, and sources read then are marked "fetched 2026-11-25" (also IB25). Entries still marked "from search snippet" are not verified.
+- Two Go-issue details (the "key generation plus ECDH, median of 5" wording and the P-384 ECDSA verify figures) were read from the issue itself on 2026-11-19.
+- Both dates are recorded where the sources disagree: Signal65 (July against October 2025) and the TmaxSoft study (about 2020-21 against the ©2023 PDF footer).
+- Two zRef ambiguities are flagged, not resolved: 1,409 TPS ran with a different user count from 1,672 TPS, and the 13-min no-CICS zRefBR reference matches the concurrent-batch scenario rather than the standalone 6.21 min.
+- zRef is ranked second, behind FitzGerald. zRef is the closest analogue to our online-under-batch test, but it is vendor-run and unreproducible, while FitzGerald is the only independent equal-core head-to-head.
+- Items with unknown contents (AC20, CR07, IB19) are included as catalogue entries flagged for retrieval rather than dropped. Left out are the Dutch-government example (no URL recovered) and the Belgian Ministry of Finance "400K IOPS" case-study mention on the LinuxONE 5 page (the IBM strand called it uncontrolled).
+- SB05's Ryzen 5800U is mapped to the 5800X by name and generation only. Their performance is not equated.

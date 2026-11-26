@@ -7,7 +7,7 @@ Marking: **fetched** means the page itself was retrieved and read. **snippet onl
 
 ## Q2. Terms of use: benchmarking, sustained load, publishing results
 
-**Verdict: EXPRESSLY PROHIBITED.** Benchmark, performance and stress testing are banned, and so is publishing their results. This rests on a 2021 version of the terms that I could not fetch myself (see the evidence status below).
+**Verdict: EXPRESSLY PROHIBITED.** Benchmark, performance and stress testing are banned, and so is publishing their results. This rests on a 2021 version of the terms that we could not fetch (see the evidence status below).
 
 Clauses (Section 5 of "LinuxONE Community Cloud Terms & Conditions, Version 9.0, June 11, 2021", hosted by Marist at http://tc.l1cc.marist.edu/linuxone/TC.PDF). **Snippet only**, seen in three separate searches:
 
@@ -18,11 +18,11 @@ Clauses (Section 5 of "LinuxONE Community Cloud Terms & Conditions, Version 9.0,
 The same snippets also say the service is "as-is", that access is "up to 120 days", that no data backups are made, and that proprietary-software work is prohibited. All of this is snippet only.
 
 Evidence status, in full:
-- **http://tc.l1cc.marist.edu/linuxone/TC.PDF:** NOT fetched. WebFetch got ECONNREFUSED on 148.100.90.20:443, and a plain HTTP `curl` on port 80 timed out after 21 s. The only source for the text is the search snippets. The search index titles the document "Version 9.0 June 11, 2021 LinuxONE Community Cloud Terms & Conditions".
+- **http://tc.l1cc.marist.edu/linuxone/TC.PDF:** NOT fetched. A page fetch got ECONNREFUSED on 148.100.90.20:443, and a plain HTTP `curl` on port 80 timed out after 21 s. The only source for the text is the search snippets. The search index titles the document "Version 9.0 June 11, 2021 LinuxONE Community Cloud Terms & Conditions".
 - **http://security.marist.edu/LinuxOne/TC.PDF** (the older link, cited from an Open Mainframe Project page): fetched. It gives a 302 redirect to https://www.marist.edu/information-security, a general page, so the document is no longer there.
-- **https://www.ibm.com/community/z/ibm-linuxone-community-cloud-terms-and-conditions/:** fetched. It gives a 302 redirect to https://community.ibm.com/zsystems/l1cc/terms/. I fetched that page too, but it renders only its title ("Terms and Conditions: IBM LinuxONE Community Cloud"), because the body is loaded by JavaScript. I could not read any clause there. A snippet of the IBM page describes the service as free access "to virtual servers and services for testing and piloting emerging applications for evaluation purposes" and says it links to separate "Terms for accessing the Community Cloud hosted at Marist College" (snippet only).
-- **No newer version found, but a 2026 copy may exist.** Several searches for a 2022-2026 version of the terms found nothing. However, a fetched IBM Community thread (https://community.ibm.com/community/user/question/problem-with-starting-the-ibm-linuxone-community-cloud-instance-again-please-help) shows a library entry titled "The LinuxONE Community Cloud Terms and Conditions", added 02/10/26 by Bruce Gilkes (the IBM "LinuxONE Community Cloud Architect and Project Leader", per https://community.ibm.com/community/user/discussion/taking-the-lnx1-linux1-course-where-can-one-join-linuxone-community-cloud-to-request-virtual-server). I could not read its contents: the group library (https://community.ibm.com/community/user/groups/community-home/librarydocuments?CommunityKey=8c2c15eb-f059-4e7c-8cb6-5fb713a7806c) does not list documents without a login. That 2026 document may restate or revise Section 5, and only someone logged in can tell which.
-- The same January 2026 thread (fetched) reports that the Community Cloud support address "linuxone.community@us.ibm.com** doesn´t seem to exist anymore". The thread was closed by an administrator with no IBM reply.
+- **https://www.ibm.com/community/z/ibm-linuxone-community-cloud-terms-and-conditions/:** fetched. It gives a 302 redirect to https://community.ibm.com/zsystems/l1cc/terms/. That page was fetched too, but it renders only its title ("Terms and Conditions: IBM LinuxONE Community Cloud"), because the body is loaded by JavaScript. No clause could be read there. A snippet of the IBM page describes the service as free access "to virtual servers and services for testing and piloting emerging applications for evaluation purposes" and says it links to separate "Terms for accessing the Community Cloud hosted at Marist College" (snippet only).
+- **No newer version found, but a 2026 copy may exist.** Several searches for a 2022-2026 version of the terms found nothing. However, a fetched IBM Community thread (https://community.ibm.com/community/user/question/problem-with-starting-the-ibm-linuxone-community-cloud-instance-again-please-help) shows a library entry titled "The LinuxONE Community Cloud Terms and Conditions", added 02/10/26 by the IBM LinuxONE Community Cloud project lead (the "LinuxONE Community Cloud Architect and Project Leader", per https://community.ibm.com/community/user/discussion/taking-the-lnx1-linux1-course-where-can-one-join-linuxone-community-cloud-to-request-virtual-server). Its contents could not be read: the group library (https://community.ibm.com/community/user/groups/community-home/librarydocuments?CommunityKey=8c2c15eb-f059-4e7c-8cb6-5fb713a7806c) does not list documents without a login. That 2026 document may restate or revise Section 5, and only someone logged in can tell which.
+- The same January 2026 thread (fetched) reports that the Community Cloud support address "linuxone.community@us.ibm.com doesn´t seem to exist anymore". The thread was closed by an administrator with no IBM reply.
 - **Older conflicting statement:** a 2015 Enterprise Times article said partners could "port, test and benchmark" on the cloud (snippet only, https://www.enterprisetimes.co.uk/2015/08/17/linuxone-the-first-linux-only-mainframe/). It predates the 2021 terms and is superseded by them.
 - **Other limits, from a 2019 IBM Japan deck (fetched, https://speakerdeck.com/sierraone47/try-linuxone-community-cloud):** slide 11 says production workloads are not allowed ("本番ワークロードは稼働できません (開発・評価用なので)") and that VMs may be deleted after 30 days of inactivity. The deck does not mention benchmarking.
 - **Enforcement:** an Open Mainframe Project FAQ, quoted in a search summary, says Marist may change or shut down an instance that violates the terms (snippet only; the page https://openmainframeproject.org/?p=9479 now returns 404).
@@ -36,7 +36,7 @@ Evidence status, in full:
 **Who runs it.** It is a joint IBM and Marist service, hosted at Marist College. The Open Mainframe Project only lists it; OMP does not run it.
 - The 2021 IBM deck (fetched, text extracted, https://www.sluug.org/resources/presentations/media/2021/STLLINUX/2021-04-22_STLLINUX.pdf) says it was "Developed as a joint project between IBM and Marist College, starting in 2015".
 - SHARE New Orleans 2023 (fetched, https://www.share.org/Events/Past-Events/Proceedings/Proceeding-Details/15614-linuxone-community-cloud-using-ibm-cloud-infrastructure-center-icic-to-bring-zlinux-to-the-world) says: "Since 2016, IBM and Marist College have worked jointly to provide a zLinux testing platform".
-- The IBM project lead is Bruce Gilkes, "LinuxONE Community Cloud Architect and Project Leader", IBM (fetched, 2024 thread: https://community.ibm.com/community/user/discussion/taking-the-lnx1-linux1-course-where-can-one-join-linuxone-community-cloud-to-request-virtual-server).
+- IBM has a project lead for it, the "LinuxONE Community Cloud Architect and Project Leader" (fetched, 2024 thread: https://community.ibm.com/community/user/discussion/taking-the-lnx1-linux1-course-where-can-one-join-linuxone-community-cloud-to-request-virtual-server).
 - OMP lists it among third-party resources (fetched, page updated 2025-09-03: https://openmainframeproject.org/news/developer-resources-for-linux-on-s390x/).
 
 **Sign-up.** The entry point is https://community.ibm.com/zsystems/l1cc/. The page is JS-rendered, so a fetch returned only its title.
@@ -67,9 +67,9 @@ Evidence status, in full:
 - Latest documented: "Current L1CC resides on LinuxONE Emperor III (z15 technology)" (2021 IBM deck, fetched).
 - Before that: Marist installed the "world's first" LinuxONE III in October 2019 to power the cloud (fetched, https://www.marist.edu/-/marist-first-linuxone-iii).
 - 2019: Emperor II (z14) and Rockhopper II (z14 ZR1) (fetched, 2019 deck slide 7).
-- I found NO source saying it moved to LinuxONE 4 (z16) or LinuxONE 5 (z17), so whether it has Telum or an AIU is unknown. Running `lscpu` or reading `/proc/cpuinfo` on a VM would show the machine type (8561 = z15, 3931 = z16, 9175 = z17).
+- We found NO source saying it moved to LinuxONE 4 (z16) or LinuxONE 5 (z17), so whether it has Telum or an AIU is unknown. Running `lscpu` or reading `/proc/cpuinfo` on a VM would show the machine type: 8561 or 8562 = z15, 3931 or 3932 = z16, 9175 or 9176 = z17. The LinuxONE models use the same types (for example 3932 for LinuxONE Rockhopper 4, 9175 for LinuxONE Emperor 5 and 9176 for LinuxONE Rockhopper 5). Sources, fetched 2026-11-25: the IBM Redbooks "IBM z15 (8561) Technical Guide" (SG24-8851) and "IBM z15 (8562) Technical Guide" (SG24-8852, https://www.redbooks.ibm.com/abstracts/sg248852.html); APAR VM66624, which adds 3932-A02, -AGZ, -LA2 and -AGL (https://www.ibm.com/support/pages/apar/vm66624); and IBM's list of z/VM service for the z17 family, which gives type 9175 models ME1 and ML1 and type 9176 models ME2, ML2, MER and MLR (https://www.ibm.com/support/pages/zvm/service/vmreqz17.html).
 
-**Shared vs dedicated, SMT.** Not documented anywhere I found. Being a z/VM guest in a "shared public cloud" (2023 blog, fetched) implies shared IFLs, but that is inference, not a source.
+**Shared vs dedicated, SMT.** Not documented anywhere we found. Being a z/VM guest in a "shared public cloud" (2023 blog, fetched) implies shared IFLs, but that is inference, not a source.
 
 **Hypervisor: z/VM.**
 - "The latest iteration of the cloud is based on ICIC (IBM Cloud infrastructure Center) on z/VM" (SHARE 2023, fetched).
@@ -100,7 +100,7 @@ Evidence status, in full:
 
 **IBM Cloud LinuxONE Virtual Server for VPC (s390x), being withdrawn.**
 - From the fetched profiles page (https://github.com/ibm-cloud-docs/vpc/blob/master/s390x-vsi-profiles.md, updated 2026-08-14): "As of 28 February 2026, you can't create new instances. Existing instances are supported until 20 February 2027." Any instance still existing then is deleted.
-- The VPC release notes announcing it on 20 Feb 2026 also deprecate Dedicated Host for VPC (s390x), Hyper Protect Virtual Server for VPC and Wazi as a Service (snippet only, https://github.com/ibm-cloud-docs/vpc/blob/master/release-notes.md; my fetch was truncated before February).
+- The VPC release notes announcing it on 20 Feb 2026 also deprecate Dedicated Host for VPC (s390x), Hyper Protect Virtual Server for VPC and Wazi as a Service (snippet only, https://github.com/ibm-cloud-docs/vpc/blob/master/release-notes.md; our fetch was truncated before February).
 - Profiles, from the same fetched page:
   - bz2 is 1 vCPU : 4 GiB, up to bz2-16x64;
   - cz2 is 1 : 2, up to cz2-16x32;
@@ -108,13 +108,13 @@ Evidence status, in full:
   - Secure Execution variants are bz2e, cz2e and mz2e;
   - 2 vCPUs per core (that is, SMT-2 pairs), with bandwidth up to 32 Gbps.
 - The hardware generation is not named on the page. A SUSE guide says Hyper Protect needs "IBM z16 or IBM LinuxONE 4" (snippet only, https://documentation.suse.com/trd/ibm/html/gs_sles_ibm-hpvs/index.html).
-- I did not look up prices, because the service is closed to new orders.
+- Prices were not looked up, because the service is closed to new orders.
 - Hyper Protect Virtual Servers for VPC are deprecated in the same notice.
 - **Not usable for a new Phase 1.**
 
 **IBM Z / LinuxONE Partner Network developer access.** There is a page at https://zlpn.ibm.com/public/ ("Developer System Access IBM Z and IBM LinuxONE Partner Network", snippet only). It is aimed at ISV partners. Terms not checked.
 
-**IBM SkillsBuild Technology Access (formerly the Academic Initiative).** A third-party 2026 guide says access needs an institutional email and is "limited to classroom, learning, and non-commercial research purposes only" (snippet only, https://aicreditmart.com/ai-credits-providers/ibm-academic-initiative-free-ai-training-credits-2026-guide/). I found no evidence that it gives LinuxONE VMs. It covers software and cloud credits.
+**IBM SkillsBuild Technology Access (formerly the Academic Initiative).** A third-party 2026 guide says access needs an institutional email and is "limited to classroom, learning, and non-commercial research purposes only" (snippet only, https://aicreditmart.com/ai-credits-providers/ibm-academic-initiative-free-ai-training-credits-2026-guide/). We found no evidence that it gives LinuxONE VMs. It covers software and cloud credits.
 
 **Open Mainframe Project mainframe access program.** New, announced about 2026-11-05.
 - "Apply to the TAC". The work must be "an open source project, not commercial work", and should benefit the mainframe ecosystem. IBM handles setup. Hardware generation and benchmark rules are not stated. (Fetched: https://tfir.io/mainframe-ci-access-open-source-linux-foundation/)
@@ -184,15 +184,15 @@ Evidence status, in full:
 **ONNX Runtime and the IBM Z Deep Learning Compiler (zDLC).**
 - ONNX Runtime's build matrix lists S390X as supported on Linux, as a source build (fetched, https://onnxruntime.ai/docs/build/inferencing.html). No official PyPI s390x wheel was found.
 - Ubuntu has an `onnxruntime` 1.13.1 s390x build (snippet only, https://launchpad.net/ubuntu/+source/onnxruntime/1.13.1+dfsg-1/+build/28445852).
-- I found **no zDNN/NNPA execution provider for ONNX Runtime**.
+- We found **no zDNN/NNPA execution provider for ONNX Runtime**.
 - IBM's NNPA route for ONNX is zDLC, which uses ONNX-MLIR to compile `.onnx` models to shared libraries. The container is `icr.io/ibmz/zdlc:5.1.0`, and the license is Apache-2.0 (fetched, https://github.com/IBM/zDLC).
 - zDLC CPU code uses SIMD on z13+. NNPA use needs "the Integrated Accelerator for AI available on IBM z16 and z17", with `-march=z16`/`-march=z17` (same page).
 - Upstream: https://github.com/onnx/onnx-mlir (`-DONNX_MLIR_ACCELERATORS=NNPA`, snippet only).
 
 **IBM Semeru / OpenJDK.**
-- Semeru Open Edition 27.0.1.0 is offered for Linux s390x (tar.gz and rpm). The download page lists Java 8, 11, 17, 21, 25, 26 and 27, but the per-version s390x rows were truncated in my fetch (fetched, https://developer.ibm.com/languages/java/semeru-runtimes/downloads/).
+- Semeru Open Edition 27.0.1.0 is offered for Linux s390x (tar.gz and rpm). The download page lists Java 8, 11, 17, 21, 25, 26 and 27, but the per-version s390x rows were truncated in our fetch (fetched, https://developer.ibm.com/languages/java/semeru-runtimes/downloads/).
 - Red Hat ships `java-21-ibm-semeru-certified-jdk` 21.0.11 for s390x (snippet only, https://access.redhat.com/errata/RHSA-2026:22328).
-- Distro OpenJDK exists on all s390x distros; I did not check a specific version.
+- Distro OpenJDK exists on all s390x distros; no specific version was checked.
 
 **cgroups v2 and cpu.weight.**
 - RHEL 9: "by default, mounts and uses cgroups-v2" (snippet only, https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/considerations_in_adopting_rhel_9/assembly_kernel_considerations-in-adopting-rhel-9; the fetch got 403).
@@ -232,7 +232,7 @@ Evidence status, in full:
 
 **AMD EPYC.**
 - Zen 4 (Genoa) added AVX-512 including VNNI and BF16, "double-pumped" over 256-bit units (snippet only, https://www.tomshardware.com/reviews/amd-4th-gen-epyc-genoa-9654-9554-and-9374f-review-96-cores-zen-4-and-5nm-disrupt-the-data-center/2; https://www.phoronix.com/review/amd-zen4-avx512/1).
-- I found no on-die compression or crypto offload engine comparable to QAT on EPYC. QAT is Intel's product. That is an absence of evidence from my searches, not a sourced statement.
+- We found no on-die compression or crypto offload engine comparable to QAT on EPYC. QAT is Intel's product. That is an absence of evidence from our searches, not a sourced statement.
 
 **Cloud bare metal with QAT/AMX (rough on-demand prices).**
 - **AWS:**
@@ -242,8 +242,8 @@ Evidence status, in full:
   - C3 bare metal instances "exclusively provide access to Intel integrated CPU features such as Intel Quick Assist (QAT), Intel Data Streaming Accelerator (DSA), and Intel In-Memory Analytics Accelerator (IAA)" (fetched, Google blog 2024-08-01, https://cloud.google.com/blog/products/compute/compute-engine-c3-bare-metal-and-x4-machine-types-now-ga).
   - C4 metal on Xeon 6 can use QAT, per Intel (snippet only, https://community.intel.com/t5/Blogs/Tech-Innovation/Cloud/Google-Cloud-C4-VMs-Intel-Xeon-6-Delivers-Instant-AI-ROI-and/post/1726843; the fetch redirected).
   - c4-standard-288-metal has 288 vCPU / 1080 GiB at about **$14.23/h** (fetched, https://instances.vantage.sh/gcp/c4-standard-288-metal).
-- **Azure:** Dv6/Ev6 run on 5th Gen Xeon Platinum 8573C with AMX (snippet only, https://mc.merill.net/message/AZ478996). I found no Azure source exposing QAT, and no Azure bare-metal QAT offering.
-- **IBM Cloud:** has 4th Gen Xeon bare metal (8474C, 8490H) on Classic and VPC (snippet only, https://community.ibm.com/community/user/blogs/laurentiu-pana/2025/04/03/power-real-time-business-with-high-end-servers-cer). I found no published price or QAT statement; pricing is quoted in the catalog.
+- **Azure:** Dv6/Ev6 run on 5th Gen Xeon Platinum 8573C with AMX (snippet only, https://mc.merill.net/message/AZ478996). We found no Azure source exposing QAT, and no Azure bare-metal QAT offering.
+- **IBM Cloud:** has 4th Gen Xeon bare metal (8474C, 8490H) on Classic and VPC (snippet only, https://community.ibm.com/community/user/blogs/laurentiu-pana/2025/04/03/power-real-time-business-with-high-end-servers-cer). We found no published price or QAT statement; pricing is quoted in the catalog.
 
 **What this means for the project.**
 - A fair x86 comparison needs two rows:
@@ -257,7 +257,7 @@ Evidence status, in full:
 
 **BenchBase** (CMU, successor to OLTPBench).
 - A JDBC "Multi-DBMS SQL Benchmarking Framework" with TPC-C, TPC-H, TATP, YCSB, SmallBank, Voter and others (snippet only, https://www.github.com/cmu-db/benchbase).
-- It is pure Java, so it should run on s390x under Semeru or OpenJDK, but I found no s390x-specific statement. Inference.
+- It is pure Java, so it should run on s390x under Semeru or OpenJDK, but we found no s390x-specific statement. Inference.
 
 **HammerDB** (TPC Council).
 - Ships x86-64 binaries only: "there are no alpha, beta or pre-release versions of HammerDB for ARM64 at present" (2025-03-18). Arm work started in 2026, and s390x is not mentioned anywhere (fetched, https://github.com/TPC-Council/HammerDB/discussions/767).
@@ -275,7 +275,7 @@ Evidence status, in full:
 
 **COBOL performance micro-benchmarks.**
 - The GnuCOBOL FAQ points to the speleotrove "telco" decimal benchmark (http://speleotrove.com/decimal/telco.html), with a GnuCOBOL-tuned version (snippet only, https://gnucobol.sourceforge.io/faq/index.html).
-- I found no open COBOL/CICS-style online+batch benchmark kit.
+- We found no open COBOL/CICS-style online+batch benchmark kit.
 
 **What this means for the project.**
 - No kit does "COBOL online + batch + compression + signing + inference" out of the box. Reuse pieces:
@@ -288,8 +288,8 @@ Evidence status, in full:
 
 ## Blockers and risks
 
-1. **The Community Cloud terms ban benchmarking and publishing results.** This is Section 5 of v9.0 (2021), snippet only. A newer 2026-02-10 terms document exists, and I could not read it. Do not run the kit there without written permission.
-2. **IBM Cloud s390x VSIs are closed to new orders** since 2026-02-28, and existing ones are deleted on 2027-02-20. Hyper Protect VPC and Dedicated Host s390x are deprecated too. No pay-as-you-go s390x cloud remains that I could find.
+1. **The Community Cloud terms ban benchmarking and publishing results.** This is Section 5 of v9.0 (2021), snippet only. A newer 2026-02-10 terms document exists, and we could not read it. Do not run the kit there without written permission.
+2. **IBM Cloud s390x VSIs are closed to new orders** since 2026-02-28, and existing ones are deleted on 2027-02-20. Hyper Protect VPC and Dedicated Host s390x are deprecated too. No pay-as-you-go s390x cloud remains that we could find.
 3. **The Community Cloud hardware is undocumented since 2021** (z15 then). There may be no AIU, so the zDNN/zDLC inference step may only run in CPU mode there.
 4. **No hardware counters in z/VM guests.** `perf stat` cycles and instructions are unavailable, so measure with wall-clock and OS CPU time.
 5. **The Community Cloud is a shared z/VM guest** with unknown SMT and IFL dedication, and noisy neighbours. Results would not be reproducible even if they were allowed.
@@ -300,9 +300,8 @@ Evidence status, in full:
 10. **QAT exists only on some Xeon SKUs.** Cloud "QAT" claims must be checked on the instance itself.
 11. **Not fetched:** the Community Cloud terms PDF (host unreachable), its JS-rendered pages and the logged-in library. Every terms quote here is snippet only.
 
-## Choices I made
+## Method notes
 
-- I downloaded the terms PDF with one plain-HTTP `curl` attempt (Bash) to tc.l1cc.marist.edu after WebFetch failed. It timed out and nothing was retrieved. This was a public web server, not a mainframe, but the brief named only WebSearch and WebFetch.
-- I extracted text locally (`pdftotext`) from two PDFs that WebFetch had saved (the 2021 SLUUG/IBM deck and the 2017 Marist ECC deck), to read content WebFetch could not decode. I count these as fetched.
-- I sent the Q2 verdict to "main" twice: the verdict, then an addendum about the 2026 terms document.
-- I did not look up IBM Cloud s390x prices, because the service no longer accepts new instances.
+- After the page fetch failed, one plain-HTTP `curl` request was made for the terms PDF at tc.l1cc.marist.edu. It timed out and nothing was retrieved.
+- Text was extracted locally (`pdftotext`) from two PDFs that page fetches had saved (the 2021 SLUUG/IBM deck and the 2017 Marist ECC deck), to read content the fetch could not decode. These count as fetched.
+- IBM Cloud s390x prices were not looked up, because the service no longer accepts new instances.

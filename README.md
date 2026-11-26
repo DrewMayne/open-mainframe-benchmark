@@ -1,27 +1,52 @@
 # Open Mainframe Benchmark
 
+*Not a project of the Open Mainframe Project or The Linux Foundation, and not affiliated with either. See
+[NOTICE](NOTICE) for trademarks.*
+
 An open, reproducible benchmark specification and kit for comparing IBM Z / LinuxONE with x86 servers. It runs online
 transactions and batch together, from the same source on every platform, in two tracks: **Java** (the same JVM
 everywhere, for the hardware question) and **COBOL** (based on AWS CardDemo, for the migration question).
 
-**Status: early design (v0.1). No kit code and no results yet.** This repository publishes the plan, the specification
-draft and the pre-registered hypotheses *before* any measurement. Anyone can then check that the results answer the
-questions as they were asked.
+**Status: early design (spec draft v0.3.2). No kit code and no results yet.** This repository publishes the plan,
+the specification draft and the pre-registered hypotheses *before* any measurement. Anyone can then check that the
+results answer the questions as they were asked. The hypotheses were registered against spec v0.1 (H1-H5) and
+v0.1.1 (H1j, H6).
 
+## Status at a glance
 > **Optional modules withdrawn for now.** Optional modules derived from industry-standard benchmark material are
 > in preparation and kept private until the benchmark owners' permission is in place. No kit code and no results
 > are published yet.
 
-## Why
-Published mainframe-against-server comparisons are almost all vendor-run. The best-known workload for sizing mainframe
-replacements (HP's "zRef", z/OS Reference Application) is proprietary, its original paper is no longer online, and its
-results can't be reproduced. IBM's own accelerator figures compare one generation of Z with another, and its x86
-comparisons mostly rest on estate models or added network delay. No audited TPC, SPEC, MLPerf or Sort Benchmark result
-exists for any IBM mainframe. See [docs/prior-art.md](docs/prior-art.md): 125 sources reviewed, each marked by
-independence and by whether we read the primary text.
+Status words, used the same way on every page: **planned** (on the roadmap; nothing written yet), **notes** (a plan,
+design or method in this repository; no code), **withdrawn** (in preparation, but not described here until the
+benchmark owners' permission is in place), and **done**.
 
-This project aims to fill that gap in the open: same code, equal cores, repeated runs with confidence intervals, every
-script and raw file published, and predictions written down before the data exists.
+| Part | Where | Status | Code |
+| --- | --- | --- | --- |
+| Specification, hypotheses, FDR template | [SPEC.md](SPEC.md), [HYPOTHESES.md](HYPOTHESES.md), [docs/FDR-TEMPLATE.md](docs/FDR-TEMPLATE.md) | notes: spec draft v0.3.2; hypotheses registered against v0.1 and v0.1.1 | none |
+| Java track (M1, M1b) | not started | planned (M1 is next) | none |
+| COBOL track (M2) | not started | planned | none |
+| s390x and z/OS legs (M3, M5) | [docs/platforms.md](docs/platforms.md), [docs/PORTING-zOS.md](docs/PORTING-zOS.md) | planned; access sought ([#1](../../issues/1), [#2](../../issues/2)) | none |
+| Optional modules derived from benchmark material | not in this repository | withdrawn | private |
+| Pricing and energy methods (T1) | [docs/FDR-TEMPLATE.md](docs/FDR-TEMPLATE.md) section 8, [docs/methods/energy.md](docs/methods/energy.md) | notes (draft) | none |
+| Prior-art review | [docs/prior-art.md](docs/prior-art.md) | notes | none |
+
+## Why
+Public measurements of IBM Z and x86 servers running the same work are scarce. Most published comparisons come from
+a vendor of one side, IBM or an x86 or rehosting vendor, and the last independent head-to-head with confidence
+intervals that we found is from 2014. See [docs/prior-art.md](docs/prior-art.md): 125 sources reviewed, each marked by
+independence and by whether we read the primary text. Among its findings:
+- HP's "zRef" (z/OS Reference Application), a workload used to size mainframe replacements, is proprietary. We could
+  not retrieve its original paper, and its results can't be reproduced independently.
+- IBM's published accelerator figures mostly compare Z with Z (an older generation, a general-purpose core, or
+  software on the same machine). Its x86 comparisons include estate models, remote x86 servers with added network
+  delay, and a few core-matched tests.
+- We found no audited TPC, SPEC or MLPerf result for any IBM mainframe, and no Sort Benchmark entry. These are
+  searches, not exhaustive queries of each results database; the Sort Benchmark records page was checked in full.
+
+This project aims to fill that gap in the open, with numbers that IBM, x86 vendors and customers can all re-run:
+same code, equal cores, repeated runs with confidence intervals, every script and raw file published, and
+predictions written down before the data exists.
 
 ## What it measures
 - **Per-core throughput:** the same COBOL workload on a LinuxONE IFL and an x86 core.
@@ -31,8 +56,8 @@ script and raw file published, and predictions written down before the data exis
 - **Batch elapsed time,** alone and alongside online work.
 
 ## Documents
-- [SPEC.md](SPEC.md): workload, platforms, metrics and run rules (draft v0.1)
-- [HYPOTHESES.md](HYPOTHESES.md): the pre-registered predictions H1 to H5
+- [SPEC.md](SPEC.md): workload, platforms, metrics and run rules (draft v0.3.2)
+- [HYPOTHESES.md](HYPOTHESES.md): the pre-registered predictions H1 to H6, plus H1j
 - [ROADMAP.md](ROADMAP.md): milestones and open questions
 - [docs/prior-art.md](docs/prior-art.md): review of prior mainframe-against-server measurements
 - [docs/platforms.md](docs/platforms.md): s390x and x86 platform and toolchain facts, with sources
@@ -64,4 +89,13 @@ published with the results. Offers of access: open a
 Apache License 2.0, see [LICENSE](LICENSE). Any third-party code adopted later (for example AWS CardDemo, also Apache
 2.0) keeps its own licence and notices; see [NOTICE](NOTICE).
 
-Maintainer: Andrew Mayne. Contributions and critique are welcome, especially methodological critique.
+## About this project
+Maintained by Andrew Mayne, Durham College. An independent project, not a Durham College publication.
+
+AI tools assisted with research compilation and drafting. Each prior-art entry marks how its sources were seen:
+fetched and read, not fetched, or seen only in a search-result snippet (marked "not verified"). On 2026-11-25 a
+sample of entries was re-checked against their sources, and the eight that differed were corrected. The maintainer
+is responsible for the content; corrections are welcome as issues.
+
+Contributions and critique are welcome, especially methodological critique. To report a security issue, see
+[SECURITY.md](SECURITY.md).

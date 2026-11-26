@@ -6,5 +6,25 @@ This product is licensed under the Apache License, Version 2.0 (see LICENSE).
 Third-party components adopted later (for example AWS CardDemo, Copyright Amazon.com, Inc. or its affiliates,
 Apache License 2.0) will be listed here with their own copyright and licence notices.
 
-IBM, IBM Z, LinuxONE, z/OS, CICS and DFSORT are trademarks of International Business Machines Corporation.
+Trademarks
+
+IBM, IBM Z, IBM Research, z/OS, z/VM, System z, zSystems, z15, z16, z17, Db2, CICS, RACF, IBM Telum, IBM Cloud,
+IBM FlashSystem, IntelliMagic, Power, Power9, Power11, WebSphere, Parallel Sysplex, Rational, Semeru Runtime,
+SkillsBuild, Language Environment and Redbooks are trademarks of International Business Machines Corporation,
+registered in many jurisdictions worldwide. IBM Spyre and Spyre are trademarks of International Business Machines
+Corporation. LinuxONE, DFSORT, IMS and the other IBM product names used here may also be trademarks of IBM; IBM's
+list of its trademarks (https://www.ibm.com/legal/copytrade) is not comprehensive.
+Intel and Xeon are trademarks of Intel Corporation or its subsidiaries.
+AMD, AMD EPYC and AMD Ryzen are trademarks of Advanced Micro Devices, Inc.
+Linux® is the registered trademark of Linus Torvalds in the U.S. and other countries.
+Java is a registered trademark of Oracle and/or its affiliates.
+Red Hat, Red Hat Enterprise Linux and Red Hat OpenShift are trademarks of Red Hat, LLC, registered in the United
+States and other countries.
+TPC, TPC Benchmark, TPC-C, TPC-E and TPC-H are trademarks of the Transaction Processing Performance Council.
+SPEC, SPEC CPU and SPECjbb are registered trademarks of the Standard Performance Evaluation Corporation (SPEC).
+MLCommons and MLPerf are registered trademarks of MLCommons Association.
+Open Mainframe Project is a trademark of The Linux Foundation.
+Other names may be trademarks of their respective owners.
+
 This project is independent and is not affiliated with or endorsed by IBM, AWS, HP/HPE or any other vendor named.
+It is not a project of the Open Mainframe Project or The Linux Foundation, and is not affiliated with either.

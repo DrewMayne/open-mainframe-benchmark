@@ -25,6 +25,37 @@ The load generator always runs off the system under test and reaches it over TCP
 
 ## COBOL track, CardDemo (about 3-6 weeks)
 - CardDemo is a z/OS application already: CICS, VSAM, JCL and BMS, installed with its own JCL and CSD definitions.
+- **Batch and online together needs changes to CardDemo as shipped** (its CSD and JCL at commit 59cc6c2, 2025-10-16):
+  - All 18 programs are defined CONCURRENCY(QUASIRENT), so a CICS region runs their code on its QR TCB, where "only
+    one task at a time can be running" (IBM CICS documentation).
+  - All 8 files are STRINGS(1), RECOVERY(NONE), DATABUFFERS(2) and INDEXBUFFERS(1), in LSR pool 1. For an LSR file,
+    STRINGS "specifies the number of concurrent requests that can be made against that specific file".
+  - The README's batch sequence starts with CLOSEFIL, which closes TRANSACT, CCXREF, ACCTDAT, CXACAIX and USRSEC in
+    CICS (`CEMT SET FIL(...) CLO`), and reopens them with OPENFIL near the end (WAITSTEP and the optional CBPAUP0J
+    follow). POSTTRAN's JCL allocates the VSAM clusters to its batch program (CBTRN02C) directly, and the clusters
+    that ACCTFILE, CARDFILE, CUSTFILE, XREFFILE and TRANFILE define are SHAREOPTIONS(2 3): without RLS, one user at a
+    time may open such a data set for read/write.
+  - So running batch and online together on z/OS needs:
+    - a way for batch to share the files with CICS, either:
+      - VSAM record-level sharing (RLS), which needs a coupling facility lock structure (IGWLOCK00), and z/OS
+        Transactional VSAM (TVS), a separately priced feature, if the files are made recoverable (LOG(UNDO) or
+        LOG(ALL)); with LOG(NONE), TVS is not required; or
+      - batch file access routed through CICS: through the external CICS interface (EXCI), programs running in z/OS
+        can call CICS application programs in a CICS region, so the batch programs would call CICS programs to read
+        and update the files instead of opening them;
+    - threadsafe program definitions, or several CICS regions, so that application code is not limited to one QR
+      TCB;
+    - STRINGS and buffer counts sized to the measured concurrency.
+  - Each change is part of the z/OS configuration and is disclosed with it (SPEC 4.3).
+  - Sources (fetched 2026-11-25): CardDemo, https://github.com/aws-samples/aws-mainframe-modernization-carddemo
+    (`app/csd/CARDDEMO.CSD`, `app/jcl/CLOSEFIL.jcl`, `app/jcl/ACCTFILE.jcl` and the other file-load jobs, and the
+    README's "Running Batch Jobs" order); IBM CICS documentation on quasi-reentrant programs
+    (https://www.ibm.com/docs/SSGMCP_5.5.0/fundamentals/threadsafe/quasi-reentrant.html), on STRINGS for LSR files
+    (https://www.ibm.com/docs/en/SSJL4D_6.x/tuning/dfht33x.html) and on the RLS lock structure
+    (https://www.ibm.com/docs/en/SSGMCP_5.4.0/installing/dfha1dd.html) and on EXCI
+    (https://www.ibm.com/docs/en/SSGMCP_5.4.0/configuring/cics/dfha2_open_close_batch.html); IBM, "VSAM RLS/TVS
+    Overview", on share options, RLS and TVS
+    (https://www.ibm.com/support/pages/system/files/inline-files/RLS%20Overview%202025.pdf).
 - **Driver interface:** CardDemo is driven by 3270 screens, so the benchmark needs small wrapper programs that take the
   same inputs as the Linux worker pool. They are exposed through CICS web services / REST or a CICS socket listener, and
   call the business logic with a COMMAREA or channel. This is the main piece of work.
