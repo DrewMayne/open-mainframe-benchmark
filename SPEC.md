@@ -15,14 +15,58 @@ Changes in v0.3.2 (2026-11-25), corrections and a withdrawal: CardDemo on z/OS n
 The benchmark has two implementation tracks. They share the same transactions, data, batch suite, accelerated
 extension, driver, metrics, run rules and FDR. Results always name their track.
 - **Java track (built first).** The transaction and batch logic is written in Java and runs on the same JVM family
-  (IBM Semeru / OpenJ9) on x86 Linux, Linux on Z and z/OS. Because the code and the JIT are the same everywhere, it
-  answers the hardware question most cleanly. On z/OS it also shows the effect of zIIP engines, which run Java work.
-  Its accelerated steps use the standard Java APIs: `java.util.zip` (DFLTCC on Z through Semeru), JCE with OpenJCEPlus
-  (CPACF on Z), and ONNX Runtime or the zDNN-backed path for scoring.
+  (IBM Semeru / OpenJ9) on x86 Linux, Linux on Z and z/OS. The source and the JVM family are the same everywhere,
+  so it answers the hardware question most cleanly; the JIT's code-generation back ends and the garbage collector's
+  barrier implementations still differ by architecture, and the z/OS JVM is a separate certified build, so the GC
+  policy in force is recorded on every side. On z/OS it also shows the effect of zIIP engines, which run
+  zIIP-eligible work, such as Java code running in the JVM; native code it calls (for example zDNN through JNI) and
+  many z/OS services may run on CPs. Which parts are eligible is shown by measurement: the zIIP time, the
+  zIIP-eligible time on CPs and their split by address space (SMF type 30) are reported.
+  Its accelerated steps use the standard Java APIs: `java.util.zip`, JCE with OpenJCEPlus (CPACF on Z), and ONNX
+  Runtime or the zDNN-backed path for scoring. Whether `java.util.zip` reaches DFLTCC on Z depends on the zlib the
+  runtime uses and how it was built, so it is shown by counters, not assumed (1.4).
+  On x86 Linux, and on Linux on Z, the Java track is also run on an OpenJDK HotSpot build of the same Java feature
+  release (on Linux on Z, for example Eclipse Temurin, which lists Linux on s390x as a supported platform [S53], at a
+  feature release Temurin publishes for s390x), as a labelled variant, so that an x86 result is not tied to one JVM.
+  The registered hypothesis H1j is
+  scored on OpenJ9, as registered.
 - **COBOL track.** The CardDemo-based application in COBOL (1.1). It answers the migration and rehosting question,
   because COBOL/CICS business applications are what those claims are about. On z/OS it uses IBM Enterprise COBOL
   under CICS. On Linux it uses GnuCOBOL. **Caveat, stated with every COBOL-track result:** GnuCOBOL compiles via C and
   is not the compiler production mainframes use, so Linux-on-Z COBOL figures don't represent Enterprise COBOL on z/OS.
+  - **What the track measures is the toolchain as well as the hardware.** GnuCOBOL implements decimal arithmetic
+    through the GNU MP library (or MPIR) and compiles through a C compiler; Enterprise COBOL compiles to z/Architecture
+    instructions, and at ARCH(12) and later uses the vector packed-decimal facility. Business COBOL relies heavily on
+    decimal arithmetic, so the two toolchains can differ by more than the hardware does. GCC has no packed-decimal
+    type, and GnuCOBOL implements decimal arithmetic through GMP, so the generated code is not expected to use
+    z/Architecture decimal instructions. A disassembly search of the build for the packed-decimal (AP, SP, MP, DP,
+    ZAP, CP) and vector packed-decimal (VAP, VSP, VMP, VDP) opcodes is published with the build record. So every
+    COBOL-track result on Linux on Z states: "This result does not exercise IBM Z's decimal hardware."
+  - **It can show:** on Linux, the same build policy (below) on Linux on Z and on x86, which is a comparison of the
+    hardware plus each platform's C code generation and its GMP build, whose hand-written assembly differs by
+    architecture (H1); and on z/OS, Enterprise COBOL under CICS as production mainframes run it, compared with itself
+    (for example, with and without batch) or in a labelled whole-stack comparison.
+  - **It cannot show:** how Enterprise COBOL on z/OS compares with GnuCOBOL on x86 as a hardware comparison, since
+    compiler, runtime and transaction manager all differ; or how a commercial COBOL compiler for x86 would perform.
+    Those questions need the Java track, or a whole-stack label.
+  - **Build policy (proposed), for both tracks and every library on the path.** Both sides build from the same source
+    with the same GnuCOBOL release (and, for the Java track, the same Java feature release and JVM build family), the
+    same C compiler family and major version, the same optimisation level and the same GnuCOBOL options. Code is
+    generated for the measured machine on both sides (`-march` set to the Z machine's architecture level, and to the
+    x86 part's microarchitecture; the C compiler's major version must support `-march` for both measured machines);
+    each distribution's default build is run as a labelled variant. GnuCOBOL's
+    `binary-byteorder` option, `big-endian` by default, is set to `native` on both sides, so that x86 does not
+    byte-swap every binary field while s390x does not; the generated record files stay byte-identical (1.5), and the
+    load step writes binary fields in each platform's native order. Before a build is measured, every program is
+    checked for a REDEFINES, or a record layout, that reads a binary field as bytes; each one found is listed in
+    PORTING.md, and the golden check must pass with native byte order on x86. The indexed-file handler (for example
+    Berkeley DB, VBISAM or DISAM) and its version, and the GMP version, are the same on both sides. The same rule
+    applies to the database, and to zlib or zlib-ng and OpenSSL in plain mode; accelerated builds follow 1.4. Every
+    flag and library build is recorded (FDR 3).
+  - Sources: GnuCOBOL 3.2, DEPENDENCIES file (https://sources.debian.org/src/gnucobol3/3.2-4/DEPENDENCIES); IBM
+    Enterprise COBOL for z/OS 6.4, "ARCH" (https://www.ibm.com/docs/en/cobol-zos/6.4.0?topic=options-arch);
+    GnuCOBOL 3.x, `config/default.conf` ("binary-byteorder: big-endian"; read on the 3.x branch, verify for the
+    release used): https://sourceforge.net/p/gnucobol/code/HEAD/tree/branches/gnucobol-3.x/config/default.conf
 - **Track equivalence:** both tracks must produce identical business results (account balances, posted transactions,
   statements) from the same seed. That is checked by a shared golden-output test.
 
@@ -31,10 +75,13 @@ extension, driver, metrics, run rules and FDR. Results always name their track.
 - **Why CardDemo:** it already exists, it is open, and it is used to test mainframe migration tooling, including performance. Results on it can be compared directly with migration claims.
 - **On z/OS:** it installs as shipped (CICS, VSAM, JCL, DFSORT). Running its batch and online work together needs configuration changes, or changes to the batch programs if their file access is routed through CICS (see 4.3 and docs/PORTING-zOS.md).
 - **On Linux (s390x and x86):** CICS and VSAM are replaced by a thin portable layer:
-  - indexed files through GnuCOBOL file I/O;
+  - indexed files through GnuCOBOL file I/O, or, in the live-database variant, a client-server database (1.8.4);
   - a pool of long-lived COBOL workers driven by the load generator, in place of CICS;
   - a driver that bypasses the 3270 screens and calls the business logic with the same inputs.
 - The port must not change business logic. Differences are listed in a PORTING.md with the reason for each.
+- **Transport equivalence (proposed).** The driver speaks one wire protocol to every platform: the same request and response bytes (proposed: a fixed-layout binary message over TCP), with any character conversion done inside the system under test and counted; the same connection model (7.1); and the same TLS setting (1.8.1). On z/OS the receiving program is named (for example the CICS sockets listener and a child server program, for a binary protocol over TCP; or, where the wire protocol is HTTP, CICS web support or CICS Liberty). A transport whose code is zIIP-eligible (for example one that runs in Java) reports its zIIP time separately and is labelled "zIIP-eligible transport"; the transport class (native or Java) is the same on both sides of a comparison, or the comparison is labelled "unequal transport" (4.11).
+- **CICS topology (proposed).** The FDR declares the number of CICS regions, MRO and function shipping, any file-owning region, program concurrency, Open Transaction Environment use, MXT and the TCB limits. A program is defined THREADSAFE only after its code has been reviewed and made threadsafe, because the definition states that the application logic is threadsafe and CICS does not make it so (IBM CICS TS 6.x, "Making applications threadsafe"); a program defined QUASIRENT always runs on the QR TCB. The review is published with the port. The z/OS baseline is the kit's configuration checklist for z/OS, which names the SMF record types and the RACF logging options in force, since z/OS has no distribution default for them. Data tables (CICS-maintained or user-maintained) and any other in-memory copy of the KSDS files are not used in counted runs unless the Linux side uses an equivalent in-memory copy of the same files; either way the choice is declared and labelled.
+- **Linux port configuration (proposed).** The worker model (processes or threads, and whether the GnuCOBOL runtime is used from several threads), the indexed-file handler's cache, lock and sync settings, and the record locking between batch and online processes are declared and published with the port, and are the same on both Linux platforms.
 
 ### 1.2 Online transactions
 - The CardDemo online set (account view and update, card list and update, transaction list, view and add, bill payment), weighted by a **transaction mix table** (to be defined in a later spec version, milestone M1b, with the weights published).
@@ -42,7 +89,7 @@ extension, driver, metrics, run rules and FDR. Results always name their track.
 
 ### 1.3 Batch suite
 - **B1 posting:** transaction posting (CardDemo POSTTRAN), interest calculation (INTCALC) and statement creation (CREASTMT).
-- **B2 extract → sort → merge** of the transaction history, at a stated record count and size. Sorts use the platform's normal utility: DFSORT on z/OS, GNU sort on Linux. Both are reported.
+- **B2 extract → sort → merge** of the transaction history, at a stated record count and size. Sorts use the platform's normal utility: DFSORT on z/OS, GNU sort on Linux. Both are reported. A B2 comparison between z/OS and Linux is labelled "whole-stack comparison", because the sort program differs. On Linux, GNU sort runs with its buffer size (`-S`), `--parallel` and temporary directory fixed in the run plan, the same on every Linux platform; on z/OS, the DFSORT options in force are recorded, and whether the Z Sort accelerator was used is shown by DFSORT message ICE267I ("ZSORT ACCELERATOR PATH ... RSN=nnn", added by APAR PH03207).
 - **B3 archive:** compress closed statements and transactions.
 
 ### 1.4 Accelerated extension (proposed, switchable)
@@ -50,13 +97,19 @@ These are optional steps added to the online path, each a single library call so
 "plain" and "accelerated" on every platform:
 - **Sign** each bill payment, using ECDSA P-256 through OpenSSL. It uses CPACF/KDSA on Z (z15+), and software or available instructions on x86.
 - **Compress** each statement or document attachment with zlib. It uses DFLTCC on Z (z15+), and software, zlib-ng or QAT on x86.
-- **Score** each transaction with a small fraud model, at batch size 1. It uses zDNN or the IBM Deep Learning Compiler on Z (z16+ AIU), and ONNX Runtime CPU (AVX2, AVX-512 or AMX) on x86.
+- **Score** each transaction with a small fraud model, at batch size 1. It uses zDNN or the IBM Deep Learning Compiler on Z (z16 and later: the on-chip IBM Integrated Accelerator for AI, which IBM also calls the AIU, here always "the on-chip AIU" to distinguish it from the IBM Spyre Accelerator adapter, used through the NNPA instruction), and ONNX Runtime CPU (AVX2, AVX-512 or AMX) on x86.
 
 Results are always reported with and without the extension.
+- **Plain and accelerated, defined per platform (proposed).** **Plain** is the same portable build on both sides, with every ISA-specific path masked (zlib built without DFLTCC and without x86 SIMD paths; OpenSSL with `OPENSSL_s390xcap` or `OPENSSL_ia32cap` set to disable the hardware crypto and vector paths; the mask values recorded). The exact mask strings and configure flags are fixed in the kit's configuration checklist. **Accelerated** uses each platform's hardware. On each side every available accelerated path is run and reported: on Z, for example DFLTCC through zlib and through zlib-ng, CPACF/KDSA, the AI accelerator through zDNN, and protected-key or Crypto Express paths where the key class allows (they pair only with the same class); on x86, QAT where the part has enabled devices (for compression and for signing), IAA for compression, zlib-ng with its SIMD paths, OpenSSL's default x86 paths, and AMX for scoring. The path used for any comparison is chosen on each side by a rule fixed in the run plan (proposed: the highest mean closed-loop capacity in separate selection runs, which are calibration runs and are never reused for scoring). Where a platform has no hardware for a step, the FDR says so.
+- **Evidence that it ran.** Counters, not configuration: on Linux on Z, the CPU-measurement facility's crypto counters for CPACF and a DFLTCC call count from the library or a trace; on z/OS, SMF type 30 or type 113 data; for the Z Sort accelerator, DFSORT's messages or SMF data; on x86, QAT telemetry or device counters. In plain mode the same counters show no use (verify the counter names against the releases in use).
+- **The same output quality.** Compression in plain mode uses zlib level 6 on both sides. In accelerated mode, DFLTCC is enabled for the levels used in the Z build, and its level setting is recorded; the compressed size of the fixed corpus is reported per side and per path. Where the two sides' selected accelerated paths give compressed sizes that differ by more than 5% (proposed), the side with the smaller output uses instead its fastest path and level whose output is at most 5% smaller than the other side's, so that the comparison is between equal work; both pairings are reported, and the size-matched one is used for any verdict. Signing names the key protection class on each side (a clear key in application memory, a CPACF protected key, or a secure key in an adapter) and pairs only the same class; clear keys are the default. Scoring names the numeric format on each side (for example FP32, BF16, DLFloat16 or INT8) and reports the model's accuracy on a fixed held-out set per side; a pairing across numeric formats is labelled.
 
 ### 1.5 Data
-- **Storage per track (proposed):** the COBOL track uses GnuCOBOL indexed files on Linux and VSAM on z/OS. The Java track uses a portable keyed store, to be chosen in a later spec version. Both load from the same generated record files.
+- **Storage per track (proposed):** the COBOL track uses GnuCOBOL indexed files on Linux and VSAM on z/OS. The Java track uses a portable keyed store, to be chosen in a later spec version. Both load from the same generated record files. In the live-database variant (1.8.4), both tracks keep the same data in a client-server database instead.
 - A deterministic generator with a scale factor S (accounts = 10,000 × S, transactions per account stated).
+- **Scale factors for results (proposed).** Every counted series runs at two scale factors, fixed in the run plan: a cache-resident S (proposed: S = 1), and a **memory-resident** S, the smallest S whose stored data, as loaded, is at least 8 times the largest cache level that the counted cores share on either side (on IBM Z, the drawer's virtual L4, which IBM gives as 2.8 GB per drawer on z17; on x86, the L3 that the counted cores share: the socket's L3, or a sub-NUMA cluster's, on Intel Xeon, and one core complex's L3, including any stacked cache, on AMD EPYC (verify against AMD's documentation for the part)). The scoring configurations use the memory-resident S (docs/HYPOTHESES-ADDENDUM.md). A result names its S and the ratio of stored data to that cache on each side; a cross-platform ratio reported at one S only is labelled "single scale factor". Memory per configuration follows 8.2.
+- The generated record files are byte-identical on every platform; the load step may write binary fields in the platform's native byte order (1.0, build policy).
+- **Request stream and loaded data (proposed; fixed before the registration tag).** The generator fixes, from the seed, the same on both sides: customers equal to accounts (proposed); the cards per account (proposed: 1, 2 or 3, with equal probability) and the transaction records per card at load (proposed: 20); the record size of every file as loaded (CardDemo's fixed record lengths; verify each against its copybook); and, for each online operation, the key-access distribution (proposed: account and card keys drawn from a Zipf distribution with exponent 0.99 over a seeded random permutation of the keys; uniform as a labelled variant) and the request and response payload sizes (proposed: the fields of the operation's screen as CardDemo defines them, in the fixed-layout message of 1.1). These are part of the transaction mix table (1.2). Every FDR reports the measured fraction of requests that reached the 1% most-used keys.
 - The same seed gives byte-identical data files on every platform. Golden checks compare decompressed bytes, because hardware and software deflate output differ.
 
 ### 1.6 Optional modules (in preparation)
@@ -76,14 +129,221 @@ Methods, not workloads:
   operating system, and the FDR says so; CPC power is shown on the HMC to the machine's owner
   (docs/methods/energy.md).
 
+### 1.8 Request profile and data variants (proposed)
+
+#### 1.8.1 Profiles
+Every result names its request profile:
+- **P0, base:** the business transaction only (1.2), in one unit of work, without TLS.
+- **P1, bookkeeping:** the work a public-facing service does on every request, around the same business
+  transaction. Its steps are defined in 1.8.3. P1 runs with **TLS** on the client connections, terminated inside the
+  system under test, so that its processors are counted (8.4): TLS 1.3, with the cipher suite
+  TLS_AES_128_GCM_SHA256 and an ECDSA P-256 server certificate (proposed), the same on both sides. The TLS library
+  and the crypto path on each side (for example System SSL or OpenSSL using CPACF on Z, OpenSSL using AES-NI on x86)
+  are recorded.
+
+P0 and P1 are reported side by side on the same hardware, so the cost of bookkeeping per request can be read
+directly.
+
+#### 1.8.2 Nothing is refused by design
+- No component is configured to reject, shed or throttle a request during a measured run at a decision point
+  (7.2): not the application, the load balancer, the database, the cache, the transaction manager or the operating
+  system.
+- Every limit that could refuse work is set so that it does not, and its value is recorded: connection limits and
+  listen backlogs, queue and thread limits, transaction class limits, rate limits and maximum database connections
+  (docs/PLAYBOOK.md, section 4.1, lists them per platform).
+- Queuing is allowed, and shows up as latency.
+- At every point, a refused request is counted as a timeout, recorded at T, and reported by component and cause. At
+  a decision point, any refusal makes that step unsustained in that repeat (7.4); above the knee and at
+  past-saturation points it is a recorded past-saturation outcome. A refusal never makes a run invalid.
+- **A limit raised after a refusal** is entered in the tuning log (4.14) before the next run. If no decision-point
+  run of the series has yet been made (the refusal came in the coarse pass, in a calibration step before the fine
+  pass, or in the driver checks), the series continues. Otherwise the raised limit starts a new, labelled series
+  (4.13), and the results under the earlier limit are still published in full.
+- Business outcomes are not refusals. They are counted and reported by type:
+  - the business rejections that the CardDemo programs themselves return, and permission denials produced by the
+    business data (1.8.3, step 3);
+  - **duplicate-key rejections.** CardDemo assigns a new transaction ID as the highest existing key plus one, with
+    no serialisation before the write (docs/ARCHITECTURE.md, section 7). Under concurrent load two requests can
+    compute the same ID, and the second gets a duplicate-key response. The business logic is never changed to
+    prevent this (1.1); such rejections are business errors, counted and reported on both sides.
+- A unit of work rolled back by the system for a deadlock, a lock timeout or a serialisation failure is not a
+  refusal either. It is an error (7.1), counted by cause and operation, and it counts against the sustained-rate
+  test (7.4). The application does not retry it unless the run plan says so, and then the same retry rule applies
+  on both sides. The isolation level, the lock-timeout and deadlock-detection settings are recorded; because the
+  isolation level decides whether a key collision appears as a duplicate-key response or as a serialisation
+  failure, it is the same on both sides of a comparison (4.11).
+
+#### 1.8.3 Bookkeeping steps (P1)
+For every request, in this order:
+1. **Authenticate:** validate the session token sent with the request (proposed: a 32-byte random token carrying
+   an HMAC-SHA256 tag, checked with the same key length on both sides), and look up the session record. Sessions
+   are created before the run and stay valid for its whole length; there is no sign-on during the run.
+2. **Count:** update the requesting client's counters for fixed one-second and one-minute windows, and compare them
+   with the client's limits. The window a request falls in is taken from its **intended send time** (7.1), which
+   the driver sends with the request, never from the server's clock, so the counts depend only on the seeded
+   request stream. When a limit is exceeded, record a "would throttle" event and carry on. The request is never
+   rejected (1.8.2).
+3. **Authorise:** check that the principal may perform the operation on the account, using permission data: a
+   customer principal may act on accounts linked to it by the card cross-reference, and an operator principal may
+   act on any account.
+4. **Business transaction:** as in P0.
+5. **Record:** write an **access record** for every request (principal, operation, key, time, outcome), and an
+   **audit record** for every update (principal, operation, key, time, and the changed fields before and after).
+
+Where each kind of bookkeeping data commits:
+- Where the data variant has a unit of work (D-live, and D-file "atomic unit of work"), the business transaction
+  (step 4) and its audit record commit in **one unit of work**. Under the D-file label "no atomic unit of work"
+  there is no unit of work to share: the audit record is written immediately after the business update, on both
+  sides, and the label is shown with every P1 result.
+- The counters (step 2) are **not** part of the business unit of work. They live in a counter store, and each
+  counter update is atomic on its own. The counter store's **durability class** is declared and is the same on both
+  sides: **volatile** (counters may be lost when the store restarts) or **durable** (each update is on stable
+  storage before the request continues).
+- Access records may be buffered. The buffering and the flush interval are recorded, and the same rule applies on
+  both sides.
+- Sessions, counters, access records and audit records may be kept in any store that meets these rules. The store
+  chosen on each platform is disclosed.
+
+The data generator (1.5) also generates, from the same seed:
+- the principals: one per customer, plus a stated number of operator principals;
+- one session per principal;
+- per-client limits, as counts per one-second and per one-minute window, generated for each offered rate in the run
+  plan from the seeded stream at that rate, so that a stated fraction of clients (proposed: 1%) exceeds a limit at
+  least once in the measured window. The limits for each rate are recorded;
+- the request stream's principal for each request, including a stated, seeded fraction of requests that the
+  permission data denies.
+
+#### 1.8.4 Data variants
+Every result names its data variant, and for the live-database variant, its form.
+- **D-file, file-based:** the stores of 1.5 (GnuCOBOL indexed files on Linux, VSAM on z/OS, and the Java track's
+  keyed store). A D-file result names one of two labels, the same on both sides:
+  - **"no atomic unit of work":** z/OS files RECOVERY(NONE), as CardDemo ships them; Linux files as the store
+    provides them;
+  - **"atomic unit of work":** z/OS recoverable files; on Linux, a transaction layer in the data adapter that
+    commits or backs out all of a request's file updates, which is described and disclosed.
+
+  A D-file result also declares its **durability class**, the same on both sides of a comparison (4.11): **durable**
+  (each update is on stable storage before the response is sent) or **not durable** (updates may be lost in an
+  operating-system crash). The class is established by the acceptance test of 4.15, not assumed from the store's
+  documentation; on Linux, an adapter that wants the durable class forces its writes (for example with `fsync` or
+  `O_DSYNC`), and says how. "Not durable" keeps the data on the same storage class as the durable class; a store
+  held only in memory (for example on tmpfs, or with no writes to storage) is labelled "memory only" and is never
+  paired with either class. The scoring configurations use the durable class (docs/HYPOTHESES-ADDENDUM.md).
+- **D-live, live database:** the data adapter keeps the application's data in a client-server database engine
+  that runs outside the application process.
+  - **Same durability on both sides.** The commit record is forced to stable storage before the commit returns:
+    for PostgreSQL, `fsync=on`, `synchronous_commit` not `off`, and `full_page_writes=on`; for Db2, the log written
+    to stable storage before the commit returns, with the settings that ensure it named in the FDR. The storage
+    class, the write-cache protection of the log device and the number of log copies follow 4.15. A weaker setting
+    is a labelled variant, never paired in a comparison with a durable one.
+  - **Isolation for updates.** A record read for update stays locked until commit or rollback, so that a second
+    updater waits or gets a conflict status and never sees a half-applied change. The isolation level and locking
+    clauses used, and the replication mode, are recorded.
+  - The logical schema is the same on every platform.
+  - **Versions:** for each series, each database product is the newest release generally available on every
+    platform of the comparison when the series' run plan is committed. In form A, the same version and fix level
+    are used on both sides for the whole series. The version and fix level are recorded.
+  - **Optimiser and storage state:** after every data load, statistics are collected at the same point on both
+    sides (for example Db2 RUNSTATS, PostgreSQL ANALYZE), package bind options are recorded, automatic maintenance
+    (for example PostgreSQL autovacuum) is set as recorded and the same in every run of a series, and no buffer
+    pool is pre-loaded on either side: the warm-up does that.
+  - **Publication:** no result from a licensed program, IBM's or another vendor's, is published until its licence
+    terms have been checked for conditions on benchmarking or publishing results (section 10; docs/PLAYBOOK.md,
+    section 1).
+  - D-live has two labelled forms, and the FDR names the form:
+    - **Form A, same product (platform comparison):** the same database product and version on both sides, so
+      that only the platform differs: PostgreSQL on Linux on Z against PostgreSQL on x86 Linux; and Db2 for Linux,
+      UNIX, and Windows on Linux on Z against the same product on x86 Linux. (Db2 for Linux, UNIX, and Windows is
+      used on Linux on IBM Z only in a release whose IBM system requirements list Linux on IBM Z, and the FDR cites
+      that requirements page.)
+    - **Form B, whole stack (whole-stack comparison):** Db2 for z/OS on z/OS against Db2 for Linux, UNIX, and
+      Windows on x86 Linux, or against PostgreSQL on x86 Linux. Db2 for z/OS and Db2 for Linux, UNIX, and Windows
+      are separate products, with their own releases, settings, optimisers, locking and logging, so the Db2-to-Db2
+      pairing across z/OS and Linux is a whole-stack comparison too. A form B result is labelled "whole-stack
+      comparison": its differences include the database engine as well as the platform, and are never attributed
+      to the hardware alone. This is a deliberate exception to holding the program constant (docs/prior-art.md,
+      section 5, "Traps to avoid"); the label keeps such a result out of any hardware-only comparison.
+  - PostgreSQL is used because it runs on both platforms and its licence places no condition on publishing
+    benchmark results. It is not claimed to be the usual x86 counterpart of Db2 for z/OS.
+- **Batch alongside online.** How batch and online share the data is declared and labelled on each side: on z/OS,
+  VSAM record-level sharing (with DFSMS Transactional VSAM Services where the files are recoverable) or batch file
+  access through the external CICS interface, labelled "batch through EXCI"; on Linux, the data adapter's record
+  locking between batch and online processes, described with the port; in D-live, the database.
+
+The business logic is the same in every variant and form; only the data adapter changes (docs/PORTING-zOS.md,
+"three thin adapters"). The golden business-output check (1.0) passes on every variant and form.
+
+CardDemo's own base application keeps its data in VSAM. It also ships optional features: a Transaction Type
+Management feature that keeps transaction type reference data in Db2, a credit card authorization feature that uses
+IMS, Db2 and MQ together, an account extraction feature that uses MQ and VSAM, and additional JCL utilities (FTP,
+text-to-PDF conversion, Db2 and IMS DB load and unload, and the internal reader) (CardDemo README, "Optional
+Features"). D-live moves the base application's data into the database through the data adapter. The Transaction
+Type Management feature is not in the first online set. The authorization and account extraction features and the
+additional JCL utilities stay out of scope with IMS and MQ (section 5).
+
+#### 1.8.5 Golden check and invariant check
+**The golden check** (1.0) runs the golden script serially, so its output is deterministic. Under P1 it also checks:
+- the number of access records equals the number of requests in the script;
+- the number of audit records equals the number of committed updates;
+- the access and audit record contents match the golden output, with clock-derived fields masked;
+- the numbers of "would throttle" events and permission denials equal the values the seed predicts.
+
+**The invariant check** runs after every measured run, in either profile. A measured run is concurrent, so its
+final state depends on commit order (for example, a bill payment pays the whole current balance), and an exact
+final state cannot be predicted. The check is of invariants instead:
+- **keys:** no file or table holds a duplicate key, and each committed transaction add or bill payment created
+  exactly one transaction record, except a bill payment whose transaction write got a duplicate-key response, which
+  created none (see "balances conserved"). Those are counted and listed;
+- **no lost or duplicated update:** for each record, the committed updates to it form one chain from its
+  generated value to its final value. In that chain, each update's **read value** (the value the business logic
+  read in that unit of work before changing it) equals the previous committed update's after-value, and every
+  committed update appears exactly once.
+  - The values come from an independent, application-level **audit stream** that the system under test writes
+    alongside its work: for every update, the data adapter writes the read value and the after-value, in the same
+    unit of work as the update where the data variant has one, and immediately after it otherwise. In P1 this is
+    the audit record (1.8.3); in P0 it is an update log in the same format. The stream is written in every measured
+    run, the same on both sides, so its cost is part of the measured work; one point per series is also run with
+    it off, and the difference is reported (docs/CPU-ACCOUNTING.md, section 5).
+  - A data manager's own change log (for example PostgreSQL logical decoding, the Db2 log, or a CICS log) is a
+    cross-check only. Its before-images are the stored value just before each write, so they always chain, and
+    cannot show a lost update.
+  - Responses logged by the driver are not enough, because a request that timed out at the driver may still have
+    committed;
+- **balances conserved:** for each account, the final balance equals the generated balance, minus the amounts of
+  the transaction records created by committed bill payments, plus the changes made by committed account updates
+  (read value to after-value, from the audit stream). One exception follows from CardDemo as shipped: in bill
+  payment, a duplicate-key response on the transaction write does not stop the account update that follows
+  (docs/ARCHITECTURE.md, section 7). A balance change on an account with such a response in the window is
+  attributed to that response, counted and listed. Any other unexplained change fails the check;
+- **counts:** the committed operations by type equal the system's own counts; the driver's completed, error,
+  refusal and timeout counts add up to the requests sent; and any difference between the system's count and the
+  driver's completed count (late responses, 7.1) is reported.
+
+A run that fails the invariant check is invalid, and is kept and reported (FDR section 6).
+
 ## 2. Platforms
 - **Phase 1:**
-  - x86 PC on bare-metal Linux;
-  - the same PC in a VM;
+  - x86 PC on bare-metal Linux, and the same PC in a VM, for development and for within-platform results;
+  - a current x86 server for any cross-platform ratio, on bare metal: a general-purpose server part (not one sold as
+    frequency-optimised, core-dense or with stacked cache), the newest such part the contributor has access to whose
+    general availability is within 24 months (proposed) of the Z machine's, named with the reason for the choice in
+    the machine registry before any kit run on it (docs/REGISTRY.md); where both Intel and AMD offer such a part and
+    access allows, one of each is named. A part of another class may also be named there, and gives its own
+    verdicts, labelled with its class. If no qualifying part is available, the newest available part may still be
+    run, but the pair is labelled "cross-generation" and scores no cross-platform hypothesis;
   - a LinuxONE / Linux on Z guest, **only where terms permit benchmarking and publishing**.
+- **A fair x86 baseline.** A ratio between parts more than 24 months apart, or between a desktop part and a server
+  part, is labelled "cross-generation" or "desktop part" and scores no cross-platform hypothesis; a ratio from a part
+  of another class is labelled with its class. Every machine run in a scoring configuration gives its own verdicts,
+  and all of them are reported. No cross-platform figure comes from a VM with less memory than the run plan
+  requires. Libraries follow the build policy of 1.0. In plain mode, and in every run that scores H1, H1j or H3-H5,
+  each library is the same portable build on both sides (1.4). In accelerated mode, each library is the platform's
+  optimised build where one is published (for example DFLTCC-enabled zlib or zlib-ng on Z; zlib-ng with its SIMD
+  paths, and QAT-backed compression and signing, on x86; OpenSSL built for each platform's crypto instructions). The
+  build of every library is recorded (FDR 3).
 - **Phase 2:**
   - an x86 server with QAT and AMX (cloud bare metal);
-  - z/OS with CICS, VSAM, DFSORT and WLM;
+  - z/OS with CICS, VSAM, DFSORT and WLM, and Db2 for z/OS for the live-database variant (1.8.4);
   - dedicated or characterised LinuxONE capacity.
 - **Comparison tiers.** Every result names its comparison tier: equal core counts on a single box, equal service, or the scale-out tier.
 - **Equal core counts on a single box,** for the registered per-core hypotheses: such runs use equal counts of cores or IFLs (2 and 4 to start), and measure closed-loop capacity (4.2). SMT state is recorded, along with whether a "vCPU" is a core or a thread. The configurations that score each hypothesis are named in docs/HYPOTHESES-ADDENDUM.md.
@@ -214,7 +474,7 @@ Methods, not workloads:
 
 ## 5. Out of scope
 - Audited or official benchmark status (TPC/SPEC). Results are research results. This kit is not a TPC benchmark, and results must not be presented as TPC results or described with TPC benchmark names. A separately sponsored, audited run of an actual TPC benchmark is listed as a stretch goal in ROADMAP.md.
-- Db2, IMS and MQ variants of CardDemo (later, possibly).
+- IMS and MQ variants of CardDemo (later, possibly). The Db2 variant is in scope as the live-database variant (1.8.4); CardDemo's optional components that need IMS or MQ stay out of scope with them.
 
 ## 6. Benchmark materials from third parties
 To stay within other benchmark owners' terms:
