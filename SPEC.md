@@ -1,6 +1,10 @@
-# Open Mainframe Benchmark: specification, draft v0.3.2 (2026-11-25)
+# Open Mainframe Benchmark: specification, v0.4.0 (draft, unreleased)
 
-Status: draft for comment. Items marked **(proposed)** are not yet decided. Version numbers follow semantic versioning:
+Status: draft for comment. Items marked **(proposed)** are not yet decided. A fact marked **(verify)** has not yet been checked against a source read for this specification, and every such mark is resolved, or the fact removed, before the version is released. In this repository, "SPEC n" means section n of this file, not the Standard Performance Evaluation Corporation.
+
+Terms used throughout: a **scored run** is a run that scores a registered hypothesis, in the scoring configuration named for it (docs/HYPOTHESES-ADDENDUM.md); a **counted run** is a scored run, or a run that gives an equal-service or scale-out result; a **counted series** is a series of counted runs; a **pilot run** is a run made before a registration to estimate variance, which scores nothing (section 10). A **headline result** is defined in section 10.
+
+Version numbers follow semantic versioning:
 results always name the spec version and track they ran against.
 
 Changes in v0.1.1: two implementation tracks (Java first, then COBOL) under one spec (1.0, 1.5).
@@ -8,6 +12,14 @@ Changes in v0.2.0: an optional analytics module derived from industry-standard b
 Changes in v0.3.0: further optional modules derived from benchmark material, plus pricing and energy methods (1.7).
 Changes in v0.3.1: labelling of derived work aligned with the benchmark owner's published policies; written permission requested before publishing derived results (6).
 Changes in v0.3.2 (2026-11-25), corrections and a withdrawal: CardDemo on z/OS needs configuration changes to run batch and online together (1.1, 4.3); CPC power is shown on the HMC for older Z machines (1.7); IBM's capacity ratings are per processor model (3); Db2 (5); version labels made consistent. The optional modules derived from benchmark material, and the rules specific to them, are withdrawn until the benchmark owners' permission is in place (1.6, 1.7, 6). HYPOTHESES.md is unchanged.
+Changes in v0.4.0 (draft, unreleased):
+- Comparison basis: an exploratory equal-service comparison with no registered prediction, reported after the registered verdicts; per-core results kept as a disclosed normalisation (2, 3, 8); six preconditions before any headline result, including a pilot and a power analysis before registration (10).
+- Pre-registration: an external timestamp from the archive's creation time, a machine registry, a run registry and a tuning log; scoring only in each hypothesis's named configuration (4.7, 4.13, 4.14).
+- Platforms and builds: a current x86 server part named before any kit run on it, held at its sustained all-core frequency; the same neighbour load on both sides; vendor-optimised libraries in accelerated mode; a HotSpot variant of the Java track; a build policy; and what the COBOL track can and cannot show (1.0, 2, 8.2).
+- Workload: transport equivalence and a declared CICS topology (1.1); z/OS-against-Linux B2 sorts labelled whole-stack (1.3); accelerator evidence and equal output quality (1.4); scale factors with a cache-residency rule, and a defined request stream and loaded data (1.5); a request profile with bookkeeping steps and TLS, and data variants with a live database in two labelled forms (1.8); the Db2 variant in scope, IMS and MQ later (5).
+- Run rules: at least 6 repeats over at least three boots or IPLs (4.1); confinement in place of pinning, with Z partition rules (4.4); a manifest for every node and driver host (4.5); the load generator, refusals, equal guarantees, the order of reporting, the run registry, the tuning log, storage class and acceptance tests, the statistics plan, accounting validation and tuning parity (4.9-4.18).
+- Methods: a load model with open-loop arrivals, a persistent connection pool, one timeout per series, throughput counted in committed requests, decision and past-saturation points, a per-repeat knee and default parameters (7); a single-writer scale-out tier with a declared availability design and one scaling-limit test for both sides (9); CPU counted on one basis on both sides, the PR/SM view for every Z partition, with workload characterisation (3; docs/CPU-ACCOUNTING.md); no MIPS equivalence (3).
+- HYPOTHESES.md is unchanged. Entry 1 of docs/HYPOTHESES-ADDENDUM.md (tag omb-v0.4.0-prereg; registration status in docs/REGISTRY.md) records the change of comparison basis and names the scoring configurations.
 
 ## 1. Workload
 
