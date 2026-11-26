@@ -1,96 +1,16 @@
-# Energy method: what TPC-Energy asks, and what we can actually measure
+# Energy method: what we can actually measure
 
 Status: draft for comment, 2026-11-19. Applies to the energy fields of an FDR and to the "per watt" normalisation in
-SPEC section 3. See SPEC sections 1.7 and 6.
+SPEC section 3. See SPEC section 1.7.
 
-Source for TPC-Energy: the TPC-Energy Specification, version 1.5.0, February 2012 ("TPC-Energy 1.5.0" below). The
-kit download page on tpc.org looped, but the specification PDF itself was fetched from tpc.org on 2026-11-19 and read
-in full. Clause numbers refer to it. **No TPC text is reproduced here**: everything is our own summary (SPEC
-section 6). Other sources are marked "fetched" (page read) as in [platforms.md](../platforms.md).
+Sources are marked "fetched" (page read) as in [platforms.md](../platforms.md).
 
 ## 1. Labels
-- **Every energy figure we publish is labelled "not TPC-Energy compliant".** Where a figure follows the TPC-Energy
-  method (energy over the measured window divided by work done), the full label is "derived from TPC-Energy method; not
-  TPC-Energy compliant; not comparable to published TPC-Energy results".
-- TPC-Energy metric names (watts per KtpmC, watts per tpsE and so on, clause 3.2.1.1) are never used for our numbers.
-- RAPL figures are also labelled with their domain, e.g. "RAPL package + DRAM", because they are not system power.
+- RAPL figures are labelled with their domain, e.g. "RAPL package + DRAM", because they are not system power.
 
-## 2. What TPC-Energy 1.5.0 requires (summary)
+## 2. What we do on x86 hardware we control
 
-### 2.1 Scope and boundary
-- It is an optional add-on to a TPC benchmark result, not a benchmark of its own (clauses 0.1.1, 2.3.1). Once any
-  energy figure is reported with a TPC result, the whole specification applies (clause 2.3.1).
-- **What is measured:**
-  - The Reported Energy Configuration (REC), which is built from the benchmark's Priced Configuration. Uninstalled
-    spares and support services are left out (definition in clause 0.4; clause 2.5).
-  - Anything plugged into a measured unit during the run counts too, even if it is not priced (REC definition).
-- **Where it is measured:** at the power input of each Power Measurable Unit, i.e. at the connection to the external
-  power source. A unit is something that can be measured on its own, with every power cord it uses in normal running
-  included (clauses 2.5.1, 2.5.1.1).
-- Optional subsystem figures: database server, application server, storage and miscellaneous (clauses 2.5.2.1 to
-  2.5.2.4, 3.3.1).
-- Unmeasured identical units may be extrapolated from two measured ones that agree within 10% (clause 3.6.2).
-  Manufacturer nameplate values may cover at most 20% of the energy (clause 3.6.5).
-
-### 2.2 The metric
-- **Shape:** energy per unit of work, reported as "watts per performance unit" beside the benchmark's primary metric
-  (clauses 0.1.1, 3.1, 3.2.1).
-- **Calculation:**
-  - The energy consumed over the benchmark's measurement interval(s) is divided by the work done in them (clauses
-    3.2.1.1, 5.2.2).
-  - The work done is the throughput metric multiplied by the interval length.
-  - With several intervals, totals are summed first, then divided. Averaging per-interval ratios is called out as
-    wrong (clause 2.4.2).
-- **Rounding and scale:** reported to two decimals, rounded up. Scaled by powers of 1000 to keep 1 to 3 digits before
-  the point (clauses 3.2.1.1, 3.4).
-
-### 2.3 Idle power
-- It is a required number, in watts (clause 3.3.2).
-- **Timing:** measured after the performance runs (clause 3.3.4.1). It starts within 30 minutes of the end of all
-  benchmark processing and lasts at least 10 minutes (clauses 5.2.4, 5.3.3).
-- **The system must be ready for work:**
-  - The database and its storage stay up (clause 3.3.4).
-  - The first transaction after idle must meet 1.5 times the benchmark's response-time limit (clause 3.3.3).
-
-### 2.4 Instruments and software
-- **Devices:** analyzers and temperature sensors must be on TPC's approved device list (clause 6.1.1; we did not
-  retrieve it), commercially available with published accuracy (clause 6.1.2.1), and report real power, voltage,
-  current and power factor (clause 6.1.2.2).
-- **Accuracy and handling:**
-  - Average accuracy must be 2% or better over the ranges used (clause 6.1.2.4).
-  - Each reading is scaled up by (1 + the device's accuracy), so the result errs on the high side (clause 6.1.2.7).
-  - Current crest factor must be at least 3 (clause 6.1.2.8).
-  - Readings are logged at least every 5 seconds (clauses 5.3.2, 6.1.2.9).
-  - Missing readings may not exceed the greater of 1 or 0.2% of an interval (clause 5.3.1).
-- **Calibration:** traceable to NIST or another national metrology institute, done within the year before the
-  measurement (clause 6.2.1). New devices are accepted by series comparison against an approved one (clause 6.2.1.1).
-- **Environment:**
-  - Inlet temperature is at least 20 C. It is measured within 100 mm of the coolest air inlet, every 2 minutes or
-    better, by a sensor accurate to 0.5 C (clauses 5.2.5.2, 5.3.2, 6.1.3 to 6.1.3.2).
-  - Supply voltage limits apply when the measuring site and the pricing locale differ (clause 5.2.5.1).
-- **Software:**
-  - TPC's Energy Measurement System (EMS) must be used (clause 4.3.1).
-  - Its power and temperature daemon, EMS-PTD, is an extended version of SPEC's PTDaemon, used under licence from
-    SPEC (clause 4.3.2). The TPC-Energy web page adds that the daemon's source is not distributed.
-  - The FDR must carry a licence statement about EMS and PTDaemon (clause 7.3.2.6).
-- **SPEC's list:** SPEC keeps its own list of power analyzers accepted for PTDaemon (Yokogawa WT series, ZES Zimmer
-  LMG, Hioki and others, with per-model restrictions). It is SPEC's list, not TPC's.
-
-### 2.5 Disclosure and audit
-- **Disclosure:** for each measurement, the analyzer make and model, calibration date, range settings, probes, and
-  the accuracy used and its source (clause 7.3.6.1). The raw logs are included (clause 7.4).
-- **Audit:** an independent TPC-certified auditor must review the energy result before publication. The review can
-  be part of the benchmark audit or separate (clause 8.1.1.1). The checklist includes the analyzers' calibration
-  dates (clause 8.2.2.6).
-
-### 2.6 Why we cannot comply, on any platform
-- No TPC result underneath ours (clause 2.3.1); our analytics and module results are derived from TPC-x only (SPEC 1.6,
-  1.7). No EMS, which is mandatory (clause 4.3.1); the kit could not be downloaded. No auditor (clause 8.1.1.1).
-- No approved, calibrated analyzer: RAPL reads on-chip counters, not the power input (clause 2.5.1).
-
-## 3. What we do on x86 hardware we control
-
-### 3.1 Counters and interfaces
+### 2.1 Counters and interfaces
 - **powercap sysfs:** `/sys/class/powercap/intel-rapl:<n>/energy_uj` for each package, with core and uncore
   sub-zones. Each zone also has `max_energy_range_uj`, the counter's range (kernel powercap documentation, fetched).
   That document does not list DRAM or psys zones, so the sampler discovers the zones present at run time.
@@ -101,25 +21,24 @@ section 6). Other sources are marked "fetched" (page read) as in [platforms.md](
   registers package and core energy only, with no DRAM and no power limits (`drivers/powercap/intel_rapl_msr.c`,
   fetched). The perf driver also enables only package and per-core events on AMD (`rapl.c`).
 
-### 3.2 Procedure (proposed)
+### 2.2 Procedure (proposed)
 - **Sampling:**
   - A small sampler reads every available zone at the start and end of each measured window, and every 1 s in
     between.
-  - The 1 s interval is our choice. It is well inside TPC-Energy's 5 s maximum (clause 5.3.2) and far shorter than any
-    counter wrap time (section 3.3).
+  - The 1 s interval is our choice. It is far shorter than any counter wrap time (section 2.3).
   - The measured window is the run-rule window of SPEC section 4: warm-up excluded, whole batch cycles.
 - **Energy:** the sum of successive deltas. A negative delta means the counter wrapped, and `max_energy_range_uj` is
   added back.
-- **Per-transaction figure:** total energy in the window divided by committed transactions in the window. Summed
-  first, then divided, as in clause 2.4.2. Batch steps report joules per job.
+- **Per-transaction figure:** total energy in the window divided by committed transactions in the window. Batch
+  steps report joules per job.
 - **Idle baseline:**
-  - Measured after the last run of a session, starting within 30 minutes and lasting at least 10 minutes, with the
-    kit's services up. This mirrors clauses 5.2.4 and 3.3.4.
+  - The procedure and its parameters (start delay after the last run, duration, and which services stay up) are set
+    before the first measured run and recorded in the FDR.
   - A pre-run idle reading is also taken, to show drift.
 - **Repeats and power state:** energy is reported per run, then as mean and 95% CI (SPEC section 4). Governor, turbo
   and C-state settings are in the manifest (SPEC 4.5), since they change energy as much as throughput.
 
-### 3.3 RAPL's limits (stated with every result)
+### 2.3 RAPL's limits (stated with every result)
 - **Measured on some generations, modelled on others:**
   - Intel moved RAPL from a model to actual measurement with Haswell (Hackenberg et al. 2015, fetched); Sandy Bridge
     and Ivy Bridge values are modelled.
@@ -139,7 +58,7 @@ section 6). Other sources are marked "fetched" (page read) as in [platforms.md](
     Haswell and Skylake. They update about every millisecond, with jitter (Khan et al. 2018).
   - The kernel's AMD hwmon documentation for 5.11 estimates that a socket counter wraps in about 9 minutes at 240 W.
   - The sysfs counter wraps at `max_energy_range_uj`, so the sampler must read more often than the shortest wrap time
-    (range divided by peak package power). The perf events do not wrap (section 3.1).
+    (range divided by peak package power). The perf events do not wrap (section 2.1).
 - **Permissions after Platypus (CVE-2020-8694, CVE-2020-8695):**
   - Unprivileged RAPL readings were used as a power side channel against Intel CPUs (Platypus site; Intel
     INTEL-SA-00389, both fetched).
@@ -166,20 +85,16 @@ section 6). Other sources are marked "fetched" (page read) as in [platforms.md](
     (virtualised; counters absent or not attributable)". Bare-metal cloud instances will be checked one by one; not
     verified yet.
 
-### 3.4 Later upgrade: an external wall-power meter
+### 2.4 Later upgrade: an external wall-power meter
 - **What it adds:**
   - A meter from SPEC's accepted list, read through PTDaemon, would measure AC input for the whole box, including PSU
     losses, fans, storage and NICs.
-  - That is the boundary TPC-Energy uses (clause 2.5.1).
   - It would also allow a check of RAPL against the wall, as Hackenberg et al. and Khan et al. did.
-- **What it would still not make us:** TPC-Energy compliant. There would still be no TPC result, no EMS, no
-  TPC-approved device list check, no calibration certificate unless we buy one, no inlet-temperature logging, and no
-  auditor (section 2.6).
 - PTDaemon licence terms for our use have not been checked.
 
-## 4. IBM Z: what can and cannot be metered
+## 3. IBM Z: what can and cannot be metered
 
-### 4.1 Findings (neutral)
+### 3.1 Findings (neutral)
 - **No RAPL-style counter for Linux on Z.** The Linux RAPL drivers above are x86 drivers: the powercap driver matches
   only Intel, AMD and Hygon CPUs (`intel_rapl_msr.c`).
 - **z15 and earlier:** we found no IBM source for per-partition power. CPC-level figures existed on the HMC; the only
@@ -217,7 +132,7 @@ section 6). Other sources are marked "fetched" (page read) as in [platforms.md](
   - Whether DIAGNOSE 0x324 is offered to Linux guests under z/VM, or only to Linux running directly in an LPAR.
   - Whether any LinuxONE or z/OS system we may use is a z17.
 
-### 4.2 What our FDR says for Z results
+### 3.2 What our FDR says for Z results
 - **Default, on every Z platform:**
   - "Energy: not measurable on this platform."
   - With the reason, e.g. "shared CPC; no energy counter for this partition is visible to us. Machine power is
@@ -226,33 +141,28 @@ section 6). Other sources are marked "fetched" (page read) as in [platforms.md](
 - **Proposed (REVIEW): on z17, where the partition can read IBM's figures** (`zpwr`, SMF 70.1 or z/VM monitor):
   - The FDR may record them in a separate field, "IBM firmware-apportioned partition power", with CPU, storage and
     I/O watts averaged over the measured window.
-  - The field is labelled "vendor estimate; not measured; not comparable with RAPL or wall power; not TPC-Energy
-    compliant".
+  - The field is labelled "vendor estimate; not measured; not comparable with RAPL or wall power".
   - It is never used in a cross-platform per-watt comparison.
 
-## 5. How the FDR energy section is filled
+## 4. How the FDR energy section is filled
 One block per result, added to FDR section 6 (or "n/a" with the reason):
 - **Status:** `measured (RAPL)`, `measured (wall meter)`, `vendor-apportioned (IBM Z firmware)` or `not measurable
   on this platform`, with the label from section 1 and, if not measured, the reason.
 - **Source and domains:** powercap or perf; the zones read (`package-<n>`, `dram`, `psys`, `core`); CPU vendor and
-  model; whether RAPL is modelled or measured on that generation (section 3.3).
+  model; whether RAPL is modelled or measured on that generation (section 2.3).
 - **Access route:** root sampler or CAP_PERFMON; kernel version.
 - **Sampling interval:** seconds (default 1 s); the number of samples; missing samples, and counter wraps corrected.
 - **Window:** start and end timestamps, matching the throughput window.
 - **Energy and power:** joules and average watts per domain over the window, mean and 95% CI over the repeats.
 - **Energy per unit of work:** joules per committed transaction (online) and joules per job (batch).
-- **Idle baseline:** watts per domain; its start delay after the run (minutes) and duration (at least 10 minutes);
-  plus the pre-run idle reading.
+- **Idle baseline:** watts per domain; its start delay after the run and its duration (minutes), as set before the
+  first measured run; plus the pre-run idle reading.
 - **Power settings:** governor, turbo and C-states (cross-reference to the manifest).
 - **Exclusions:** what the boundary leaves out (for RAPL: PSU, fans, storage, NICs, board).
 - **Raw data:** the sampler CSV and its checksum, under FDR section 7.
 
-## 6. Sources
-TPC and SPEC
-- TPC-Energy Specification 1.5.0 (PDF): https://www.tpc.org/TPC_Documents_Current_Versions/pdf/TPC-Energy_v1.5.0.pdf
-  (fetched 2026-11-19, read in full)
-- TPC current specifications (lists TPC-Energy 1.5.0): https://www.tpc.org/tpc_documents_current_versions/current_specifications5.asp (fetched)
-- TPC-Energy overview page (EMS, PTD licensed from SPEC): https://www.tpc.org/tpc_energy/default5.asp (fetched)
+## 5. Sources
+SPEC
 - SPEC accepted power analyzers: https://spec.org/power/docs/specpower-device_list/accepted_power_analyzers (fetched)
 
 Linux and RAPL

@@ -8,6 +8,10 @@ everywhere, for the hardware question) and **COBOL** (based on AWS CardDemo, for
 draft and the pre-registered hypotheses *before* any measurement. Anyone can then check that the results answer the
 questions as they were asked.
 
+> **Optional modules withdrawn for now.** Optional modules derived from industry-standard benchmark material are
+> in preparation and kept private until the benchmark owners' permission is in place. No kit code and no results
+> are published yet.
+
 ## Why
 Published mainframe-against-server comparisons are almost all vendor-run. The best-known workload for sizing mainframe
 replacements (HP's "zRef", z/OS Reference Application) is proprietary, its original paper is no longer online, and its

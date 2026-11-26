@@ -24,12 +24,12 @@ What we commit to:
 - **Hygiene.** No credentials, internal hostnames or private data ever enter this repository.
 - **Functional checks are not measurements.** On a system without benchmark permission, we only compile and run small pass/fail checks, and we never record or publish performance data from it (docs/PORTING-zOS.md).
 
-## TPC materials
-If you work on a TPC-derived part of the benchmark, follow SPEC.md section 6:
-- never commit TPC kits or spec text;
-- label every derived work "Derived from <benchmark>" and include the TPC disclaimer sentence (SPEC.md 6);
-- don't publish results that use a TPC name until the TPC's written permission is recorded;
-- never use TPC names or metrics for our own workloads;
+## Third-party benchmark materials
+Follow SPEC.md section 6:
+- never commit third-party benchmark kits or specification text;
+- modules derived from benchmark material, and their results, are published only once the benchmark owner's
+  written permission is in place;
+- never use another benchmark's name or metrics for our own workloads;
 - no marketing claims.
 
 ## Licence

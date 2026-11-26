@@ -261,7 +261,7 @@ Evidence status, in full:
 
 **HammerDB** (TPC Council).
 - Ships x86-64 binaries only: "there are no alpha, beta or pre-release versions of HammerDB for ARM64 at present" (2025-03-18). Arm work started in 2026, and s390x is not mentioned anywhere (fetched, https://github.com/TPC-Council/HammerDB/discussions/767).
-- **Use:** run the HammerDB client on x86 against PostgreSQL on s390x.
+- Because it ships x86-64 binaries only, testing PostgreSQL on s390x with it means running its client on x86.
 
 **DBT-5 (TPC-E) and DBT-2 (TPC-C)**, from OSDL DBT.
 - DBT-5 is an "open source fair-use implementation of the TPC Benchmark(TM) E (TPC-E) specification". "The TPC's TPC-E Tools cannot be redistributed with DBT-5 and must be downloaded separately". AppImages are Linux-only, with the architecture unstated (fetched, https://osdldbt.github.io/dbt5).
@@ -280,9 +280,9 @@ Evidence status, in full:
 **What this means for the project.**
 - No kit does "COBOL online + batch + compression + signing + inference" out of the box. Reuse pieces:
   - CardDemo's data model and batch flow for the COBOL side;
-  - BenchBase (Java, portable) or DBT-2/DBT-5 for the PostgreSQL OLTP leg;
   - telco for decimal arithmetic.
-- Run HammerDB only as an x86 client.
+- The OLTP kits above (BenchBase, HammerDB, DBT-2, DBT-5) are surveyed here as third-party work only; the
+  specification does not use them.
 
 ---
 
