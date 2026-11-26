@@ -21,7 +21,7 @@ No audited TPC, SPEC, MLPerf or Sort Benchmark entry for any IBM mainframe was f
 - a remote x86 server reached over injected network delay;
 - an estate model built on assumed x86 utilisation.
 
-Equal-core tests of sort, compression, AI per transaction, signatures, a mixed workload grid, online-under-batch, random read-modify-write and choke behaviour therefore sit in a genuine gap. That gap is what this project's specification targets.
+Equal-core tests of sort, compression, AI per transaction, signatures, a mixed workload grid, online-under-batch, random read-modify-write and choke behaviour therefore sit in a genuine gap. That gap is what this project's specification targets: equal-core runs for its registered per-core predictions, beside an equal-service comparison.
 
 ## 1. Executive summary
 
@@ -39,7 +39,7 @@ Equal-core tests of sort, compression, AI per transaction, signatures, a mixed w
   - **Co-location against a remote x86.** The z16's "20x lower response time" added 60 ms of `tc-netem` delay on the x86 path ([M65ZR5DV](https://ibm.com/downloads/cas/M65ZR5DV), fetched).
   - **Estate extrapolation.** "Up to 2,944 x86 cores" is mostly 2,688 modelled non-production cores at 7-15% utilisation ([Signal65](https://signal65.com/wp-content/uploads/2025/10/Signal65-TCO-Analysis_Workload-Consolidation-on-IBM-LinuxONE.pdf), fetched).
   - **Core-matched.** Snap ML on 6 z16 IFLs against 6 Ice Lake cores ([AI Toolkit](https://www.ibm.com/products/ai-toolkit-for-z-and-linuxone), fetched).
-  - Only the core-matched type resembles our 2-vs-2 design.
+  - Only the core-matched type resembles our single-box, equal-core runs (2 vs 2), which test the per-core hypotheses.
 - **zRef is the closest published analogue to online under concurrent batch.** It is HP's 2013 TPC-E-derived COBOL/CICS/DB2 application with a sort/merge batch job (zRefBR). TmaxSoft's Azure study gives 1,672 TPS online, and 1,409 TPS with 3 zRefBR jobs alongside (different user counts). zRefBR took 16 min with CICS running against 13 min without ([TmaxSoft study](https://www.tmaxsoft.com/upload/eBookMgmt/20231219134111167015.pdf), fetched, spot-checked). The kit is proprietary, every run is vendor-run, and HP's original paper could not be retrieved.
 - **The only published Z-side figure for batch interference** is IBM REDP-5170: CICS CPU per transaction rose "up to 15%" on a zEC12 when batch ran in the same LPAR, through cache contention ([REDP-5170](https://www.redbooks.ibm.com/redpapers/pdfs/redp5170.pdf), fetched). No study measures WLM against Linux cgroups under the same batch load.
 - **Sources contradict each other on batch.**
@@ -162,7 +162,7 @@ Where strands disagree on fetch status, the entry says which strand fetched it.
   - Weaknesses: a 2012 flagship mainframe against a 2009 entry-level Xeon, a toy CPU test, and Linux 3.2.
 - **Maps to:** choke/limits, RMW/IO, mixed grid.
 - **Useful to us:**
-  - It is the closest precedent to our equal-core design (4 vs 4 here, 2 vs 2 for us).
+  - It is the closest precedent to our single-box, equal-core runs (4 vs 4 here, 2 vs 2 for us), which test the per-core hypotheses.
   - Borrow: matched core counts, SMT/HT off, the same kernel build on both sides, and CI plus t-test reporting.
   - Gap it leaves: no accelerators and no modern hardware. Our runs add both.
 
@@ -972,7 +972,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
   - batch elapsed time alone, then under online load;
   - CPU% on each tier.
 - The gap our test fills: zRef never reports the z/OS side's behaviour under the same mix. Its only z/OS figures are the baseline columns (68.1 and 161.9 min) and the snippet's "124 TPS at 93% busy". It is also never run at equal core counts.
-- Our 2-vs-2 design, with WLM on z/OS and the plain Linux scheduler or cgroups on the PC, measures what zRef leaves out.
+- Our 2-vs-2 single-box runs, with WLM on z/OS and the plain Linux scheduler or cgroups on the PC, measure what zRef leaves out.
 
 **VN02. "TmaxSoft OpenFrame and Microsoft Azure Mainframe Migration Sizing Study"**
 - **Who / when:** TmaxSoft with Microsoft. The vendors strand dates the study to 2020. The PDF footer reads "(c) TmaxSoft 2023" and its metadata was last modified 2023-10-10.
@@ -1814,7 +1814,7 @@ Cross-references in other sections:
 - **Useful to us:**
   - Copy the presentation: TPS per core and response time at several offered loads.
   - Footnote 17 shows where consolidation ratios come from.
-  - Our 2-vs-2 runs at full load measure the residual per-busy-core factor, not the 12x.
+  - Our 2-vs-2 single-box runs at full load, which test the per-core hypotheses, measure the residual per-busy-core factor, not the 12x.
 - **Contradiction:** Temenos's own figure is 61 TPS per core on AWS (VN14).
 
 **CS03. "Nationwide Virtualizes With A Vengeance: 700 Servers Gone"**
@@ -2027,12 +2027,12 @@ Cross-references in other sections:
 
 ### How others normalised across architectures
 
-- **Equal cores, SMT/HT off, same kernel build** (AC01). This is the only independent precedent, and it matches our 2-against-2 design. State SMT state, clock and cache on both sides. Note any cap that disadvantages one side: WSL2 limited to 2 GB hurts x86 on memory-bound work (analysts strand).
+- **Equal cores, SMT/HT off, same kernel build** (AC01). This is the only independent precedent, and it matches our 2-against-2 single-box runs, which test the per-core hypotheses. State SMT state, clock and cache on both sides. Note any cap that disadvantages one side: WSL2 limited to 2 GB hurts x86 on memory-bound work (analysts strand).
 - **Work per CPU-busy-second for a named workload** (IB20, CR04). This is LSPR's own unit, an ITR.
   - Report it per workload, never as a #MIX-style composite: Watson shows a spread over 30% between workloads on one architecture.
   - Examples: records sorted per CPU-second, MB/s deflated per core, signatures/s per core, inferences/s at a stated batch size, commits/s per core.
 - **TPS per core across several offered loads, with response time** (CS02, IB14). A scatter of TPS per core against offered TPS shows where each side bends.
-- **Fixed offered load, compare cores needed** (AN01's measured run). At small scale this means: hold the request rate constant and report the CPU% each side needs.
+- **Fixed offered load, compare cores needed** (AN01's measured run, in a study commissioned by IBM). At small scale this means: hold the request rate constant and report the CPU% each side needs. Our equal-service comparison (SPEC 8) is of this kind; its results are resource needs at one service target, not consolidation ratios (CR03).
 - **"x86 cores equivalent to one accelerator"** (IB04 fn1, AN02). A unit for the AI grid, but only if both sides run in-process.
 - **Cycles and wall time reported separately** (AC11). The z17's higher clock and the Ryzen's boost behaviour otherwise get conflated.
 - **Per dollar** (CM03 gives monthly cloud prices; AN01 and CS02 give TCO). Use only with stated assumptions: utilisation, licence model, production/non-production split, $/kWh and labour.
@@ -2078,7 +2078,7 @@ Cross-references in other sections:
   - CR02: idle failover and test servers at 5-10%.
   - CS02 fn17: 10-20% against 89%.
   - CS03: idle-heavy servers per IFL.
-  - Our results are performance ratios, never consolidation ratios (CR03).
+  - Our results are performance ratios or, for the equal-service comparison, resource needs at one service target; never consolidation ratios (CR03).
 - **Batch-size choices.** IBM's AI headlines use batch 128-160 with threads pinned one per chip (AC09, IB02, IB04). Batch 1 is a different regime, so report the batch size with every inference figure.
 - **Cross-generation baselines.**
   - Z Sort against z14 (IB12); compression against z14 zEDC Express (IB06); ECC against a z14 Crypto Express6 card (AC06).
@@ -2088,9 +2088,9 @@ Cross-references in other sections:
 - **Different software on the two sides:** Fujitsu Enterprise Postgres against PG11 (VN16); Temenos releases (VN14, CS02). Hold the program constant.
 - **Headline against footnote.** The zCX paper's "44%/54% more" for Z matches the x86 shortfall in its own TCO-model settings, which give Z 1.79x and 2.16x (IB14): "X% more" and "X% less" are not the same ratio, so recompute from the footnote. "450 billion/day" has two different footnotes (IB02-IB04). PUE varies from 1.55 to 1.67 across IBM pages. Cite the footnote.
 - **Energy estimated on one side, measured on the other** (CS01, IB17).
-- **Slice size set by one side.** Microsoft's 2003 comparison used Linux on one zSeries CPU (VN13). State our slice size and that the LPAR is shared, and expect the objection.
+- **Slice size set by one side.** Microsoft's 2003 comparison used Linux on one zSeries CPU (VN13). State our slice size, whether the partition's engines are dedicated or shared under the entitlement rule (SPEC 8.2), and the neighbour state (SPEC 8.2), and expect the objection.
 - **Corpus and tool choice.** Zeroes understate DFLTCC (CM04, IB08). gzip and zlib take different DFLTCC paths. Small Python buffers throttle the hardware (IB09).
-- **Shared accelerators.** One AIU per chip on z16, eight per drawer on z17, and one DFLTCC unit per chip (IB05, AC02). A 2-CP slice does not own them, so contention from other tenants is possible.
+- **Shared accelerators.** One on-chip AIU per chip on z16 and on z17, where each AI accelerator accepts work from any core in the same drawer (IBM, "New Telum II Processor and IBM Spyre Accelerator", https://www.ibm.com/blog/announcement/telum-ii); and one DFLTCC unit per chip (IB05, AC02). A 2-CP slice does not own them, so contention from other tenants is possible.
 - **Host-side overhead.** Time the whole call path, not just the accelerator kernel (CM07).
 
 ## 6. Open gaps no one seems to have published

@@ -5,7 +5,7 @@ has been run on z/OS yet; the effort figures are estimates.
 
 ## Principle: three thin adapters, one body of business logic
 Each track keeps its business logic identical on every platform and swaps three adapters:
-- **Data access:** indexed files or PostgreSQL on Linux; VSAM or Db2 for z/OS on z/OS.
+- **Data access:** indexed files, PostgreSQL, or Db2 for Linux, UNIX, and Windows on Linux (x86 and s390x); VSAM or Db2 for z/OS on z/OS. The database pairings are the two forms of the live-database variant (SPEC 1.8.4).
 - **Transport:** the TCP worker pool on Linux; CICS (web services / REST via CICS Liberty, or a socket listener) for
   the COBOL track on z/OS, and the JVM's TCP server for the Java track.
 - **Accelerators:** zlib, OpenSSL and ONNX Runtime on Linux; zlib with zEDC/DFLTCC, ICSF/CPACF and zDNN on z/OS.
@@ -13,8 +13,10 @@ Each track keeps its business logic identical on every platform and swaps three 
 The load generator always runs off the system under test and reaches it over TCP.
 
 ## Java track (about 1-2 weeks)
-- Runs on IBM Semeru Java under z/OS UNIX. Java work is zIIP-eligible, so results are reported with and without zIIPs
-  (hypothesis H6).
+- Runs on IBM Semeru Java under z/OS UNIX. Java code running in the JVM is zIIP-eligible, while native code it calls
+  (for example zDNN through JNI, below) and z/OS services may run on CPs. Which parts are eligible is shown by
+  measurement (the zIIP time, the zIIP-eligible time on CPs and their split by address space, from SMF type 30);
+  results are reported with and without zIIPs (hypothesis H6).
 - **Changes:**
   - EBCDIC: set the file encoding explicitly, and name the charset in all file and network I/O;
   - crypto through z/OS JCE providers backed by CPACF/ICSF;
@@ -43,9 +45,17 @@ The load generator always runs off the system under test and reaches it over TCP
       - batch file access routed through CICS: through the external CICS interface (EXCI), programs running in z/OS
         can call CICS application programs in a CICS region, so the batch programs would call CICS programs to read
         and update the files instead of opening them;
-    - threadsafe program definitions, or several CICS regions, so that application code is not limited to one QR
-      TCB;
-    - STRINGS and buffer counts sized to the measured concurrency.
+    - application code that is not limited to one QR TCB: either programs defined THREADSAFE, which is done only
+      after their code has been reviewed and made threadsafe, because the definition states that the application
+      logic is threadsafe and CICS does not make it so (IBM CICS TS 6.x, "Making applications threadsafe",
+      https://www.ibm.com/docs/SSJL4D_6.x/fundamentals/threadsafe/threadsafe_making.html); or several CICS
+      application regions, which with non-RLS VSAM need a file-owning region and function shipping between the
+      regions, or RLS. The choice changes CPU per transaction, and is declared (SPEC 1.1). The CICS system
+      initialisation parameter FCQRONLY is recorded too, because it decides whether file control requests from
+      threadsafe programs run on the QR TCB (verify its default for the CICS release in use);
+    - STRINGS, and the buffers of the LSR pool the files use (the LSRPOOL definition, since a file's own DATABUFFERS
+      and INDEXBUFFERS apply to non-shared resources; verify against the CICS release in use), sized to the measured
+      concurrency.
   - Each change is part of the z/OS configuration and is disclosed with it (SPEC 4.3).
   - Sources (fetched 2026-11-25): CardDemo, https://github.com/aws-samples/aws-mainframe-modernization-carddemo
     (`app/csd/CARDDEMO.CSD`, `app/jcl/CLOSEFIL.jcl`, `app/jcl/ACCTFILE.jcl` and the other file-load jobs, and the
@@ -81,7 +91,8 @@ benchmark owners' permission is in place (SPEC 1.6).
   - LPAR weight and capping;
   - the WLM service classes used.
 
-  These are needed both for honest comparison and for the planned MIPS calibration.
+  These are needed for honest comparison, and for counting CPU on one basis (docs/CPU-ACCOUNTING.md). No MIPS
+  calibration is planned (SPEC 3).
 
 ## Functional verification versus measurement
 Porting work on a system that has not granted benchmark permission is **functional verification only**:
@@ -95,7 +106,7 @@ owner's written permission.
 
 ## What the system must provide
 - Sanctioned access with agreed windows (CONTRIBUTING.md).
-- **Products:** CICS TS, Db2 for z/OS (for the database variants and the optional modules), ICSF, zEDC enabled,
+- **Products:** CICS TS, Db2 for z/OS (for the live-database variant, SPEC 1.8.4), ICSF, zEDC enabled,
   Semeru Java, and Open XL C/C++ or equivalent build tools.
 - **Systems programmer help:** a WLM service class (or classes) for the benchmark work, and access to the SMF and RMF
   records above. Both need authority that an ordinary user ID doesn't have.
