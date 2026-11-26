@@ -11,29 +11,9 @@
 | M5 | Phase 2: x86 with QAT/AMX; z/OS with CICS, VSAM, DFSORT and WLM (COBOL track on Enterprise COBOL; Java track with and without zIIPs); MIPS-to-x86-core calibration | access being arranged |
 | M6 | Peer-reviewed reproducibility: submit the report and kit for artifact evaluation (e.g. ACM ICPE), so that independent reviewers re-run it | planned |
 | M7 | Open cost model: a separate report in which every cost assumption is a visible, editable input, fed by the measured ratios. No hidden utilisation or licence assumptions | later |
-| A1 | Analytics track (derived from TPC-H, compliance-ready; publication after TPC written permission) on PostgreSQL x86: SF 1 and 10, power and throughput tests, refresh streams, answer validation, ACID tests (with power-loss durability on our own hardware) | planned |
-| A2 | Analytics on Linux on Z, then Db2 for z/OS (phase 2); queries as batch underneath the online track | access being arranged |
-| T1 | TPC-Pricing / TPC-Energy methods applied to the FDR pricing appendix and energy section (x86) | planned |
-| T2 | Derived from TPC-DI batch ETL module on PostgreSQL x86, then Linux on Z / z/OS | planned |
-| T3 | Derived from TPC-E OLTP module beside the online track (x86 first) | planned |
-| T4 | Derived from TPCx-V consolidation module (KVM on x86; KVM or z/VM on Z) | access being arranged |
-| Stretch | An audited run of an actual TPC benchmark (e.g. TPC-E or TPCx-AI) on Z and x86, as a separately sponsored effort with a TPC-certified auditor | needs a sponsor |
-
-## Other TPC benchmarks, ranked (derived, labelled, never vendored)
-Modules derived from the high-priority rows are planned (SPEC 1.7; milestones T1-T4); the others stay candidates. These rows describe the TPC's own benchmarks; any work of ours based on them is labelled "Derived from" and carries the TPC disclaimer (SPEC 6).
-Revisions as on tpc.org, 2026-11-19: TPC-H 3.0.1, TPC-E 1.14.0, TPC-DI 1.1.0 (obsolete), TPCx-V 2.1.10, TPC-Energy 1.5.0, TPC-Pricing 2.9.0.
-
-| Benchmark | What it is | Why it matters here | Priority |
-| --- | --- | --- | --- |
-| TPC-E (module derived from it planned) | Brokerage OLTP: complex, read-heavy transactions | The closest standard analogue to zRef and to CICS-style work; a familiar OLTP yardstick beside our CardDemo track | high |
-| TPC-DI (module derived from it planned; obsolete at TPC) | Data integration: batch ETL from multiple source formats, including fixed-width files, into a warehouse | The nightly batch load, in its most mainframe-like form | high |
-| TPCx-V (module derived from it planned) | Virtualization: many database VMs with shifting load on one host | Tests the consolidation claims (N VMs per LinuxONE vs x86) directly | high |
-| TPC-Pricing, TPC-Energy (methods derived from them) | Common methodologies for price and energy metrics | Method for the open cost model (M7) and for energy where it can be measured | high (method only) |
-| TPC-C | Classic order-entry OLTP (spec only; HammerDB's TPROC-C is the common derived kit) | A widely recognised OLTP baseline on PostgreSQL and Db2 | medium |
-| TPC-DS | Modern decision support: 99 queries plus data maintenance | A broader analytics check beside TPC-H | medium |
-| TPCx-AI | End-to-end AI pipelines (data prep, training, serving) | Relevant to the Telum AI accelerator; stack portability to s390x unknown | medium |
-| TPCx-HS | Big-data sort (TeraSort-style, Hadoop/Spark) | Relates to our sort tests, but the Hadoop stack is far from mainframe practice | low |
-| TPCx-BB, TPCx-IoT, TPCx-HCI | Big-data analytics, IoT ingest, hyperconverged infrastructure | Little overlap with mainframe workloads | low / skip |
+| Modules | Optional modules derived from industry-standard benchmark material: in preparation, published only once the benchmark owners' permission is in place | withdrawn |
+| T1 | Pricing appendix and energy section of the FDR, applied on x86 | planned |
+| Stretch | An audited run of an actual TPC benchmark on Z and x86, as a separately sponsored effort with a TPC-certified auditor | needs a sponsor |
 
 ## System access: what we're pursuing
 We need s390x and z/OS time on platforms whose terms allow benchmarking **and** publishing results. Routes in progress:
@@ -51,4 +31,3 @@ We need s390x and z/OS time on platforms whose terms allow benchmarking **and** 
 - **Transaction mix weights** for the online set.
 - **The AI model for the scoring step:** a public fraud model and dataset (candidates: the IBM LSTM fraud and TabFormer models).
 - **Fair x86 accelerator coverage** on consumer hardware without QAT or AMX.
-- **Order of the TPC modules** (T1-T4), and whether any medium-priority ones are worth adding.

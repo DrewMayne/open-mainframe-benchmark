@@ -1574,7 +1574,7 @@ Everything in this section is the vendor's own material, so IBM is the intereste
   - IBM claims pgbench on PostgreSQL 9.6.1 gives "up to 2x more throughput per core than x86".
 - **Quality / independence:** vendor claim (pgbench); tool guidance (HammerDB).
 - **Maps to:** RMW/IO, choke/limits.
-- **Useful to us:** set the Ryzen governor to performance, and use NOPM if HammerDB is used.
+- **Useful to us:** HammerDB's note on the CPU governor applies to any x86 run: set it to performance.
 
 **SB08. OpenBenchmarking.org (Phoronix Test Suite) uploads from LinuxONE Community Cloud**
 - **Who / when:** community uploads, 2020-2022.

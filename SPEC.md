@@ -1,12 +1,13 @@
-# Open Mainframe Benchmark: specification, draft v0.3.0 (2026-11-19)
+# Open Mainframe Benchmark: specification, draft v0.3.2 (2026-11-26)
 
 Status: draft for comment. Items marked **(proposed)** are not yet decided. Version numbers follow semantic versioning:
 results always name the spec version and track they ran against.
 
 Changes in v0.1.1: two implementation tracks (Java first, then COBOL) under one spec (1.0, 1.5).
-Changes in v0.2.0: analytics track, TPC-H-derived and compliance-ready (1.6); rules for using TPC materials (6).
-Changes in v0.3.1: TPC labelling aligned with TPC Policies v6.20 (8.1.4, 8.1.5); written permission requested before publishing derived results (6).
-Changes in v0.3.0: optional TPC-derived modules: TPC-E, TPC-DI, TPCx-V, plus the TPC-Pricing and TPC-Energy methods (1.7).
+Changes in v0.2.0: an optional analytics module derived from industry-standard benchmark material (1.6), and rules for using third-party benchmark materials (6).
+Changes in v0.3.1: labelling of derived work aligned with the benchmark owner's published policies; written permission requested before publishing derived results (6).
+Changes in v0.3.0: further optional modules derived from benchmark material, plus pricing and energy methods (1.7).
+Changes in v0.3.2 (2026-11-26), a withdrawal: the optional modules derived from benchmark material, and the rules specific to them, are withdrawn until the benchmark owners' permission is in place (1.6, 1.7, 6). HYPOTHESES.md is unchanged.
 
 ## 1. Workload
 
@@ -58,50 +59,19 @@ Results are always reported with and without the extension.
 - A deterministic generator with a scale factor S (accounts = 10,000 × S, transactions per account stated).
 - The same seed gives byte-identical data files on every platform. Golden checks compare decompressed bytes, because hardware and software deflate output differ.
 
-### 1.6 Analytics track: derived from TPC-H, compliance-ready (proposed)
-The reporting and analytics side of mainframe work: large scans, joins, sorts and aggregations over a standard data set.
-- **Data and queries:** generated with TPC's own `dbgen` and `qgen` from the TPC-H kit (spec revision 3.0.1 at the time
-  of writing; use the latest revision on tpc.org and name it in every result). Each user downloads the kit from tpc.org
-  and accepts the TPC EULA. It is never included in this repository (see section 6).
-- **Databases:** PostgreSQL on x86 and on Linux on Z, and Db2 for z/OS in phase 2. The query text follows the kit, with
-  only the dialect changes the spec permits, each one listed in the FDR.
-- **Compliance-ready:** the harness implements every rule of the TPC-H specification that can be implemented on the
-  platform:
-  - permitted scale factors only (1, 10, 30, 100, 300 and up; never others);
-  - exact dbgen population, and query output validated against the kit's reference answers;
-  - the power test and the throughput test, with the required number of query streams plus the refresh stream (RF1/RF2);
-  - the ACID tests, including durability by power loss on platforms we fully control;
-  - the FDR and executive summary in TPC's format, and pricing under the TPC Pricing Specification where it can be done
-    with public list prices.
-- **How results are labelled:** until an independent TPC-certified audit is passed and the result is accepted by the
-  TPC, every result is published as **"Derived from TPC-H"** with the TPC's required disclaimer (section 6), as academic
-  research with no marketing claims (TPC EULA clause 4c). TPC metric names (e.g. QphH@Size) are never used for our
-  numbers. Rules that could not be met on a platform are listed in its FDR.
-- **Also used as batch:**
-  - the queries can run as the batch load underneath the online track, with reporting against the live database;
-  - dbgen's LINEITEM data can be the standard input for the B2 extract/sort/merge job.
-- **End goal:** an audited, official TPC-H result on at least one configuration, if a sponsor funds the audit and
-  pricing.
+### 1.6 Optional modules (in preparation)
+Optional modules derived from industry-standard benchmark material are in preparation. They will be published
+only once the benchmark owners' permission is in place; until then, none is described here.
 
-### 1.7 Optional modules derived from TPC benchmarks (proposed)
-Each module answers a question the core tracks don't. Each is optional, run only when its question matters, and
-follows section 6: every module is labelled "Derived from" its TPC benchmark, and carries that benchmark's 8.1.5 disclaimer. Revisions are as listed on tpc.org on 2026-11-19; results name the revision used.
-- **Derived from TPC-E (v1.14.0, EGen kit). A standard OLTP yardstick.** A brokerage OLTP workload derived from TPC-E, run on PostgreSQL / Db2 next
-  to our CardDemo track. It shows whether our online-track ratios hold on a recognised OLTP mix, and it is the nearest
-  standard analogue to zRef. It is a separate module, and CardDemo is never derived from it.
-- **Derived from TPC-DI (v1.1.0, DIGen kit; listed by the TPC as obsolete, so no new official results are possible). Batch ETL.**
-  It loads a warehouse from multiple source formats, including fixed-width files, with historical and incremental
-  loads. It is the nightly batch job in its most mainframe-like form, measured as elapsed time and CPU for each load
-  phase.
-- **Derived from TPCx-V (v2.1.10, kit). Consolidation.** Many database VMs with shifting load on one host. It tests the
-  consolidation claims (how many VMs per LinuxONE against per x86 host, under the same service levels) on KVM or z/VM
-  on Z and KVM on x86.
-- **Methods derived from TPC-Pricing (v2.9.0) and TPC-Energy (v1.5.0). Methods, not workloads.** Pricing defines how the optional pricing
-  appendix and the open cost model (M7) are built, from public list prices with stated assumptions. Energy defines how
-  power is measured where it can be (RAPL on x86 we control; docs/methods/energy.md). On IBM z17 / LinuxONE 5, per-partition
-  power is reported to the operating system (Linux `zpwr`, z/OS SMF 70.1 via APAR OA66018, the z/VM 7.4 monitor), but
-  IBM describes it as apportioned rather than measured. It is recorded in an optional FDR field labelled "vendor
-  estimate; not measured" and kept out of per-watt comparisons. Older Z generations: not measurable, and the FDR says so.
+### 1.7 Pricing and energy methods (proposed)
+Methods, not workloads:
+- **Pricing:** the optional pricing appendix and the open cost model (M7) are built from public list prices, with
+  every assumption stated.
+- **Energy:** power is measured where it can be (RAPL on x86 we control; docs/methods/energy.md). On IBM z17 /
+  LinuxONE 5, per-partition power is reported to the operating system (Linux `zpwr`, z/OS SMF 70.1 via APAR OA66018,
+  the z/VM 7.4 monitor), but IBM describes it as apportioned rather than measured. It is recorded in an optional FDR
+  field labelled "vendor estimate; not measured" and kept out of per-watt comparisons. Older Z generations: not
+  measurable, and the FDR says so.
 
 ## 2. Platforms
 - **Phase 1:**
@@ -138,23 +108,14 @@ follows section 6: every module is labelled "Derived from" its TPC benchmark, an
 - Audited or official benchmark status (TPC/SPEC). Results are research results. This kit is not a TPC benchmark, and results must not be presented as TPC results or described with TPC benchmark names. A separately sponsored, audited run of an actual TPC benchmark is listed as a stretch goal in ROADMAP.md.
 - DB2, IMS and MQ variants of CardDemo (later, possibly).
 
-## 6. Using TPC materials
-TPC benchmark kits and specifications are licensed by the Transaction Processing Performance Council under their own
-EULAs. To stay within them:
-1. **Download, never vendor.** TPC kits are never committed to this repository. Scripts fetch them from tpc.org, or
-   point the user there to accept the EULA.
-2. **Label every derived work and result** as the TPC Policies require (v6.20, clauses 8.1.4 and 8.1.5):
-   - the prefix **"Derived from"** before every use of the benchmark name (e.g. "Derived from TPC-H Query 5");
-   - this disclaimer, verbatim, with the benchmark name filled in: *"This workload is derived from the TPC-H Benchmark
-     and is not comparable to published TPC-H Benchmark results, as this implementation does not comply with all
-     requirements of the TPC-H Benchmark."*
-   - A derived work judged too similar to the standard falls under the TPC's fair-use rules. So before results that
-     use a TPC benchmark name are published, **the TPC's written permission is requested** (Policies 8.1.4), and the
-     publishing scripts refuse to run until it is recorded.
-3. **No TPC names or metrics on our own workloads.** The online track (CardDemo-based) is not TPC-C- or derived from TPC-E
-   and is never described as such. TPC metric names (tpmC, tpsE, QphH@Size, and so on) are used only for official
-   results.
-4. **Academic framing only:** no marketing claims based on TPC-derived results.
+## 6. Benchmark materials from third parties
+To stay within other benchmark owners' terms:
+1. **Download, never vendor.** Third-party benchmark kits and specification text are never committed to this
+   repository.
+2. **Permission first.** No module derived from industry-standard benchmark material, and no result from one, is
+   published until the benchmark owner's written permission is in place.
+3. **No borrowed names or metrics.** Our own workloads (the CardDemo-based online track and the batch suite) are
+   never described with another benchmark's name, and other benchmarks' metric names are never used for our numbers.
+4. **Academic framing only:** no marketing claims based on results derived from benchmark material.
 
-TPC, TPC-H, TPC-C, TPC-E, TPC-DS, TPC-DI, TPCx-AI, TPCx-V, QphH and related names are trademarks of the Transaction
-Processing Performance Council.
+TPC and TPC Benchmark are trademarks of the Transaction Processing Performance Council.
