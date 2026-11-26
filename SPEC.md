@@ -85,17 +85,31 @@ Methods, not workloads:
   - an x86 server with QAT and AMX (cloud bare metal);
   - z/OS with CICS, VSAM, DFSORT and WLM;
   - dedicated or characterised LinuxONE capacity.
-- **Equal counts:** runs use equal counts of cores or IFLs (2 and 4 to start). SMT state is recorded, along with whether a "vCPU" is a core or a thread.
+- **Comparison tiers.** Every result names its comparison tier: equal core counts on a single box, equal service, or the scale-out tier.
+- **Equal core counts on a single box,** for the registered per-core hypotheses: such runs use equal counts of cores or IFLs (2 and 4 to start), and measure closed-loop capacity (4.2). SMT state is recorded, along with whether a "vCPU" is a core or a thread. The configurations that score each hypothesis are named in docs/HYPOTHESES-ADDENDUM.md.
+- **Equal service (proposed; exploratory).** For a stated throughput within a p99 latency bound fixed before the runs, what each side needs to sustain it: cores or engines by type, memory, accelerators, power where measurable and cost where priced, all disclosed (section 8). No prediction about it is registered, it is not a headline result, and it is reported after the registered verdicts (4.12, 10).
+- **Per core, as a disclosed normalisation.** Per-core figures from any tier are labelled as a normalisation. Much software is licensed per core, but a core is not one licence unit: IBM's Processor Value Unit table rates a z17 ME1 core at 120 PVUs, and a core of a two-socket Intel Xeon server or of an AMD EPYC server at 70.
+- **The scale-out tier** (section 9) is its own labelled tier, reported apart from single-box results.
+- **Why an equal-service comparison, beside equal cores.** It allows a cluster to be compared with a single system, and it reports a resource need at a stated service level, which is the question a capacity plan answers. Neither tier counts the work of processors outside the counted cores (on IBM Z, SAPs, IFPs, the z17 DPU and the on-core and on-chip accelerators; on x86, adapter offloads and QAT, IAA and DSA); those are listed beside every result instead (8.4, 8.5). A shared Z engine is not a fixed amount of hardware, so counted runs use dedicated or entitled engines (8.2). Much z/OS software is charged on MSUs, not per core, so the FDR states each product's licence metric. The reasoning, with its sources, is in docs/ARCHITECTURE.md, section 1.1.
 
 ## 3. Metrics
-- **Throughput:** transactions per second, per core.
-- **Cost per transaction:** CPU time per transaction (user + sys), from OS accounting. Hardware counters may be unavailable in Z guests, so wall-clock and OS CPU time are the common basis.
+- **Capacity:** closed-loop throughput at zero think time (4.2), in committed transactions per second per core or engine (7.1), with the p99 at that point reported beside it. The registered hypotheses use it: per core in H1, H1j and H2, per engine in H6, as online capacity in H3a and H3b, and as the base of H4's load points (docs/HYPOTHESES-ADDENDUM.md).
+- **Sustained throughput:** transactions per second at the transaction mix of 1.2, sustained within a stated p99 bound (7.4). The equal-service result is what each side needs for a stated sustained throughput (section 8).
+- **Cost per transaction:** the busy processor time of the whole system under test during the measured window, by engine type, divided by the committed requests in that window (7.1), with CPU per completed request beside it (docs/CPU-ACCOUNTING.md).
+  - **x86 Linux:** the busy time (user, nice, system, irq and softirq) of every CPU in the system under test's cpuset, from `/proc/stat`, plus the confinement residue of the other online CPUs (8.2), with the kernel's CPU-time accounting options recorded, because their defaults differ between s390 and x86. With SMT on, the time is in hardware-thread seconds and is labelled so.
+  - **IBM Z, one basis for every partition:** the PR/SM view, whatever the operating system: the partition's effective dispatch time by engine type (on z/OS, the sum of SMF70EDT over the partition's logical processors of each type, in the PR/SM partition data of SMF type 70 subtype 1; verify the field names against the release in use), over intervals aligned with the window. For Linux in an LPAR, the same partition data, read through `hyptop` with global performance data authority or from the RMF partition data of a z/OS partition on the same CPC. The partition's LPAR management time (total minus effective dispatch time) is reported beside it, listed and not counted. The operating system's own view (MVS busy; `/proc/stat` busy) is reported beside it, with the capture ratio on z/OS. Before the first counted run on a machine, a zero-load check shows that the field tracks load (docs/CPU-ACCOUNTING.md, section 3).
+  - **Guests:** the busy time of the processors the guest runs on, from the hypervisor's view.
+  - **Coupling facility partitions:** the coupling facility processor busy time (SMF type 74 subtype 4).
+  - **Several nodes or partitions:** the time is summed over every one in the system under test. Driver hosts are excluded and reported separately.
+  - **Breakdown only:** per-process and per-cgroup figures on Linux; SMF 30 (per job) and SMF 110 (per transaction) on z/OS.
+  - The basis is validated on each platform against a known load before it is used (4.17).
+- **Workload characterisation (required for every counted series):** on IBM Z, the CPU-measurement facility counters (SMF type 113 on z/OS; the `cpum_cf` counter sets on Linux in an LPAR authorised for them), with the L1 miss rate, the relative nest intensity and the LSPR workload category they imply; on x86, instructions retired, cycles and last-level-cache misses per transaction (`perf`); on both, a breakdown of CPU per transaction into transport, data adapter, business logic, data manager and operating system. Where counters cannot be read (for example in a z/VM guest), the FDR says so and the result is labelled "not characterised" (docs/CPU-ACCOUNTING.md, section 7).
 - **Latency:** p50, p90, p99 and p99.9 (HdrHistogram).
 - **Batch:** elapsed time and CPU time per job, alone and alongside online work.
 - **Interference:** online capacity and p99 with batch present, divided by the same without batch.
 - **Steal time** and other-load indicators on shared platforms.
-- **Normalisations:** per core at the stated clock, and per watt where measurable (RAPL on x86; Z guests generally cannot meter, which is stated). Per dollar is optional, using published list prices with assumptions stated.
-- **MIPS:** never derived from Linux runs. A calibration of MIPS to x86 cores per workload class is planned for phase 2, against z/OS and IBM's capacity data for the measured processor model. IBM's published capacity ratings are per processor model (the LSPR multi-image table, which IBM uses as the basis for MIPS and MSUs); for a specific LPAR configuration, IBM's LSPR FAQ points to its zPCR tool (LPAR Configuration Capacity Planning).
+- **Normalisations,** each labelled as a normalisation and shown beside the result: per core or engine at the stated clock (with the licence metric of each product, because a core is not one licence unit); per watt where measurable (RAPL on x86; on Z machines before z17 no partition-level power figure is visible to the operating system, and on z17 ME1 the figure reported is apportioned by IBM, not measured, and for z17 ME2 and MER this is not verified, 1.7); and per dollar, optional, using published list prices with assumptions stated and the licence metric of each product named (where no published list price exists for a hardware configuration, on either side, no per-dollar figure is given for it). Per watt and per dollar appear beside the result only when both sides are measured or priced on the same basis (8.6). Where a per-core result scores a registered hypothesis, its verdict is reported first (4.12).
+- **MIPS:** never derived from Linux runs, and no MIPS-to-x86-core equivalence is computed or published. IBM's published capacity ratings are per processor model (the LSPR multi-image table, which IBM uses as the basis of its processor capacity ratings, commonly called MIPS, and of its MSU ratings); for a specific LPAR configuration, IBM's LSPR FAQ points to its zPCR tool (LPAR Configuration Capacity Planning). The prior-art review advises against MIPS equivalence (docs/prior-art.md, section 5). A comparison with an estate model, if one is ever made, is a separate, labelled analysis in the open cost model (ROADMAP M7), with every assumption disclosed, and never a result of this benchmark.
 
 ## 4. Run rules
 1. **Repeats:** at least 6 runs per point (proposed), in randomised order, with warm-up excluded. The runs are spread evenly over at least 3 boots of each x86 node and 3 IPLs or re-activations of each Z partition (proposed; two runs per boot at the default of 6 repeats), with the data reloaded each time; where the owner does not allow an IPL, over 3 restarts of every component of the system under test, labelled "restarts, not IPLs". The repeat count is fixed in the run plan, and is the same at every point of a series and on both sides of a comparison. Each open-loop repeat uses its own arrival seed (7.1). Report the mean and a 95% confidence interval over all runs, the between-boot and within-boot variance components, the median and the spread (4.16).
@@ -434,5 +448,357 @@ and it is the same on both sides.
   driver's schedule lag; and the requests waiting in the driver for a free connection.
 - The principal latency figures are p50, p99 and p99.9.
 - The raw histograms are published (4.6).
+
+## 8. Equal-service comparison (proposed)
+For a stated throughput within a stated p99 bound, this comparison reports what each side needs to sustain it. It
+is **exploratory**: no prediction about it is registered (docs/HYPOTHESES-ADDENDUM.md), it scores no registered
+hypothesis, and no equal-service result is a headline result. That changes only when a prediction about it has been
+registered in a later addendum entry, at its own tag, before the first kit run that tests it, and the preconditions
+of section 10 hold. Until then every equal-service result is reported as exploratory. Because it carries no
+prediction, an equal-service result is descriptive: it is not summarised as one platform winning, and no claim of
+advantage is drawn from it (8.7). Every FDR reports the verdicts of the registered hypotheses it scores first,
+before any equal-service figure (4.12).
+
+### 8.1 Service targets and latency bounds
+- A **service target** is a stated throughput R (transactions per second at the transaction mix of 1.2), with its
+  request profile and data variant (1.8), and a p99 latency bound L (7.2). The same R and L apply to both sides.
+- **Fixed before the first run of the series,** calibration included, in the run plan: the calibration size, the
+  calibration bound L_cal, the timeout T, the rule that derives the targets and the rule that derives the values of
+  L.
+- **Calibration size.** One size is declared for both sides before either is measured: the same number of x86 cores
+  and of Z engines (on z/OS, CPs plus zIIPs, with the split declared), proposed 4. Each side's declared set of
+  configurations (8.2) includes the calibration size and extends to at least twice it; a side whose declared set
+  does not gives no equal-service result.
+- **Calibration.** Each side runs the sweep of 7.2 at the calibration size, with L = L_cal (proposed: p99 of 1 s,
+  overall) and the series' T (proposed: 10 × L_cal). The calibration knees are found with L_cal. The calibrations
+  are reported with the result and score nothing.
+- **Targets come from both calibrations.** The targets are declared fractions of the **lower** of the two
+  calibration knees (proposed: 25%, 50% and 80% of it). They are never derived from one side's calibration alone.
+  100% is not used: at the median knee about half the repeats of the lower side sustain, so a target there would
+  report mostly noise.
+- **Latency bounds come from both sides too.** After both calibrations, each side is offered 50% of the lower
+  calibration knee, open loop, at the calibration size, with the run plan's repeats, and its mean p99 is recorded.
+  Each side also records its mean p99 at 5% of the lower calibration knee, as its **latency floor**.
+  - The series declares at least three values of L by a rule applied to both sides (proposed: 2×, 5× and 10× the
+    **higher** of the two sides' mean p99 at 50% of the lower calibration knee). The higher is used so that no side
+    fails a bound by its base latency alone, which adding engines or cores cannot shorten.
+  - No value may exceed L_cal (that is, T/10). A value the rule would set higher is set to L_cal, and the cap is
+    reported.
+  - For each L, a side whose latency floor exceeds 0.8 × L (proposed) reports "latency floor above L" for that bound
+    instead of a sustaining configuration.
+- The derived targets and values of L are added to the run plan, committed and registered (4.13) before the first
+  counted run of the series.
+- **Network distance.** If the idle round-trip time from driver to system under test differs between the sides by
+  more than 10% (proposed) of the smallest L, the result is labelled "unequal network distance", and the sustaining
+  configuration is also reported with L applied to latency minus each side's idle round-trip time.
+- A series may have several targets. Each target is a separate result.
+
+### 8.2 Declared configurations
+Before the series, each side declares an ordered set of configurations it will try, from smallest to largest. The
+rules below apply to every counted run.
+- **Z engines:**
+  - Linux on Z: 1, 2, 3 ... IFLs. z/OS: a declared sequence of (CP, zIIP) pairs with at least one CP, for example
+    (1,0), (1,1), (2,1), (2,2) ..., with the order fixed before the series.
+  - **Dedicated or entitled.** A counted run uses dedicated engines, or shared engines that meet all four of these:
+    1. absolute capping of the partition at the declared engine count, a whole number;
+    2. exactly that many logical processors of the type online;
+    3. a weight for that processor type, fixed for the series, that alone entitles the partition to at least the
+       capped capacity: the partition's weight for the type ÷ the total weight for that type of the active
+       partitions sharing the pool × the physical processors of the type in the pool ≥ the cap;
+    4. the other partitions' consumption of the pool recorded for every run, and stable within the limit of 7.5 (a
+       repeat outside it is invalid, not unsustained).
+
+    Results on such engines are labelled "shared, capped"; results on dedicated engines are labelled "dedicated".
+  - A configuration whose entitlement is below its cap is labelled "shared, capped above entitlement"; a shared,
+    uncapped one is labelled "shared uncapped" and reports the partition's measured physical processor consumption
+    beside its logical engine count. Both are disclosed only: not counted, and never a headline result.
+  - Fractional caps on Z, and `cpu.max` caps on x86, are a labelled variant on both sides or on neither.
+  - **Partition hygiene, for every counted run:** no System Recovery Boost period is active (boosts disabled, or no
+    boost active in the window, shown by the system log and the RMF data for the window; the boost setting and the
+    IPL time are recorded); no temporary
+    capacity record is activated or deactivated during the series; Intelligent Resource Director weight management
+    and vary CPU management are off; the HiperDispatch state and the polarisation of each logical processor are
+    recorded at the start and end of each run; the CPC's microcode driver and bundle level is recorded; and the
+    drawer and chip of each logical processor are recorded where the platform shows them.
+  - The CP capacity setting and the multithreading (MT) mode of IFLs and zIIPs are fixed for the series. A series
+    on sub-capacity CPs is labelled "sub-capacity CPs".
+  - **z/OS: the partition runs only the system under test** (the z/OS counterpart of the x86 confinement): nothing
+    but the system under test and the system's own address spaces, as listed in the run plan, checked against the
+    SMF type 30 and type 72 data for every window (docs/CPU-ACCOUNTING.md, section 3). A run with other work is
+    invalid.
+  - **Linux on Z:** counted runs run Linux directly in an LPAR, with exactly the counted IFLs online (the others
+    deconfigured, or offline with `chcpu`), so that interrupt handling and every other kernel activity of the
+    partition can run only on counted IFLs; the processes of the system under test run in a cpuset that holds them
+    all. The CPU dispatching mode (polarisation: horizontal or vertical, as `chcpu` sets it [S56]) is recorded at
+    the start and end of each run. A z/VM or KVM guest is a labelled variant, with the hypervisor's time counted
+    (docs/CPU-ACCOUNTING.md, section 2).
+- **x86:**
+  - One server on bare metal, with 1, 2, 3 ... physical cores in use. The cores in use form a **cpuset** (cgroup v2
+    `cpuset.cpus`):
+    - every process of the system under test runs in it: the application, the database, any cache and their
+      background workers;
+    - its memory nodes (`cpuset.mems`) are the NUMA node of the counted cores, and the counted cores stay on one
+      socket, in one NUMA node and in one last-level-cache domain until the configuration needs more; the placement
+      is recorded;
+    - device interrupts are handled on the same cores, in one of these ways:
+      - where an interrupt's affinity can be set, through `/proc/irq/*/smp_affinity_list` [S39];
+      - for kernel-managed interrupts (for example NVMe, and many multi-queue network drivers), whose affinity
+        cannot be changed from user space, through their queue mapping (with one NVMe queue per CPU, I/O submitted
+        from the counted cores completes on them);
+      - by limiting the NIC's RSS indirection table, and the RPS and XPS masks, to queues whose interrupts are on the
+        cpuset's CPUs;
+      - where none of these is enough, with the boot parameter `isolcpus=managed_irq,<the other cores>` (verify
+        against the kernel in use).
+
+      The per-CPU interrupt counts from `/proc/interrupts` over the window are published. The cores outside the
+      cpuset are never taken offline, because the loaded neighbour state needs them;
+    - kernel threads that can be moved are moved there; CPU affinity for the application alone is not enough.
+  - The confinement is **verified for every run**. The **residue** is the busy time of the CPUs outside the cpuset
+    during the window (user, nice, system, irq and softirq, from `/proc/stat`), less the CPU time of the background
+    load's cgroup (loaded state), and less a baseline measured with the system under test stopped and the
+    background load, if any, running. The residue is at most 1% (proposed) of the busy time of the counted cores,
+    or the run is invalid. It is added to the reported CPU figure (docs/CPU-ACCOUNTING.md), so that work outside the
+    cpuset is still counted, as all work in a Z partition is.
+  - Both hardware threads of a counted core are in the cpuset, and the SMT state is fixed for the series.
+  - **Frequency.** The frequency governor is fixed for the series. Counted series hold the counted cores at the
+    part's **sustained all-core frequency**, not at base frequency: turbo is enabled and the counted cores are capped
+    at the mean core frequency measured with every core of the socket running the kit's background load, measured
+    once per machine before the series and recorded (for example with `cpupower frequency-set --max`, or the
+    platform's equivalent). Pinning that frequency, and reporting the setting, are part of the run. A point whose
+    counted-core mean frequency is more than 2% (proposed) below the cap is invalid. Turbo uncapped (single-core and
+    light-load boost peaks) and turbo off at base frequency are labelled variants. IBM Z processors run at their
+    machine's fixed rated frequency, which is recorded.
+  - **The frequency asymmetry that remains,** stated with every per-core verdict: an x86 part can run a few cores
+    above the cap when the rest of the socket is idle, and below it under heavier vector or power load, while an
+    IBM Z core runs at one fixed frequency whatever its neighbours do. Each per-core verdict reports the cap, the
+    measured mean frequency of the counted cores, the part's published base and maximum boost frequencies, and the
+    Z machine's rated frequency; the turbo-uncapped variant is run and reported beside it, and scores nothing.
+  - **SKU.** The x86 part is named, with its class (frequency-optimised, general-purpose, core-dense, or with
+    stacked cache), its last-level cache per core and the reason it was chosen, in the machine registry before any
+    kit run on it (docs/REGISTRY.md). Memory is populated on every channel at the part's rated speed. Scored runs
+    use a general-purpose part, or a part of another class named in the machine registry, whose verdicts are then
+    labelled with its class (docs/HYPOTHESES-ADDENDUM.md); every named part is in the one Holm family.
+- **Neighbour load, the same rule on both sides.** Every counted series declares one neighbour state and runs it on
+  both sides. The neighbour processors are those that share the counted cores' largest shared cache or memory
+  path: on x86, the other cores of the socket; on IBM Z, the other physical processors of the drawers that hold the
+  counted logical processors.
+  - **Loaded (the scored state):** the neighbour processors are busy at a defined level over the window: 80% mean
+    utilisation (proposed), within ± 10 percentage points. On x86 the kit's background program provides it, in its
+    own cgroup, excluded from the count and from the confinement residue. On IBM Z the kit's background program
+    provides it in another partition on the same drawers where the owner allows one; otherwise the other
+    partitions' own work provides it, labelled "loaded by other partitions". On Z the level is shown for every run
+    from the RMF partition data and the processor topology data (verify the records: SMF type 70 subtype 1, and
+    SMF type 99 subtype 14 for the topology). The background type is reported with every verdict.
+  - **Quiet (a labelled variant, on both sides):** on x86, the other cores of the socket idle; on IBM Z, no logical
+    processor of any other partition dispatched on the drawers that hold the counted logical processors, shown in
+    the same way. Where one side cannot be made quiet, the quiet variant is not paired.
+  - A run whose declared state cannot be shown is invalid for that state. The drawer and chip of every counted
+    logical processor are recorded for every run, and a series whose placement changes between runs is labelled
+    "placement changed".
+- **Both sides:** a small configuration still shares the last-level cache and memory bandwidth of its socket, core
+  complex, chip or drawer. Each configuration states its memory, the last-level cache available to its counted cores, and the
+  frequency policy. Memory follows the **same rule on both sides**, stated before the series: the same amount at
+  each count, or the same multiple of the stored data.
+- Settings that change with size (worker pools, buffer pools, connection limits) follow a rule stated before the
+  series. Every other setting is the same across the set.
+- A single-box series changes the size of one machine or partition. A series that adds machines is the scale-out
+  tier (9).
+
+### 8.3 Procedure
+For each target, from the smallest declared configuration upwards:
+1. Offer R open loop (7.1), with warm-up, window and the run plan's repeats (section 4).
+2. If the configuration sustains R (7.4), it is the **sustaining configuration** for that target. Stop.
+3. Otherwise move to the next declared configuration.
+
+The result for the next smaller declared configuration, which did not sustain R, is reported with the sustaining
+configuration, so the reader can see that one size less was not enough. If no declared configuration sustains R,
+the result is "not sustained within the declared configurations", and the result for the largest declared
+configuration is reported.
+
+If the smallest declared configuration sustains R, the result is "sustained at the smallest declared
+configuration". That is an upper bound on the need, not the need. It is reported with the CPU time per transaction
+(8.4) and without a next smaller configuration. When both sides sustain R at their smallest declared configuration,
+no difference in counted cores or engines is reported, only the CPU time per transaction.
+
+### 8.4 What is counted, and what is disclosed
+For each target and each side, the sustaining configuration is reported with:
+- **cores or engines by type,** counted over every tier of the system under test (including any database, cache,
+  load balancer and coupling facility partitions; a load-balancer appliance is listed instead, unless it terminates
+  TLS or runs a pipeline step):
+  - on Z: CPs, zIIPs, IFLs and ICFs (or the shared CPs a coupling facility runs on), each dedicated or shared, with
+    weight, entitlement and capping for shared engines, and the MT mode of IFLs and zIIPs;
+  - on x86: physical cores, by CPU model, with the SMT state;
+  - cores or engines of tiers that exist only for availability (standbys, replicas that serve no reads) are counted
+    separately from those that serve the load, and each side's count is given with and without them (9.2);
+- **everything that runs a pipeline step on its own processors is counted.** A component that executes a step of
+  the request pipeline (docs/ARCHITECTURE.md, section 3), or terminates TLS sessions, on processors of its own and
+  independently of the counted cores (an appliance, a gateway, a TLS-terminating proxy, or a SmartNIC that runs such
+  a step) is part of the system under test, and its processors are counted. A device that only performs an
+  operation requested by a counted core (a cryptographic or compression operation by CPACF, a Crypto Express
+  adapter, QAT or IAA, or a network adapter's inline TLS record encryption) is listed, not counted, on both sides;
+- **CPU time per transaction by engine type,** on the basis of docs/CPU-ACCOUNTING.md, so that a tie at whole-core
+  or whole-engine steps is not read as equal need;
+- **processors and adapters not counted as cores,** listed on both sides:
+  - on Z: System Assist Processors (SAPs), Integrated Firmware Processors (IFPs), the on-chip Data Processing Unit
+    (DPU, z17), channels, network adapters and their offloads, and cryptographic adapters; for every z/OS run, the
+    SAP utilisation from the RMF I/O queuing activity data (verify the record, SMF type 78 subtype 3), and for Linux
+    on Z the same figure from the CPC owner where it is available;
+  - on x86: network adapters and their offloads (and any DPU or SmartNIC that runs no pipeline step), storage
+    controllers, and on-die accelerators such as QAT, IAA and DSA where present;
+  - on both: the storage subsystem and its processors;
+- **accelerators** present and in use (1.4), with the counters that show their use: on Z, CPACF, the on-chip
+  compression accelerator (zEDC, used through DFLTCC), CMPSC (the compression call instruction), the Z Sort
+  accelerator (SORTL), the IBM Integrated Accelerator for AI, with the number of AI accelerators the partition's
+  cores can reach, IBM Spyre Accelerator adapters and Crypto Express adapters; on x86, AES-NI/SHA, AVX-512, AMX, QAT,
+  IAA and DSA. Hardware that only performs operations requested by the counted cores (CPACF, the on-chip
+  accelerators, QAT, IAA, Crypto Express) stays listed, not counted;
+- **memory,** over every tier;
+- **hardware generation:** machine type and model, or CPU model, with its general-availability date, on both
+  sides. If the two dates are more than 24 months apart (proposed), the result is labelled "cross-generation";
+- **power,** where measurable (1.7; docs/methods/energy.md), or "not measurable" with the reason;
+- **cost,** where priced (FDR section 8), with the licence metric of each product;
+- utilisation of each tier at the sustaining configuration.
+
+Driver hosts are never counted, and are reported separately (7.3).
+
+### 8.5 What equal service does and does not capture
+Equal service counts the cores and engines a workload needs to meet a stated service, and lists every processor,
+adapter and accelerator that does work outside them. It does not count that outside work: neither an equal-core run
+nor an equal-service run does, on either platform. What equal service adds is that each side runs at the size it
+needs for the same service, instead of at a size fixed in advance; that a cluster can be compared with a single
+system; and that the result is a resource need at a stated service level.
+
+One asymmetry of this kind is stated with every result: on x86, the interrupt and softirq time of network and
+storage I/O lands on the counted cores, while on IBM Z channel-program processing runs on SAPs, which are listed and
+not counted. For I/O-heavy work this favours Z in CPU time per transaction, which is why the SAP utilisation is
+reported beside every z/OS result (8.4).
+
+### 8.6 Normalisations reported with it
+- At the sustaining configuration, the target per counted core or engine (R divided by the count) is shown beside
+  the result, labelled as a normalisation of the target, not a capacity. Per-core capacity (the knee, 7.4, divided
+  by the count) is reported only from a sweep of that configuration, and labelled as such.
+- A per-watt or per-dollar figure is shown beside the result only when both sides are measured or priced on the
+  same basis. Otherwise neither appears there, and the available side's figure is given in the FDR body, labelled
+  "one side only; not comparable". Where no published list price exists for a hardware configuration, on either
+  side, no per-dollar figure is given for it.
+- Equal-service results are measured resource needs at one service target. They are not consolidation ratios, and
+  they are never scaled to an estate (docs/prior-art.md, section 5, "Traps to avoid"). The only measured precedent
+  we found for a fixed offered load with the resources each side needs is a study commissioned by IBM
+  (docs/prior-art.md, AN01); we found no independent one.
+
+### 8.7 How an equal-service result may be summarised
+An equal-service result is the table of 8.4 for each target. It is never reduced to one ratio of engine counts
+across engine types. Where one figure is given, it is the ratio of CPU time per transaction (8.4) on the two sides,
+labelled with the engine types it compares, with its 95% confidence interval and the result of the next smaller
+configuration. Its inverse is not a replacement ratio either. The table shows each side's configurations in their
+own units; on z/OS the declared (CP, zIIP) steps can be finer than whole x86 cores, which is stated, and the figure
+compared is the CPU time per transaction, not the number of steps. Every FDR summary that reports equal service
+carries this sentence: "An equal-service result is a resource need at one service target on the configurations
+tested. It is exploratory. It is not a consolidation ratio, and it does not state how many x86 cores replace an IBM
+Z engine."
+
+## 9. Scale-out tier (proposed)
+
+### 9.1 Purpose
+This tier is its own labelled tier (section 2). It measures what each added application node buys at a fixed
+offered rate, and where adding nodes stops raising capacity (the **scaling limit**, if one is found). It runs the
+live-database variant (1.8.4), because file-based stores do not span nodes, and names its form. Its results are
+exploratory, like those of section 8.
+
+The x86 cluster of this tier is **single-writer**: one database primary takes every write. Results are labelled
+"scale-out tier, single-writer". A scaling limit found here is the limit of a single-writer design with the
+declared fixed tiers, not of x86 clusters in general. A multi-writer x86 variant (a shared-data or distributed
+database, as declared) is optional and may be added in a later spec version. No claim is made that the
+single-writer cluster, or any later variant, matches Parallel Sysplex data sharing.
+
+### 9.2 Topology and availability design
+- The x86 cluster has a load balancer, N identical stateless application nodes, a counter and session store, one
+  database primary and optional batch nodes (docs/ARCHITECTURE.md, section 5.2). It has database replicas only in
+  variant S2, where they serve reads and are counted, or under availability design A1.
+- Within a series only N changes. Every other tier is fixed, and declared before the series starts.
+- **Availability design,** declared for each side and the same on both sides of a comparison (4.11):
+  - **A0 (default): no standby on either side.** On x86, one database primary with no synchronous standby; on Z,
+    the declared configuration with no standby partition or CPC.
+  - **A1: a synchronous standby on both sides, at the same layer.** Either a database-level synchronous standby on
+    both sides (on x86, for example PostgreSQL synchronous replication; on Z, a database standby), or storage-level
+    synchronous mirroring on both sides (on Z, for example Metro Mirror; on x86, synchronous array replication). The
+    layer is declared; a pairing across layers is labelled "unequal availability design".
+
+  A comparison between different availability designs is labelled "unequal availability design" and reported as
+  two separate results, not as a comparison. Cores or engines of tiers that exist only for availability are
+  counted separately (8.4).
+- Two variants:
+  - **S1 (default):** only application nodes grow;
+  - **S2:** application nodes and read replicas grow together, with read-only operations routed to replicas.
+    Replication lag is measured, and the invariant check (1.8.5) is run after each point.
+- The load generator runs on its own hardware (7.3) and is sized for the highest rate in the series.
+
+### 9.3 Procedure
+- The series fixes L and T in the run plan before K_1 is measured (proposed: L = L_cal and the T of 7.5), and every
+  K_N, and every (R, N) point, uses them.
+- The single-node knee K_1 is found by the sweep of 7.2 with N = 1.
+- A **rate ladder** of fixed target rates is set from K_1 before the series starts, and recorded.
+- At every N used in the series, C and the knee K_N are found by the procedures of 4.2 and 7.2 (coarse and fine
+  passes).
+- For each rate R, N grows one node at a time. Each (R, N) point follows the run rules of section 4.
+- **Flat, rising or inconclusive.** For each added node, the 95% percentile bootstrap interval (7.5) of
+  D_N = K_N − K_(N−1) is computed, with the per-repeat knees at N and at N − 1 resampled independently. The node
+  takes the first label that applies, so that each node is in exactly one class:
+  - **flat** if the interval lies wholly below 0.10 × K_1 (proposed), that is, the node is shown to add less than a
+    tenth of the one-node knee (a one-sided equivalence test, 4.16);
+  - **rising** if the interval lies wholly above 0;
+  - **inconclusive** otherwise.
+
+  "Flat" is always reported with its margin, never as "adds nothing".
+- For each R the series ends in one of three outcomes, and records it:
+  - **sustained:** N_min(R), the smallest N that sustains R (7.4). The series then adds two more nodes, to show
+    whether more nodes keep helping;
+  - **the scaling limit:** two consecutive added nodes are flat. The series records the N where this began, and
+    the tier whose utilisation or waiting rose (load balancer, application, counter and session store, database or
+    network);
+  - **the declared maximum N** is reached first. Inconclusive steps are reported as such.
+
+### 9.4 The Z comparator
+The same ladder of rates is offered to the declared Z configuration: a single LPAR at a declared set of engine
+counts (8.2), and in a later phase a Parallel Sysplex with an increasing number of members. For each R the result
+records whether it is sustained, and the smallest declared configuration that sustains it (8.3).
+
+The same scaling-limit test applies on both sides. The single-LPAR series finds C and the knee at every engine count
+in its declared set (4.2, 7.2), classes each added engine flat, rising or inconclusive by the rule of 9.3, with K_1
+the one-engine knee, and reports two consecutive flat engines as the scaling limit of that configuration, with the
+resource whose utilisation or waiting rose. Where an x86 single-server series is run beside the tier, each added
+core is classed in the same way, with K_1 the one-core knee. A sysplex with
+Db2 data sharing is multi-writer; it is labelled so, and a comparison of it with the single-writer x86 cluster is
+labelled "multi-writer sysplex against single-writer cluster".
+
+### 9.5 What the tier reports
+- For each R: the sustaining configuration on each side, counted and disclosed as in 8.4, with and without the
+  tiers that exist only for availability.
+- Per-node capacity (K_N divided by N) against N; and, for each R, the achieved rate against N.
+- The scaling limit, where found, and the saturated tier.
+- Any fit of a scalability model to the pairs (N, K_N) is reported as analysis, never as a measurement.
+- Results of this tier are labelled "scale-out tier" and reported apart from single-box results. They score no
+  registered hypothesis, and none is a headline result.
+
+## 10. Preconditions before any headline result (proposed)
+A **headline result** is a result that the project presents as a finding of the benchmark: in an FDR summary, the
+README, a release note or an announcement. None exists today, and none can exist until every precondition below
+holds. Until then, every FDR summary begins with "Preliminary: the preconditions of SPEC section 10 are not all
+met", followed by the list of those not met.
+
+| Precondition | What is missing today | What must exist |
+| --- | --- | --- |
+| 1. A published kit | No kit code is published: the kit's data generator, transaction mix table, load driver, Linux replacement for CICS and VSAM, Java reimplementation, z/OS wrapper programs and golden script are not released. | A tagged kit release with all of these, a configuration checklist for each platform, the validity checker of 4.13, and reference code for the interval methods and the Holm procedure of 4.16, which passes its golden check on every platform of the result. |
+| 2. A sanctioned platform | The project has no IBM Z or LinuxONE system whose terms allow benchmarking and publishing results (docs/platforms.md). | For every machine in the result, the written permission of its owner to benchmark it and publish the results, recorded in FDR 9. |
+| 3. Licence terms checked | The licence terms of the programs a run would use have not been checked for conditions on benchmarking or publishing results. | For every licensed program in the run, on both sides (IBM's and any other vendor's: for example z/OS, CICS TS, Db2, Enterprise COBOL, a Java runtime, a commercial Linux distribution, a hypervisor or a vendor accelerator library), its terms checked and the outcome recorded in FDR 9. A configuration whose publication a term forbids, or makes conditional on something the run does not meet, is not published. |
+| 4. An independent reproduction | No one has re-run anything from this specification. | A reproduction by a team independent of the maintainer (neither the maintainer nor anyone working under the maintainer's direction), from the published kit and run plan, on its own x86 hardware and on the same or an equivalent Z machine (the same machine type, engine type and count, engine mode and capacity setting), published with its own FDR. A figure to be called a headline is reproduced when the 90% interval of the difference between the reproduction's estimate and the original's (Welch for means, Fieller for ratios, the percentile bootstrap for derived quantities, over both sets of runs) lies within ±10% (proposed) of the original estimate. A registered verdict to be called a headline must be the same verdict in the reproduction. A figure or verdict that does not reproduce is not a headline, and the difference is reported. |
+| 5. External pre-registration | The hypotheses are timestamped only by git history. | The signed tag `omb-v0.4.0-prereg` and its archive deposit with a DOI, recorded in docs/REGISTRY.md, with an archive creation time before the first counted kit run (4.7); the machine registry entries of every machine in the result, made before any kit run on it; the run registry and tuning logs of every series behind the result (4.13, 4.14). For an equal-service or scale-out result, a prediction about it registered in the same way before its first kit run (section 8). |
+| 6. A pilot and a power analysis | No pilot has been run and no power analysis made. | Before the tag `omb-v0.4.0-prereg`: a pilot of at least 6 runs over at least 3 boots or IPLs (proposed) on each side, at one point of each measurand, entered in the run registry as kind "pilot", scoring nothing and published; and, from it, a power analysis recorded in the addendum entry: for every claim, its Holm-adjusted level, the repeat count, and the smallest distance from the predicted region's boundary that the claim resolves with 80% probability (proposed) at that count (docs/REGISTRY.md, section 2). Every DIFFERS verdict is quoted with that power statement. |
+
+Results produced before the preconditions hold are published under the run rules, labelled "preliminary", and they
+stay preliminary. Preconditions 2 and 3 are never waived: no result, preliminary or not, is published from a machine
+without its owner's written permission to benchmark it and publish the results, or from a licensed program whose
+terms have not been checked. Only the independent reproduction (precondition 4) necessarily comes after the result it
+reproduces.
 
 Trademarks used in this specification are listed in [NOTICE](NOTICE).
