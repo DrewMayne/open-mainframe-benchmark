@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you cite this specification or kit, please cite it as below, and name the spec version and track you used."
+type: software
+title: "Open Mainframe Benchmark: specification and kit"
+abstract: >-
+  An open, reproducible benchmark specification, with a kit in development, for comparing IBM Z / LinuxONE with x86
+  servers on online transactions and batch together, from the same source on every platform, with pre-registered
+  hypotheses and a Full Disclosure Report for every result. Not a project of the Open Mainframe Project or The
+  Linux Foundation, and not affiliated with either.
+authors:
+  - family-names: Mayne
+    given-names: Andrew
+    affiliation: "Durham College"
+repository-code: "https://github.com/DrewMayne/open-mainframe-benchmark"
+version: "0.4.0-draft"
+license: Apache-2.0
+keywords:
+  - benchmark
+  - IBM Z
+  - LinuxONE
+  - x86
+  - COBOL
+  - CICS
+  - reproducibility
+  - pre-registration
